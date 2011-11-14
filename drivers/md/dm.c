@@ -2195,7 +2195,7 @@ static void dm_request_fn(struct request_queue *q)
 		spin_unlock(q->queue_lock);
 		if (map_request(tio, rq, md) == DM_MAPIO_REQUEUE)
 			dm_requeue_original_request(md, rq);
-		BUG_ON(!irqs_disabled());
+		BUG_ON_NONRT(!irqs_disabled());
 		spin_lock(q->queue_lock);
 	}
 
