@@ -45,6 +45,10 @@ SCHED_FEAT(LB_BIAS, true)
  */
 SCHED_FEAT(NONTASK_CAPACITY, true)
 
+#ifdef CONFIG_PREEMPT_RT_FULL
+SCHED_FEAT(PREEMPT_LAZY, true)
+#endif
+
 /*
  * Queue remote wakeups on the target CPU and process them
  * using the scheduler IPI. Reduces rq->lock contention/bounces.
