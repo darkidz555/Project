@@ -5544,9 +5544,6 @@ static int __init init_workqueues(void)
 	       !system_unbound_wq || !system_freezable_wq ||
 	       !system_power_efficient_wq ||
 	       !system_freezable_power_efficient_wq);
-
-	wq_watchdog_init();
-
 	return 0;
 }
 early_initcall(init_workqueues);
