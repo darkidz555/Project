@@ -168,7 +168,6 @@ struct ipu_soc {
 	struct ipu_dmfc_priv	*dmfc_priv;
 	struct ipu_di		*di_priv[2];
 	struct ipu_csi		*csi_priv[2];
-	struct ipu_ic_priv	*ic_priv;
 	struct ipu_smfc_priv	*smfc_priv;
 };
 
@@ -194,10 +193,6 @@ int ipu_wait_interrupt(struct ipu_soc *ipu, int irq, int ms);
 int ipu_csi_init(struct ipu_soc *ipu, struct device *dev, int id,
 		 unsigned long base, u32 module, struct clk *clk_ipu);
 void ipu_csi_exit(struct ipu_soc *ipu, int id);
-
-int ipu_ic_init(struct ipu_soc *ipu, struct device *dev,
-		unsigned long base, unsigned long tpmem_base);
-void ipu_ic_exit(struct ipu_soc *ipu);
 
 int ipu_di_init(struct ipu_soc *ipu, struct device *dev, int id,
 		unsigned long base, u32 module, struct clk *ipu_clk);

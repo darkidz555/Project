@@ -16,9 +16,7 @@
 #include <linux/videodev2.h>
 #include <linux/bitmap.h>
 #include <linux/fb.h>
-#include <linux/of.h>
 #include <media/v4l2-mediabus.h>
-#include <video/videomode.h>
 
 struct ipu_soc;
 
