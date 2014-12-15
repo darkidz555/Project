@@ -143,7 +143,6 @@ config CPU_FREQ_DEFAULT_GOV_BIOSHOCK
 	help
 Default governor of BioShock kernel
 	  have a look at the help section of that governor.
-endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
 	tristate "'performance' governor"
@@ -395,6 +394,22 @@ config LGE_PM_TRITON
 config LGE_PM_CANCUN
 	tristate "LGE CPU Cancun Project"
 	depends on CPU_FREQ_GOV_INTERACTIVE
+
+config CPU_FREQ_GOV_BLU_ACTIVE
+	tristate "'blu_active' cpufreq policy governor"
+	help
+	  'blu_active' - This driver adds a dynamic cpufreq policy governor
+	  designed for latency-sensitive workloads.
+
+	  This governor attempts to reduce the latency of clock
+	  increases so that the system is more responsive to
+	  interactive workloads.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called cpufreq_blu_active.
+
+	  If in doubt, say N.
+
 if X86
 source "drivers/cpufreq/Kconfig.x86"
 endif
