@@ -310,6 +310,7 @@ enum lru_cost_type {
 };
 extern void lru_note_cost(struct lruvec *lruvec, enum lru_cost_type cost,
 			  bool file, unsigned int nr_pages);
+DECLARE_LOCAL_IRQ_LOCK(swapvec_lock);
 extern void lru_cache_add(struct page *);
 extern void lru_cache_putback(struct page *page);
 extern void lru_cache_add_anon(struct page *page);
