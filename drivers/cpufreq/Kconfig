@@ -197,6 +197,13 @@ config CPU_FREQ_DEFAULT_GOV_ALUCARD
 	  you to get a full dynamic cpu frequency capable system by simply
 	  loading your cpufreq low-level hardware driver, using the
 	  'alucard' governor for latency-sensitive workloads.
+	  Use the CPUFreq governor 'optimax' as default
+
+config CPU_FREQ_DEFAULT_GOV_RAGINGMOLASSES
+	bool "ragingmolasses"
+	select CPU_FREQ_GOV_RAGINMOLASSES
+	help
+	  Use the CPUFreq governor 'ragingmolasses' as default. Work in progress attempt at a good all around governor that can do either high performance or battery. Attempts to keep CPU away from max frequency as much as possible.
 
 endchoice
 
@@ -501,6 +508,26 @@ config CPU_FREQ_GOV_BLU_ACTIVE
 	  If in doubt, say N.
 
 if X86
+config CPU_FREQ_GOV_OPTIMAX
+	tristate "'optimax' cpufreq policy governor"
+	select CPU_FREQ_TABLE
+	
+config CPU_FREQ_GOV_RAGINGMOLASSES
+	tristate "'RAGINGMOLASSES' cpufreq policy governor"
+	help
+	  'RAGINGMOLASSES' - This driver adds a cpufreq policy governor 
+	  much along the lines of ondemand but tries to keep to low 
+	  frequencies without hurting performance for workloads that need it. 
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called cpufreq_interactive.
+
+	  For details, take a look at linux/Documentation/cpu-freq.
+
+	  If in doubt, say N.
+
+menu "x86 CPU frequency scaling drivers"
+depends on X86
 source "drivers/cpufreq/Kconfig.x86"
 endif
 
