@@ -92,6 +92,7 @@ struct request {
 	struct list_head queuelist;
 	union {
 		call_single_data_t csd;
+		struct work_struct work;
 		unsigned long fifo_time;
 	};
 
