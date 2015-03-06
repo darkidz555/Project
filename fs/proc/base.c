@@ -1179,7 +1179,29 @@ static ssize_t oom_adj_write(struct file *file, const char __user *buf,
 	else
 		oom_adj = (oom_adj * OOM_SCORE_ADJ_MAX) / -OOM_DISABLE;
 
-	err = __set_oom_adj(file, oom_adj, true);
+	if (oom_adj < task->signal->oom_score_adj &&
+	    !capable(CAP_SYS_RESOURCE)) {
+		err = -EACCES;
+		goto err_sighand;
+	}
+
+	/*
+	 * /proc/pid/oom_adj is provided for legacy purposes, ask users to use
+	 * /proc/pid/oom_score_adj instead.
+	 */
+	pr_warn_once("%s (%d): /proc/%d/oom_adj is deprecated, please use /proc/%d/oom_score_adj instead.\n",
+		  current->comm, task_pid_nr(current), task_pid_nr(task),
+		  task_pid_nr(task));
+
+	delete_from_adj_tree(task);
+	task->signal->oom_score_adj = oom_adj;
+	add_2_adj_tree(task);
+	trace_oom_score_adj_update(task);
+err_sighand:
+	unlock_task_sighand(task, &flags);
+err_task_lock:
+	task_unlock(task);
+	put_task_struct(task);
 out:
 	return err < 0 ? err : count;
 }
@@ -1239,7 +1261,9 @@ static ssize_t oom_score_adj_write(struct file *file, const char __user *buf,
 	}
 #endif
 
-//	task->signal->oom_score_adj = (short)oom_score_adj;
+	delete_from_adj_tree(task);
+	task->signal->oom_score_adj = (short)oom_score_adj;
+	add_2_adj_tree(task);
 
 #ifdef CONFIG_HSWAP
 	if (!task->signal->oom_score_adj) {
