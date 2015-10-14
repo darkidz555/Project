@@ -6215,10 +6215,11 @@ decay_load_missed(unsigned long load, unsigned long missed_updates, int idx)
 }
 
 /**
- * __cpu_load_update - update the rq->cpu_load[] statistics
+ * __update_cpu_load - update the rq->cpu_load[] statistics
  * @this_rq: The rq to update statistics for
  * @this_load: The current load
  * @pending_updates: The number of missed updates
+ * @active: !0 for NOHZ_FULL
  *
  * Update rq->cpu_load[] statistics. This function is usually called every
  * scheduler tick (TICK_NSEC).
@@ -6247,12 +6248,12 @@ decay_load_missed(unsigned long load, unsigned long missed_updates, int idx)
  *   load[i]_n = (1 - 1/2^i)^n * load[i]_0
  *
  * see decay_load_misses(). For NOHZ_FULL we get to subtract and add the extra
- * term.
+ * term. See the @active paramter.
  */
-static void cpu_load_update(struct rq *this_rq, unsigned long this_load,
-			    unsigned long pending_updates)
+static void __update_cpu_load(struct rq *this_rq, unsigned long this_load,
+			      unsigned long pending_updates, int active)
 {
-	unsigned long tickless_load = this_rq->cpu_load[0];
+	unsigned long tickless_load = active ? this_rq->cpu_load[0] : 0;
 	int i, scale;
 
 	this_rq->nr_load_updates++;
@@ -6264,17 +6265,9 @@ static void cpu_load_update(struct rq *this_rq, unsigned long this_load,
 
 		/* scale is effectively 1 << i now, and >> i divides by scale */
 
-		old_load = this_rq->cpu_load[i];
+		old_load = this_rq->cpu_load[i] - tickless_load;
 		old_load = decay_load_missed(old_load, pending_updates - 1, i);
-		if (tickless_load) {
-			old_load -= decay_load_missed(tickless_load, pending_updates - 1, i);
-			/*
-			 * old_load can never be a negative value because a
-			 * decayed tickless_load cannot be greater than the
-			 * original tickless_load.
-			 */
-			old_load += tickless_load;
-		}
+		old_load += tickless_load;
 		new_load = this_load;
 		/*
 		 * Round up the averaging division if load is increasing. This
@@ -6341,7 +6334,10 @@ static void cpu_load_update_idle(struct rq *this_rq)
 	if (weighted_cpuload(cpu_of(this_rq)))
 		return;
 
-	cpu_load_update_nohz(this_rq, READ_ONCE(jiffies), 0);
+	pending_updates = curr_jiffies - this_rq->last_load_update_tick;
+	this_rq->last_load_update_tick = curr_jiffies;
+
+	__update_cpu_load(this_rq, load, pending_updates, 0);
 }
 
 /*
@@ -6376,8 +6372,15 @@ void cpu_load_update_nohz_stop(void)
 
 	load = weighted_cpuload(cpu_of(this_rq));
 	raw_spin_lock(&this_rq->lock);
-	update_rq_clock(this_rq);
-	cpu_load_update_nohz(this_rq, curr_jiffies, load);
+	pending_updates = curr_jiffies - this_rq->last_load_update_tick;
+	if (pending_updates) {
+		this_rq->last_load_update_tick = curr_jiffies;
+		/*
+		 * We were idle, this means load 0, the current load might be
+		 * !0 due to remote wakeups and the sort.
+		 */
+		__update_cpu_load(this_rq, 0, pending_updates, 0);
+	}
 	raw_spin_unlock(&this_rq->lock);
 }
 #else /* !CONFIG_NO_HZ_COMMON */
@@ -6399,11 +6402,11 @@ static void cpu_load_update_periodic(struct rq *this_rq, unsigned long load)
 void cpu_load_update_active(struct rq *this_rq)
 {
 	unsigned long load = weighted_cpuload(cpu_of(this_rq));
-
-	if (tick_nohz_tick_stopped())
-		cpu_load_update_nohz(this_rq, READ_ONCE(jiffies), load);
-	else
-		cpu_load_update_periodic(this_rq, load);
+	/*
+	 * See the mess around update_idle_cpu_load() / update_cpu_load_nohz().
+	 */
+	this_rq->last_load_update_tick = jiffies;
+	__update_cpu_load(this_rq, load, 1, 1);
 }
 
 /*
