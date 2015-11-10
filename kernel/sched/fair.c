@@ -6346,7 +6346,7 @@ static void cpu_load_update_idle(struct rq *this_rq)
  * than other cpu_load[idx] but it should be fine as cpu_load readers
  * shouldn't rely into synchronized cpu_load[*] updates.
  */
-void cpu_load_update_nohz_start(void)
+void update_cpu_load_nohz(int active)
 {
 	struct rq *this_rq = this_rq();
 
@@ -6364,8 +6364,8 @@ void cpu_load_update_nohz_start(void)
 void cpu_load_update_nohz_stop(void)
 {
 	unsigned long curr_jiffies = READ_ONCE(jiffies);
-	struct rq *this_rq = this_rq();
-	unsigned long load;
+	unsigned long load = active ? weighted_cpuload(cpu_of(this_rq)) : 0;
+	unsigned long pending_updates;
 
 	if (curr_jiffies == this_rq->last_load_update_tick)
 		return;
@@ -6376,10 +6376,11 @@ void cpu_load_update_nohz_stop(void)
 	if (pending_updates) {
 		this_rq->last_load_update_tick = curr_jiffies;
 		/*
-		 * We were idle, this means load 0, the current load might be
-		 * !0 due to remote wakeups and the sort.
+		 * In the regular NOHZ case, we were idle, this means load 0.
+		 * In the NOHZ_FULL case, we were non-idle, we should consider
+		 * its weighted load.
 		 */
-		__update_cpu_load(this_rq, 0, pending_updates, 0);
+		__update_cpu_load(this_rq, load, pending_updates, active);
 	}
 	raw_spin_unlock(&this_rq->lock);
 }
