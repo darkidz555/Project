@@ -780,11 +780,10 @@ bool sched_can_stop_tick(struct rq *rq)
 	 * Round-robin realtime tasks time slice with other tasks at the same
 	 * realtime priority.
 	 */
-	if (rq->rt.rr_nr_running) {
-		if (rq->rt.rr_nr_running == 1)
-			return true;
-		else
-			return false;
+	if (current->policy == SCHED_RR) {
+		struct sched_rt_entity *rt_se = &current->rt;
+
+		return list_is_singular(&rt_se->run_list);
 	}
 
 	/* Normal multitasking need periodic preemption checks */
