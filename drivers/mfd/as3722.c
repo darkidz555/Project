@@ -422,6 +422,29 @@ static int as3722_i2c_remove(struct i2c_client *i2c)
 	return 0;
 }
 
+static int __maybe_unused as3722_i2c_suspend(struct device *dev)
+{
+	struct as3722 *as3722 = dev_get_drvdata(dev);
+
+	if (device_may_wakeup(dev))
+		enable_irq_wake(as3722->chip_irq);
+	disable_irq(as3722->chip_irq);
+
+	return 0;
+}
+
+static int __maybe_unused as3722_i2c_resume(struct device *dev)
+{
+	struct as3722 *as3722 = dev_get_drvdata(dev);
+
+	enable_irq(as3722->chip_irq);
+
+	if (device_may_wakeup(dev))
+		disable_irq_wake(as3722->chip_irq);
+
+	return 0;
+}
+
 static const struct of_device_id as3722_of_match[] = {
 	{ .compatible = "ams,as3722", },
 	{},
