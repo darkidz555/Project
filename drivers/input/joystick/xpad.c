@@ -597,7 +597,6 @@ struct usb_xpad {
 
 static int xpad_init_input(struct usb_xpad *xpad);
 static void xpad_deinit_input(struct usb_xpad *xpad);
-static void xpadone_ack_mode_report(struct usb_xpad *xpad, u8 seq_num);
 
 /*
  *	xpad_process_packet
@@ -681,10 +680,6 @@ static void xpad_process_packet(struct usb_xpad *xpad, u16 cmd, unsigned char *d
 static void xpad360_process_packet(struct usb_xpad *xpad, struct input_dev *dev,
 				   u16 cmd, unsigned char *data)
 {
-	/* valid pad data */
-	if (data[0] != 0x00)
-		return;
-
 	/* digital pad */
 	if (xpad->mapping & MAP_DPAD_TO_BUTTONS) {
 		/* dpad as buttons (left, right, up, down) */
@@ -1833,6 +1828,7 @@ static int xpad_probe(struct usb_interface *intf, const struct usb_device_id *id
 		error = xpad360w_start_input(xpad);
 		if (error)
 			goto err_deinit_output;
+
 		/*
 		 * Wireless controllers require RESET_RESUME to work properly
 		 * after suspend. Ideally this quirk should be in usb core
@@ -1844,10 +1840,16 @@ static int xpad_probe(struct usb_interface *intf, const struct usb_device_id *id
 	} else {
 		error = xpad_init_input(xpad);
 		if (error)
+			goto err_kill_in_urb;
+	} else {
+		error = xpad_init_input(xpad);
+		if (error)
 			goto err_deinit_output;
 	}
 	return 0;
 
+err_kill_in_urb:
+	usb_kill_urb(xpad->irq_in);
 err_deinit_output:
 	xpad_deinit_output(xpad);
 err_free_in_urb:
@@ -1866,19 +1868,18 @@ static void xpad_disconnect(struct usb_interface *intf)
 	if (xpad->xtype == XTYPE_XBOX360W)
 		xpad360w_stop_input(xpad);
 
+	if (xpad->xtype == XTYPE_XBOX360W)
+		usb_kill_urb(xpad->irq_in);
+
+	cancel_work_sync(&xpad->work);
+
 	xpad_deinit_input(xpad);
-
-	/*
-	 * Now that both input device and LED device are gone we can
-	 * stop output URB.
-	 */
-	xpad_stop_output(xpad);
-
-	xpad_deinit_output(xpad);
 
 	usb_free_urb(xpad->irq_in);
 	usb_free_coherent(xpad->udev, XPAD_PKT_LEN,
 			xpad->idata, xpad->idata_dma);
+
+	xpad_deinit_output(xpad);
 
 	kfree(xpad);
 
