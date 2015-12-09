@@ -575,6 +575,7 @@ struct usb_xpad {
 	bool irq_out_active;		/* we must not use an active URB */
 	u8 odata_serial;		/* serial number for xbox one protocol */
 	unsigned char *odata;		/* output data */
+	u8 odata_serial;		/* serial number for xbox one protocol */
 	dma_addr_t odata_dma;
 	spinlock_t odata_lock;
 
@@ -1182,12 +1183,17 @@ static int xpad_start_xbox_one(struct usb_xpad *xpad)
 
 	spin_lock_irqsave(&xpad->odata_lock, flags);
 
-	/*
-	 * Begin the init sequence by attempting to send a packet.
-	 * We will cycle through the init packet sequence before
-	 * sending any packets from the output ring.
-	 */
-	xpad->init_seq = 0;
+	/* Xbox one controller needs to be initialized. */
+	packet->data[0] = 0x05;
+	packet->data[1] = 0x20;
+	packet->data[2] = xpad->odata_serial++; /* packet serial */
+	packet->data[3] = 0x01; /* rumble bit enable?  */
+	packet->data[4] = 0x00;
+	packet->len = 5;
+	packet->pending = true;
+
+	/* Reset the sequence so we send out start packet first */
+	xpad->last_out_packet = -1;
 	retval = xpad_try_sending_next_out_packet(xpad);
 
 	spin_unlock_irqrestore(&xpad->odata_lock, flags);
@@ -1281,18 +1287,18 @@ static int xpad_play_effect(struct input_dev *dev, void *data, struct ff_effect 
 
 	case XTYPE_XBOXONE:
 		packet->data[0] = 0x09; /* activate rumble */
-		packet->data[1] = 0x00;
+		packet->data[1] = 0x08;
 		packet->data[2] = xpad->odata_serial++;
-		packet->data[3] = 0x09;
-		packet->data[4] = 0x00;
-		packet->data[5] = 0x0F;
-		packet->data[6] = 0x00;
-		packet->data[7] = 0x00;
+		packet->data[3] = 0x08; /* continuous effect */
+		packet->data[4] = 0x00; /* simple rumble mode */
+		packet->data[5] = 0x03; /* L and R actuator only */
+		packet->data[6] = 0x00; /* TODO: LT actuator */
+		packet->data[7] = 0x00; /* TODO: RT actuator */
 		packet->data[8] = strong / 512;	/* left actuator */
 		packet->data[9] = weak / 512;	/* right actuator */
-		packet->data[10] = 0xFF; /* on period */
-		packet->data[11] = 0x00; /* off period */
-		packet->data[12] = 0xFF; /* repeat count */
+		packet->data[10] = 0x80;	/* length of pulse */
+		packet->data[11] = 0x00;	/* stop period of pulse */
+		packet->data[12] = 0x00;
 		packet->len = 13;
 		packet->pending = true;
 		break;
