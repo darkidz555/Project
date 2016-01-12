@@ -221,6 +221,20 @@ static int deferred_probe_enable_fn(void)
 }
 late_initcall(deferred_probe_enable_fn);
 
+/**
+ * device_is_bound() - Check if device is bound to a driver
+ * @dev: device to check
+ *
+ * Returns true if passed device has already finished probing successfully
+ * against a driver.
+ *
+ * This function must be called with the device lock held.
+ */
+bool device_is_bound(struct device *dev)
+{
+	return dev->p && klist_node_attached(&dev->p->knode_driver);
+}
+
 static void driver_bound(struct device *dev)
 {
 	if (klist_node_attached(&dev->p->knode_driver)) {
