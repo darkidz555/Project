@@ -570,45 +570,6 @@ static int smaps_pte_hole(unsigned long addr, unsigned long end,
 }
 #endif
 
-#ifdef CONFIG_SHMEM
-static unsigned long smaps_shmem_swap(struct vm_area_struct *vma,
-		unsigned long addr)
-{
-	struct page *page;
-
-	page = find_get_entry(vma->vm_file->f_mapping,
-					linear_page_index(vma, addr));
-	if (!page)
-		return 0;
-
-	if (radix_tree_exceptional_entry(page))
-		return PAGE_SIZE;
-
-	page_cache_release(page);
-	return 0;
-
-}
-
-static int smaps_pte_hole(unsigned long addr, unsigned long end,
-		struct mm_walk *walk)
-{
-	struct mem_size_stats *mss = walk->private;
-
-	while (addr < end) {
-		mss->swap += smaps_shmem_swap(walk->vma, addr);
-		addr += PAGE_SIZE;
-	}
-
-	return 0;
-}
-#else
-static unsigned long smaps_shmem_swap(struct vm_area_struct *vma,
-		unsigned long addr)
-{
-	return 0;
-}
-#endif
-
 static void smaps_pte_entry(pte_t *pte, unsigned long addr,
 		struct mm_walk *walk)
 {
@@ -638,7 +599,17 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
 			page = migration_entry_to_page(swpent);
 	} else if (unlikely(IS_ENABLED(CONFIG_SHMEM) && mss->check_shmem_swap
 							&& pte_none(*pte))) {
-		mss->swap += smaps_shmem_swap(vma, addr);
+		page = find_get_entry(vma->vm_file->f_mapping,
+						linear_page_index(vma, addr));
+		if (!page)
+			return;
+
+		if (radix_tree_exceptional_entry(page))
+			mss->swap += PAGE_SIZE;
+		else
+			page_cache_release(page);
+
+		return;
 	}
 
 	if (!page)
