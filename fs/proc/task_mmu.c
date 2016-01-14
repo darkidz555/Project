@@ -570,6 +570,45 @@ static int smaps_pte_hole(unsigned long addr, unsigned long end,
 }
 #endif
 
+#ifdef CONFIG_SHMEM
+static unsigned long smaps_shmem_swap(struct vm_area_struct *vma,
+		unsigned long addr)
+{
+	struct page *page;
+
+	page = find_get_entry(vma->vm_file->f_mapping,
+					linear_page_index(vma, addr));
+	if (!page)
+		return 0;
+
+	if (radix_tree_exceptional_entry(page))
+		return PAGE_SIZE;
+
+	page_cache_release(page);
+	return 0;
+
+}
+
+static int smaps_pte_hole(unsigned long addr, unsigned long end,
+		struct mm_walk *walk)
+{
+	struct mem_size_stats *mss = walk->private;
+
+	while (addr < end) {
+		mss->swap += smaps_shmem_swap(walk->vma, addr);
+		addr += PAGE_SIZE;
+	}
+
+	return 0;
+}
+#else
+static unsigned long smaps_shmem_swap(struct vm_area_struct *vma,
+		unsigned long addr)
+{
+	return 0;
+}
+#endif
+
 static void smaps_pte_entry(pte_t *pte, unsigned long addr,
 		struct mm_walk *walk)
 {
@@ -599,17 +638,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
 			page = migration_entry_to_page(swpent);
 	} else if (unlikely(IS_ENABLED(CONFIG_SHMEM) && mss->check_shmem_swap
 							&& pte_none(*pte))) {
-		page = find_get_entry(vma->vm_file->f_mapping,
-						linear_page_index(vma, addr));
-		if (!page)
-			return;
-
-		if (radix_tree_exceptional_entry(page))
-			mss->swap += PAGE_SIZE;
-		else
-			page_cache_release(page);
-
-		return;
+		mss->swap += smaps_shmem_swap(vma, addr);
 	}
 
 	if (!page)
@@ -772,25 +801,8 @@ static int show_smap(struct seq_file *m, void *v, int is_pid)
 
 #ifdef CONFIG_SHMEM
 	if (vma->vm_file && shmem_mapping(vma->vm_file->f_mapping)) {
-		/*
-		 * For shared or readonly shmem mappings we know that all
-		 * swapped out pages belong to the shmem object, and we can
-		 * obtain the swap value much more efficiently. For private
-		 * writable mappings, we might have COW pages that are
-		 * not affected by the parent swapped out pages of the shmem
-		 * object, so we have to distinguish them during the page walk.
-		 * Unless we know that the shmem object (or the part mapped by
-		 * our VMA) has no swapped out pages at all.
-		 */
-		unsigned long shmem_swapped = shmem_swap_usage(vma);
-
-		if (!shmem_swapped || (vma->vm_flags & VM_SHARED) ||
-					!(vma->vm_flags & VM_WRITE)) {
-			mss.swap = shmem_swapped;
-		} else {
-			mss.check_shmem_swap = true;
-			smaps_walk.pte_hole = smaps_pte_hole;
-		}
+		mss.check_shmem_swap = true;
+		smaps_walk.pte_hole = smaps_pte_hole;
 	}
 #endif
 
