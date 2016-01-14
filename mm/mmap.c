@@ -3135,34 +3135,7 @@ out:
  */
 bool may_expand_vm(struct mm_struct *mm, vm_flags_t flags, unsigned long npages)
 {
-	if (mm->total_vm + npages > rlimit(RLIMIT_AS) >> PAGE_SHIFT)
-		return false;
-
-	if (is_data_mapping(flags) &&
-	    mm->data_vm + npages > rlimit(RLIMIT_DATA) >> PAGE_SHIFT) {
-		if (ignore_rlimit_data)
-			pr_warn_once("%s (%d): VmData %lu exceed data ulimit "
-				     "%lu. Will be forbidden soon.\n",
-				     current->comm, current->pid,
-				     (mm->data_vm + npages) << PAGE_SHIFT,
-				     rlimit(RLIMIT_DATA));
-		else
-			return false;
-	}
-
-	return true;
-}
-
-void vm_stat_account(struct mm_struct *mm, vm_flags_t flags, long npages)
-{
-	mm->total_vm += npages;
-
-	if (is_exec_mapping(flags))
-		mm->exec_vm += npages;
-	else if (is_stack_mapping(flags))
-		mm->stack_vm += npages;
-	else if (is_data_mapping(flags))
-		mm->data_vm += npages;
+	return mm->total_vm + npages <= rlimit(RLIMIT_AS) >> PAGE_SHIFT;
 }
 
 static int special_mapping_fault(struct vm_area_struct *vma,
