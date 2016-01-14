@@ -25,7 +25,7 @@
 
 void task_mem(struct seq_file *m, struct mm_struct *mm)
 {
-	unsigned long text, lib, swap, ptes, pmds, anon, file, shmem;
+	unsigned long data, text, lib, swap, ptes, pmds, anon, file, shmem;
 	unsigned long hiwater_vm, total_vm, hiwater_rss, total_rss;
 
 	anon = get_mm_counter(mm, MM_ANONPAGES);
@@ -77,7 +77,7 @@ void task_mem(struct seq_file *m, struct mm_struct *mm)
 		anon << (PAGE_SHIFT-10),
 		file << (PAGE_SHIFT-10),
 		shmem << (PAGE_SHIFT-10),
-		mm->data_vm << (PAGE_SHIFT-10),
+		data << (PAGE_SHIFT-10),
 		mm->stack_vm << (PAGE_SHIFT-10), text, lib,
 		ptes >> 10,
 		pmds >> 10,
