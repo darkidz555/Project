@@ -1726,9 +1726,9 @@ static void dump_line(char *data, int offset, int limit)
 	if (bad_count == 1) {
 		error ^= POISON_FREE;
 		if (!(error & (error - 1))) {
-			pr_err("Single bit error detected. Probably bad RAM.\n");
+			printk(KERN_ERR "Single bit error detected. Probably bad RAM.\n");
 #ifdef CONFIG_X86
-			pr_err("Run memtest86+ or a similar memory test tool.\n");
+			printk(KERN_ERR "Run memtest86+ or a similar memory test tool.\n");
 #else
 			pr_err("Run a memory test tool.\n");
 #endif
@@ -2549,7 +2549,7 @@ static void slab_put_obj(struct kmem_cache *cachep, struct page *page,
 	/* Verify double free bug */
 	for (i = page->active; i < cachep->num; i++) {
 		if (get_free_obj(page, i) == objnr) {
-			pr_err("slab: double free detected in cache '%s', objp %p\n",
+			printk(KERN_ERR "slab: double free detected in cache '%s', objp %p\n",
 			       cachep->name, objp);
 			BUG();
 		}
@@ -2876,9 +2876,10 @@ static void *cache_alloc_debugcheck_after(struct kmem_cache *cachep,
 		if (*dbg_redzone1(cachep, objp) != RED_INACTIVE ||
 				*dbg_redzone2(cachep, objp) != RED_INACTIVE) {
 			slab_error(cachep, "double free, or memory outside object was overwritten");
-			pr_err("%p: redzone 1:0x%llx, redzone 2:0x%llx\n",
-			       objp, *dbg_redzone1(cachep, objp),
-			       *dbg_redzone2(cachep, objp));
+			printk(KERN_ERR
+				"%p: redzone 1:0x%llx, redzone 2:0x%llx\n",
+				objp, *dbg_redzone1(cachep, objp),
+				*dbg_redzone2(cachep, objp));
 		}
 		*dbg_redzone1(cachep, objp) = RED_ACTIVE;
 		*dbg_redzone2(cachep, objp) = RED_ACTIVE;

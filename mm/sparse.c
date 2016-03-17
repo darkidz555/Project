@@ -425,7 +425,7 @@ void __init sparse_mem_maps_populate_node(struct page **map_map,
 		if (map_map[pnum])
 			continue;
 		ms = __nr_to_section(pnum);
-		pr_err("%s: sparsemem memory map backing failed some memory will not be available\n",
+		printk(KERN_ERR "%s: sparsemem memory map backing failed some memory will not be available.\n",
 		       __func__);
 		ms->section_mem_map = 0;
 	}
@@ -453,7 +453,7 @@ static struct page __init *sparse_early_mem_map_alloc(unsigned long pnum)
 	if (map)
 		return map;
 
-	pr_err("%s: sparsemem memory map backing failed some memory will not be available\n",
+	printk(KERN_ERR "%s: sparsemem memory map backing failed some memory will not be available.\n",
 	       __func__);
 	ms->section_mem_map = 0;
 	return NULL;

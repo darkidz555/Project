@@ -4657,7 +4657,8 @@ static int __parse_numa_zonelist_order(char *s)
 	} else if (*s == 'z' || *s == 'Z') {
 		user_zonelist_order = ZONELIST_ORDER_ZONE;
 	} else {
-		pr_warn("Ignoring invalid numa_zonelist_order value:  %s\n", s);
+		printk(KERN_WARNING
+		       "Ignoring invalid numa_zonelist_order value:  %s\n", s);
 		return -EINVAL;
 	}
 	return 0;

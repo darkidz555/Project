@@ -453,8 +453,8 @@ void dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t dma)
 				dev_err(pool->dev, "dma_pool_free %s, dma %Lx already free\n",
 					pool->name, (unsigned long long)dma);
 			else
-				pr_err("dma_pool_free %s, dma %Lx already free\n",
-				       pool->name, (unsigned long long)dma);
+				printk(KERN_ERR "dma_pool_free %s, dma %Lx already free\n",
+					pool->name, (unsigned long long)dma);
 			return;
 		}
 	}
