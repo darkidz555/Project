@@ -1149,7 +1149,14 @@ brcmf_msgbuf_process_rx_complete(struct brcmf_msgbuf *msgbuf, void *buf)
 
 	skb_trim(skb, buflen);
 
-	brcmf_msgbuf_rx_skb(msgbuf, skb, rx_complete->msg.ifidx);
+	ifp = brcmf_get_ifp(msgbuf->drvr, rx_complete->msg.ifidx);
+	if (!ifp || !ifp->ndev) {
+		brcmf_err("Received pkt for invalid ifidx %d\n",
+			  rx_complete->msg.ifidx);
+		brcmu_pkt_buf_free_skb(skb);
+		return;
+	}
+	brcmf_netif_rx(ifp, skb);
 }
 
 
