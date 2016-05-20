@@ -1390,7 +1390,8 @@ static int compact_finished(struct zone *zone, struct compact_control *cc,
  *   COMPACT_CONTINUE - If compaction should run now
  */
 static unsigned long __compaction_suitable(struct zone *zone, int order,
-					int alloc_flags, int classzone_idx)
+					unsigned int alloc_flags,
+					int classzone_idx)
 {
 	int fragindex;
 	unsigned long watermark;
@@ -1435,7 +1436,8 @@ static unsigned long __compaction_suitable(struct zone *zone, int order,
 }
 
 unsigned long compaction_suitable(struct zone *zone, int order,
-					int alloc_flags, int classzone_idx)
+					unsigned int alloc_flags,
+					int classzone_idx)
 {
 	unsigned long ret;
 
@@ -1607,7 +1609,7 @@ out:
 
 static unsigned long compact_zone_order(struct zone *zone, int order,
 		gfp_t gfp_mask, enum migrate_mode mode, int *contended,
-		int alloc_flags, int classzone_idx)
+		unsigned int alloc_flags, int classzone_idx)
 {
 	unsigned long ret;
 	struct compact_control cc = {
@@ -1648,8 +1650,8 @@ int sysctl_extfrag_threshold = 500;
  * This is the main entry point for direct page compaction.
  */
 unsigned long try_to_compact_pages(gfp_t gfp_mask, unsigned int order,
-			int alloc_flags, const struct alloc_context *ac,
-			enum migrate_mode mode, int *contended)
+		unsigned int alloc_flags, const struct alloc_context *ac,
+		enum migrate_mode mode, int *contended)
 {
 	int may_enter_fs = gfp_mask & __GFP_FS;
 	int may_perform_io = gfp_mask & __GFP_IO;
