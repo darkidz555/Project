@@ -2302,6 +2302,12 @@ static void qpnp_timed_enable_worker(struct work_struct *work)
 	}
 
 	time_ms = (time_ms > hap->timeout_ms ? hap->timeout_ms : time_ms);
+
+	if (hap->vmax_mv == QPNP_HAP_VMAX_MIN_MV) {
+		spin_unlock(&hap->lock);
+		return;
+	}
+
 	hap->play_time_ms = time_ms;
 	hap->state = 1;
 	hrtimer_start(&hap->hap_timer,
