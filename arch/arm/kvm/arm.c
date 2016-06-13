@@ -1209,14 +1209,14 @@ static int init_hyp_mode(void)
 	 * Map the Hyp-code called directly from the host
 	 */
 	err = create_hyp_mappings(kvm_ksym_ref(__kvm_hyp_code_start),
-				  kvm_ksym_ref(__kvm_hyp_code_end), PAGE_HYP_EXEC);
+				  kvm_ksym_ref(__kvm_hyp_code_end), PAGE_HYP);
 	if (err) {
 		kvm_err("Cannot map world-switch code\n");
 		goto out_err;
 	}
 
 	err = create_hyp_mappings(kvm_ksym_ref(__start_rodata),
-				  kvm_ksym_ref(__end_rodata), PAGE_HYP_RO);
+				  kvm_ksym_ref(__end_rodata), PAGE_HYP);
 	if (err) {
 		kvm_err("Cannot map rodata section\n");
 		goto out_err;
