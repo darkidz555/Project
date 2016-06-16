@@ -2507,6 +2507,8 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 		p->sched_class = &fair_sched_class;
 	}
 
+	init_entity_runnable_average(&p->se);
+
 	/*
 	 * The child is not yet in the pid-hash so no cgroup attach races,
 	 * and the cgroup is pinned to this child due to cgroup_fork()
@@ -2655,6 +2657,8 @@ void wake_up_new_task(struct task_struct *p)
 	add_new_task_to_grp(p);
 	raw_spin_lock_irqsave(&p->pi_lock, flags);
 	p->state = TASK_RUNNING;
+
+	walt_init_new_task_load(p);
 
 	/* Initialize new task's runnable average */
 	init_entity_runnable_average(&p->se);
