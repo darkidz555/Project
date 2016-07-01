@@ -23,10 +23,7 @@
 #ifndef __ASM_ASSEMBLER_H
 #define __ASM_ASSEMBLER_H
 
-#include <asm/asm-offsets.h>
 #include <asm/cpufeature.h>
-#include <asm/page.h>
-#include <asm/pgtable-hwdef.h>
 #include <asm/ptrace.h>
 #include <asm/thread_info.h>
 
@@ -393,22 +390,19 @@ alternative_endif
 	.endm
 
 /*
- * Return the current thread_info.
- */
-	.macro	get_thread_info, rd
-	mrs	\rd, sp_el0
-	.endm
-
-/*
  * Errata workaround post TTBR0_EL1 update.
  */
 	.macro	post_ttbr0_update_workaround
 #ifdef CONFIG_CAVIUM_ERRATUM_27456
-alternative_if ARM64_WORKAROUND_CAVIUM_27456
+alternative_if_not ARM64_WORKAROUND_CAVIUM_27456
+	nop
+	nop
+	nop
+alternative_else
 	ic	iallu
 	dsb	nsh
 	isb
-alternative_else_nop_endif
+alternative_endif
 #endif
 	.endm
 
