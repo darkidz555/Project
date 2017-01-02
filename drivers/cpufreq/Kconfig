@@ -200,19 +200,12 @@ config CPU_FREQ_DEFAULT_GOV_ALUCARD
 
 endchoice
 
-config CPU_FREQ_GOV_ALUCARD
-	bool "'alucard' cpufreq policy governor"
+
+config CPU_FREQ_DEFAULT_GOV_BIOSHOCK
+	bool "BioShock"
+	select CPU_FREQ_GOV_BIOSHOCK
 	help
-	  'alucard' - This driver adds a dynamic cpufreq policy governor
-	  designed for latency-sensitive workloads.
-
-	  This governor attempts to reduce the latency of clock
-	  increases so that the system is more responsive to
-	  alucard workloads.
-
-	  For details, take a look at linux/Documentation/cpu-freq.
-
-	  If in doubt, say N.
+	  Default governor of BioShock kernel
 
 config CPU_FREQ_GOV_PERFORMANCE
 	tristate "'performance' governor"
@@ -469,6 +462,20 @@ config CPUFREQ_DT
 	  systems which share clock and voltage across all CPUs.
 
 	  If in doubt, say N.
+	  
+#
+# custom govenors
+#
+
+config CPU_FREQ_GOV_BIOSHOCK
+	  tristate "'bioshock' cpufreq bioshock"
+	  depends on CPU_FREQ
+	  help
+	      'bioshock' - More aggressive version of conservative
+	      
+#
+# custom govenors -END
+#
 
 config LGE_PM_TRITON
 	tristate "Cpu Freq Helper Driver"
