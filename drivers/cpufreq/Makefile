@@ -29,6 +29,11 @@ obj-$(CONFIG_CPU_INPUT_BOOST)		+= cpu_input_boost.o
 
 obj-$(CONFIG_CPUFREQ_DT)		+= cpufreq-dt.o
 obj-$(CONFIG_LGE_PM_TRITON)        += triton.o
+# Custom CPUfreq Govenors
+obj-$(CONFIG_CPU_FREQ_GOV_BIOSHOCK)	   += cpufreq_bioshock.o
+# Custom CPUfreq Govenors -End
+
+obj-$(CONFIG_GENERIC_CPUFREQ_CPU0)	+= cpufreq-cpu0.o
 
 ##################################################################################
 # x86 drivers.
