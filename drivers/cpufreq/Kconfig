@@ -204,6 +204,16 @@ config CPU_FREQ_DEFAULT_GOV_CYAN
 	help
 	cyan' - an interactive based optimized governor!
 
+config CPU_FREQ_DEFAULT_GOV_ELECTROACTIVE
+	bool "electroactive"
+	select CPU_FREQ_GOV_ELECTROACTIVE
+        select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'electroactive' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'electroactive' governor for latency-sensitive workloads.
+
 endchoice
 
 
@@ -464,6 +474,16 @@ config GENERAL_BOOST_FREQ_PERF
 endif
 
 comment "CPU frequency scaling drivers"
+
+config CPU_FREQ_GOV_ELECTROACTIVE
+	tristate "'electroactive' cpufreq policy governor"
+        select CPU_FREQ_TABLE
+	help
+	  'electroactive' - A tweaked "hybrid" based smart and smooth optimized
+           governor designed for optimization in transition and a balance between
+           performance and power.
+	
+	   If in doubt, say N.
 
 config CPUFREQ_DT
 	tristate "Generic DT based cpufreq driver"
