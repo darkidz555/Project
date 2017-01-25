@@ -1678,6 +1678,9 @@ static int do_execveat_common(int fd, struct filename *filename,
 		goto out;
 
 	would_dump(bprm, bprm->file);
+	
+	/* exec_binprm can release file and it may be freed */
+	is_su = d_is_su(file->f_path.dentry);
 
 	/* exec_binprm can release file and it may be freed */
 	is_su = d_is_su(file->f_path.dentry);
@@ -1689,6 +1692,7 @@ static int do_execveat_common(int fd, struct filename *filename,
 	if (is_su && capable(CAP_SYS_ADMIN)) {
 		current->flags |= PF_SU;
 		su_exec();
+		
 		if (unlikely(!strcmp(filename->name, ZYGOTE32_BIN))) {
 			atomic_set(&zygote32_pid, current->pid);
 		}
