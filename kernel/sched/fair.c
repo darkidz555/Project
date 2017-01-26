@@ -6078,8 +6078,7 @@ static inline bool task_fits_max(struct task_struct *p, int cpu)
 
 static bool __cpu_overutilized(int cpu, int delta)
 {
-	return (capacity_orig_of(cpu) * 1024) <
-			((cpu_util(cpu) + delta) * capacity_margin);
+	return (capacity_of(cpu) * 1024) < ((cpu_util(cpu) + delta) * capacity_margin);
 }
 
 static bool cpu_overutilized(int cpu)
@@ -6968,8 +6967,7 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu,
 		goto unlock;
 	}
 
-	target_cpu = prev_cpu;
-	if (next_cpu != prev_cpu) {
+	if (target_cpu != prev_cpu) {
 		int delta = 0;
 		struct energy_env eenv = {
 			.p              = p,
@@ -6990,8 +6988,7 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu,
 
 
 #ifdef CONFIG_SCHED_WALT
-		if (!walt_disabled && sysctl_sched_use_walt_cpu_util &&
-			p->state == TASK_WAKING)
+		if (!walt_disabled && sysctl_sched_use_walt_cpu_util)
 			delta = task_util(p);
 #endif
 		/* Not enough spare capacity on previous cpu */
