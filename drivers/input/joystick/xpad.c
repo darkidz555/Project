@@ -460,39 +460,10 @@ static const u8 xboxone_hori_init[] = {
 };
 
 /*
- * This packet is required for some of the PDP pads to start
- * sending input reports. These pads include: (0x0e6f:0x02ab),
- * (0x0e6f:0x02a4).
- */
-static const u8 xboxone_pdp_init1[] = {
-	0x0a, 0x20, 0x00, 0x03, 0x00, 0x01, 0x14
-};
-
-/*
- * This packet is required for some of the PDP pads to start
- * sending input reports. These pads include: (0x0e6f:0x02ab),
- * (0x0e6f:0x02a4).
- */
-static const u8 xboxone_pdp_init2[] = {
-	0x06, 0x20, 0x00, 0x02, 0x01, 0x00
-};
-
-/*
- * A specific rumble packet is required for some PowerA pads to start
+ * A rumble packet is required for some PowerA pads to start
  * sending input reports. One of those pads is (0x24c6:0x543a).
  */
-static const u8 xboxone_rumblebegin_init[] = {
-	0x09, 0x00, 0x00, 0x09, 0x00, 0x0F, 0x00, 0x00,
-	0x1D, 0x1D, 0xFF, 0x00, 0x00
-};
-
-/*
- * A rumble packet with zero FF intensity will immediately
- * terminate the rumbling required to init PowerA pads.
- * This should happen fast enough that the motors don't
- * spin up to enough speed to actually vibrate the gamepad.
- */
-static const u8 xboxone_rumbleend_init[] = {
+static const u8 xboxone_zerorumble_init[] = {
 	0x09, 0x00, 0x00, 0x09, 0x00, 0x0F, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00
 };
@@ -507,18 +478,9 @@ static const struct xboxone_init_packet xboxone_init_packets[] = {
 	XBOXONE_INIT_PKT(0x0e6f, 0x0165, xboxone_hori_init),
 	XBOXONE_INIT_PKT(0x0f0d, 0x0067, xboxone_hori_init),
 	XBOXONE_INIT_PKT(0x0000, 0x0000, xboxone_fw2015_init),
-	XBOXONE_INIT_PKT(0x0e6f, 0x02ab, xboxone_pdp_init1),
-	XBOXONE_INIT_PKT(0x0e6f, 0x02ab, xboxone_pdp_init2),
-	XBOXONE_INIT_PKT(0x0e6f, 0x02a4, xboxone_pdp_init1),
-	XBOXONE_INIT_PKT(0x0e6f, 0x02a4, xboxone_pdp_init2),
-	XBOXONE_INIT_PKT(0x0e6f, 0x02a6, xboxone_pdp_init1),
-	XBOXONE_INIT_PKT(0x0e6f, 0x02a6, xboxone_pdp_init2),
-	XBOXONE_INIT_PKT(0x24c6, 0x541a, xboxone_rumblebegin_init),
-	XBOXONE_INIT_PKT(0x24c6, 0x542a, xboxone_rumblebegin_init),
-	XBOXONE_INIT_PKT(0x24c6, 0x543a, xboxone_rumblebegin_init),
-	XBOXONE_INIT_PKT(0x24c6, 0x541a, xboxone_rumbleend_init),
-	XBOXONE_INIT_PKT(0x24c6, 0x542a, xboxone_rumbleend_init),
-	XBOXONE_INIT_PKT(0x24c6, 0x543a, xboxone_rumbleend_init),
+	XBOXONE_INIT_PKT(0x24c6, 0x541a, xboxone_zerorumble_init),
+	XBOXONE_INIT_PKT(0x24c6, 0x542a, xboxone_zerorumble_init),
+	XBOXONE_INIT_PKT(0x24c6, 0x543a, xboxone_zerorumble_init),
 };
 
 struct xpad_output_packet {
@@ -1164,17 +1126,12 @@ static int xpad_start_xbox_one(struct usb_xpad *xpad)
 
 	spin_lock_irqsave(&xpad->odata_lock, flags);
 
-	/* Xbox one controller needs to be initialized. */
-	packet->data[0] = 0x05;
-	packet->data[1] = 0x20;
-	packet->data[2] = xpad->odata_serial++; /* packet serial */
-	packet->data[3] = 0x01; /* rumble bit enable?  */
-	packet->data[4] = 0x00;
-	packet->len = 5;
-	packet->pending = true;
-
-	/* Reset the sequence so we send out start packet first */
-	xpad->last_out_packet = -1;
+	/*
+	 * Begin the init sequence by attempting to send a packet.
+	 * We will cycle through the init packet sequence before
+	 * sending any packets from the output ring.
+	 */
+	xpad->init_seq = 0;
 	retval = xpad_try_sending_next_out_packet(xpad);
 
 	spin_unlock_irqrestore(&xpad->odata_lock, flags);
