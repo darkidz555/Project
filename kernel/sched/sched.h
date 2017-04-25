@@ -2448,6 +2448,27 @@ static inline unsigned long cpu_util_freq(int cpu)
 {
 	unsigned long util = cpu_rq(cpu)->cfs.avg.util_avg;
 	unsigned long capacity = capacity_orig_of(cpu);
+	return static_key_false(&__sched_freq);
+}
+
+/*
+ * sched_capacity_reqs expects capacity requests to be normalised.
+ * All capacities should sum to the range of 0-1024.
+ */
+DECLARE_PER_CPU(struct sched_capacity_reqs, cpu_sched_capacity_reqs);
+void update_cpu_capacity_request(int cpu, bool request);
+
+static inline void set_cfs_cpu_capacity(int cpu, bool request,
+					unsigned long capacity)
+{
+	struct sched_capacity_reqs *scr = &per_cpu(cpu_sched_capacity_reqs, cpu);
+
+	if (scr->cfs != capacity) {
+		scr->cfs = capacity;
+		update_cpu_capacity_request(cpu, request);
+	}
+}
+>>>>>>> 3a11a0ef0efe... cpufreq/sched: Consider max cpu capacity when choosing frequencies
 
 #ifdef CONFIG_SCHED_WALT
 	if (!walt_disabled && sysctl_sched_use_walt_cpu_util)
