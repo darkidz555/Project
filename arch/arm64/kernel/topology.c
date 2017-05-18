@@ -26,17 +26,13 @@
 #include <asm/cputype.h>
 #include <asm/topology.h>
 
-/*
- * cpu power table
- * This per cpu data structure describes the relative capacity of each core.
- * On a heteregenous system, cores don't have the same computation capacity
- * and we reflect that difference in the cpu_power field so the scheduler can
- * take this difference into account during load balance. A per cpu structure
- * is preferred because each CPU updates its own cpu_power field during the
- * load balance except for idle cores. One idle core is selected to run the
- * rebalance_domains for all idle cores and the cpu_power can be updated
- * during this sequence.
- */
+static DEFINE_PER_CPU(unsigned long, cpu_efficiency) = SCHED_CAPACITY_SCALE;
+
+unsigned long arch_get_cpu_efficiency(int cpu)
+{
+	return per_cpu(cpu_efficiency, cpu);
+}
+
 static DEFINE_PER_CPU(unsigned long, cpu_scale) = SCHED_CAPACITY_SCALE;
 
 unsigned long arch_scale_freq_power(struct sched_domain *sd, int cpu)
@@ -248,6 +244,7 @@ static int __init parse_dt_topology(void)
 	struct device_node *cn, *map;
 	int ret = 0;
 	int cpu;
+	u32 efficiency;
 
 	cn = of_find_node_by_path("/cpus");
 	if (!cn) {
@@ -271,9 +268,18 @@ static int __init parse_dt_topology(void)
 	 * Check that all cores are in the topology; the SMP code will
 	 * only mark cores described in the DT as possible.
 	 */
-	for_each_possible_cpu(cpu)
+	for_each_possible_cpu(cpu) {
 		if (cpu_topology[cpu].cluster_id == -1)
 			ret = -EINVAL;
+
+		/* The CPU efficiency value passed from the device tree */
+		cn = of_get_cpu_node(cpu, NULL);
+		if (of_property_read_u32(cn, "efficiency", &efficiency) < 0) {
+			WARN_ON(1);
+			continue;
+		}
+		per_cpu(cpu_efficiency, cpu) = efficiency;
+	}
 
 out_map:
 	of_node_put(map);
