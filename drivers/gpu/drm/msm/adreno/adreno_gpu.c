@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
  *
- * Copyright (c) 2014,2016-2017 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2014,2016-2018 The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
@@ -45,7 +45,7 @@ int adreno_get_param(struct msm_gpu *gpu, uint32_t param, uint64_t *value)
 				(adreno_gpu->rev.core << 24);
 		return 0;
 	case MSM_PARAM_MAX_FREQ:
-		*value = gpu->gpufreq[gpu->active_level];
+		*value = gpu->gpufreq[0];
 		return 0;
 	case MSM_PARAM_TIMESTAMP:
 		if (adreno_gpu->funcs->get_timestamp) {
@@ -415,9 +415,9 @@ static int _adreno_get_pwrlevels(struct msm_gpu *gpu, struct device_node *node)
 	}
 
 	DBG("fast_rate=%u, slow_rate=%u, bus_freq=%u",
-		gpu->gpufreq[gpu->active_level],
+		gpu->gpufreq[0],
 		gpu->gpufreq[gpu->nr_pwrlevels - 1],
-		gpu->busfreq[gpu->active_level]);
+		gpu->busfreq[0]);
 
 	return 0;
 }
