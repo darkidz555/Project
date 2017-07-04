@@ -5619,7 +5619,7 @@ static int find_new_capacity(struct energy_env *eenv, int cpu_idx)
 	return eenv->cpu[cpu_idx].cap_idx;
 }
 
-static int group_idle_state(struct energy_env *eenv, int cpu_idx)
+static int group_idle_state(struct energy_env *eenv, struct sched_group *sg)
 {
 	struct sched_group *sg = eenv->sg;
 	int i, state = INT_MAX;
@@ -5636,26 +5636,25 @@ static int group_idle_state(struct energy_env *eenv, int cpu_idx)
 	/* Take non-cpuidle idling into account (active idle/arch_cpu_idle()) */
 	state++;
 
-	src_in_grp = cpumask_test_cpu(eenv->cpu[EAS_CPU_PRV].cpu_id,
-				      sched_group_cpus(sg));
-	dst_in_grp = cpumask_test_cpu(eenv->cpu[cpu_idx].cpu_id,
-				      sched_group_cpus(sg));
+	/*
+	 * Try to estimate if a deeper idle state is
+	 * achievable when we move the task.
+	 */
+	for_each_cpu(i, sched_group_cpus(sg))
+		grp_util += cpu_util(i);
+
+	src_in_grp = cpumask_test_cpu(eenv->src_cpu, sched_group_cpus(sg));
+	dst_in_grp = cpumask_test_cpu(eenv->dst_cpu, sched_group_cpus(sg));
 	if (src_in_grp == dst_in_grp) {
 		/* both CPUs under consideration are in the same group or not in
 		 * either group, migration should leave idle state the same.
 		 */
 		goto end;
 	}
-
-	/*
-	 * Try to estimate if a deeper idle state is
-	 * achievable when we move the task.
+	/* add or remove util as appropriate to indicate what group util
+	 * will be (worst case - no concurrent execution) after moving the task
 	 */
-	for_each_cpu(i, sched_group_cpus(sg)) {
-		grp_util += cpu_util_wake(i, eenv->p);
-		if (unlikely(i == eenv->cpu[cpu_idx].cpu_id))
-			grp_util += eenv->util_delta;
-	}
+	grp_util += src_in_grp ? -eenv->util_delta : eenv->util_delta;
 
 	if (grp_util <=
 		((long)sg->sgc->max_capacity * (int)sg->group_weight)) {
@@ -5798,30 +5797,35 @@ static int compute_energy(struct energy_env *eenv)
 				if (sg_shared_cap && sg_shared_cap->group_weight >= sg->group_weight)
 					eenv->sg_cap = sg_shared_cap;
 
-				/*
-				 * Compute the energy for all the candidate
-				 * CPUs in the current visited SG.
-				 */
-				eenv->sg = sg;
-				if (calc_sg_energy(eenv))
-					return -EINVAL;
+				cap_idx = find_new_capacity(eenv, sg->sge);
 
-				/* remove CPUs we have just visited */
-				if (!sd->child) {
-					/*
-					 * cpu_count here is the number of
-					 * cpus we expect to visit in this
-					 * calculation. If we race against
-					 * hotplug, we can have extra cpus
-					 * added to the groups we are
-					 * iterating which do not appear in
-					 * the visit_cpus mask. In that case
-					 * we are not able to calculate energy
-					 * without restarting so we will bail
-					 * out and use prev_cpu this time.
-					 */
-					if (!cpu_count)
-						return -EINVAL;
+				if (sg->group_weight == 1) {
+					/* Remove capacity of src CPU (before task move) */
+					if (eenv->util_delta == 0 &&
+					    cpumask_test_cpu(eenv->src_cpu, sched_group_cpus(sg))) {
+						eenv->cap.before = sg->sge->cap_states[cap_idx].cap;
+						eenv->cap.delta -= eenv->cap.before;
+					}
+					/* Add capacity of dst CPU  (after task move) */
+					if (eenv->util_delta != 0 &&
+					    cpumask_test_cpu(eenv->dst_cpu, sched_group_cpus(sg))) {
+						eenv->cap.after = sg->sge->cap_states[cap_idx].cap;
+						eenv->cap.delta += eenv->cap.after;
+					}
+				}
+
+				idle_idx = group_idle_state(eenv, sg);
+				group_util = group_norm_util(eenv, sg);
+
+				sg_busy_energy = (group_util * sg->sge->cap_states[cap_idx].power)
+								>> SCHED_CAPACITY_SHIFT;
+				sg_idle_energy = ((SCHED_LOAD_SCALE-group_util)
+								* sg->sge->idle_states[idle_idx].power)
+								>> SCHED_CAPACITY_SHIFT;
+
+				total_energy += sg_busy_energy + sg_idle_energy;
+
+				if (!sd->child)
 					cpumask_xor(&visit_cpus, &visit_cpus, sched_group_cpus(sg));
 					cpu_count--;
 				}
