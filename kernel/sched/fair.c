@@ -6550,6 +6550,8 @@ static inline int find_best_target(struct task_struct *p, int *backup_cpu,
 	int target_cpu = -1;
 	int cpu, i;
 
+	*backup_cpu = -1;
+
 	schedstat_inc(p, se.statistics.nr_wakeups_fbt_attempts);
 	schedstat_inc(this_rq(), eas_stats.fbt_attempts);
 
@@ -6834,6 +6836,10 @@ k
 		target_cpu = prefer_idle
 			? best_active_cpu
 			: best_idle_cpu;
+	else
+		*backup_cpu = prefer_idle
+		? best_active_cpu
+		: best_idle_cpu;
 
 	trace_sched_find_best_target(p, prefer_idle, min_util, cpu,
 				     best_idle_cpu, best_active_cpu,
@@ -6910,6 +6916,8 @@ cpu_is_in_target_set(struct task_struct *p, int cpu)
 static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu,
 				   int sync_boost)
 {
+	struct sched_domain *sd;
+	int target_cpu = prev_cpu, tmp_target, tmp_backup;
 	bool boosted, prefer_idle;
 	struct sched_domain *sd;
 	int target_cpu;
@@ -6947,12 +6955,7 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu,
 	sync_entity_load_avg(&p->se);
 
 	/* Find a cpu with sufficient capacity */
-	next_cpu = find_best_target(p, &backup_cpu, boosted || sync_boost,
-				    prefer_idle);
-	if (next_cpu == -1) {
-		target_cpu = prev_cpu;
-		goto unlock;
-	}
+	tmp_target = find_best_target(p, &tmp_backup, boosted, prefer_idle);
 
 	/* Unconditionally prefer IDLE CPUs for boosted/prefer_idle tasks */
 	if ((boosted || prefer_idle) && idle_cpu(next_cpu)) {
@@ -6996,12 +6999,16 @@ static int select_energy_cpu_brute(struct task_struct *p, int prev_cpu,
 			goto unlock;
 		}
 
-		/* Check if EAS_CPU_NXT is a more energy efficient CPU */
-		if (select_energy_cpu_idx(&eenv) != EAS_CPU_PRV) {
-			schedstat_inc(p, se.statistics.nr_wakeups_secb_nrg_sav);
-			schedstat_inc(this_rq(), eas_stats.secb_nrg_sav);
-			target_cpu = eenv.cpu[eenv.next_idx].cpu_id;
-			goto unlock;
+		if (energy_diff(&eenv) >= 0) {
+			/* No energy saving for target_cpu, try backup */
+			target_cpu = tmp_backup;
+			eenv.dst_cpu = target_cpu;
+			if (tmp_backup < 0 || energy_diff(&eenv) >= 0) {
+				schedstat_inc(p, se.statistics.nr_wakeups_secb_no_nrg_sav);
+				schedstat_inc(this_rq(), eas_stats.secb_no_nrg_sav);
+				target_cpu = prev_cpu;
+				goto unlock;
+			}
 		}
 
 		schedstat_inc(p, se.statistics.nr_wakeups_secb_no_nrg_sav);
