@@ -6599,7 +6599,6 @@ static int sched_group_energy(struct energy_env *eenv)
 {
 	struct cpumask visit_cpus;
 	u64 total_energy = 0;
-	int cpu_count;
 
 	WARN_ON(!eenv->sg_top->sge);
 
