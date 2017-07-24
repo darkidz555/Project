@@ -5756,7 +5756,7 @@ static int calc_sg_energy(struct energy_env *eenv)
 static int compute_energy(struct energy_env *eenv)
 {
 	struct cpumask visit_cpus;
-	int cpu_count;
+	u64 total_energy = 0;
 
 	WARN_ON(!eenv->sg_top->sge);
 
@@ -5820,11 +5820,9 @@ static int compute_energy(struct energy_env *eenv)
 				idle_idx = group_idle_state(eenv, sg);
 				group_util = group_norm_util(eenv, sg);
 
-				sg_busy_energy = (group_util * sg->sge->cap_states[cap_idx].power)
-								>> SCHED_CAPACITY_SHIFT;
+				sg_busy_energy = (group_util * sg->sge->cap_states[cap_idx].power);
 				sg_idle_energy = ((SCHED_LOAD_SCALE-group_util)
-								* sg->sge->idle_states[idle_idx].power)
-								>> SCHED_CAPACITY_SHIFT;
+								* sg->sge->idle_states[idle_idx].power);
 
 				total_energy += sg_busy_energy + sg_idle_energy;
 
@@ -5854,6 +5852,7 @@ next_cpu:
 		continue;
 	}
 
+	eenv->energy = total_energy >> SCHED_CAPACITY_SHIFT;
 	return 0;
 }
 
