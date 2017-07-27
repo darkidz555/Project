@@ -4725,8 +4725,41 @@ inline static void print_binder_transaction_ilocked(struct seq_file *m,
 					     struct binder_proc *proc,
 					     const char *prefix,
 					     struct binder_transaction *t)
-{ 
-  return;
+{
+	struct binder_proc *to_proc;
+	struct binder_buffer *buffer = t->buffer;
+
+	spin_lock(&t->lock);
+	to_proc = t->to_proc;
+	seq_printf(m,
+		   "%s %d: %p from %d:%d to %d:%d code %x flags %x pri %d:%d r%d",
+		   prefix, t->debug_id, t,
+		   t->from ? t->from->proc->pid : 0,
+		   t->from ? t->from->pid : 0,
+		   to_proc ? to_proc->pid : 0,
+		   t->to_thread ? t->to_thread->pid : 0,
+		   t->code, t->flags, t->priority.sched_policy,
+		   t->priority.prio, t->need_reply);
+	spin_unlock(&t->lock);
+
+	if (proc != to_proc) {
+		/*
+		 * Can only safely deref buffer if we are holding the
+		 * correct proc inner lock for this node
+		 */
+		seq_puts(m, "\n");
+		return;
+	}
+
+	if (buffer == NULL) {
+		seq_puts(m, " buffer free\n");
+		return;
+	}
+	if (buffer->target_node)
+		seq_printf(m, " node %d", buffer->target_node->debug_id);
+	seq_printf(m, " size %zd:%zd data %p\n",
+		   buffer->data_size, buffer->offsets_size,
+		   buffer->data);
 }
 
 inline static void print_binder_work_ilocked(struct seq_file *m,
@@ -4742,19 +4775,80 @@ inline static void print_binder_thread_ilocked(struct seq_file *m,
 					struct binder_thread *thread,
 					int print_always)
 {
-	return;
+	struct binder_transaction *t;
+	struct binder_work *w;
+	size_t start_pos = m->count;
+	size_t header_pos;
+
+	seq_printf(m, "  thread %d: l %02x need_return %d tr %d\n",
+			thread->pid, thread->looper,
+			thread->looper_need_return,
+			atomic_read(&thread->tmp_ref));
+	header_pos = m->count;
+	t = thread->transaction_stack;
+	while (t) {
+		if (t->from == thread) {
+			print_binder_transaction_ilocked(m, thread->proc,
+					"    outgoing transaction", t);
+			t = t->from_parent;
+		} else if (t->to_thread == thread) {
+			print_binder_transaction_ilocked(m, thread->proc,
+						 "    incoming transaction", t);
+			t = t->to_parent;
+		} else {
+			print_binder_transaction_ilocked(m, thread->proc,
+					"    bad transaction", t);
+			t = NULL;
+		}
+	}
+	list_for_each_entry(w, &thread->todo, entry) {
+		print_binder_work_ilocked(m, thread->proc, "    ",
+					  "    pending transaction", w);
+	}
+	if (!print_always && m->count == header_pos)
+		m->count = start_pos;
 }
 
 inline static void print_binder_node_nilocked(struct seq_file *m,
 				       struct binder_node *node)
 {
-	return;
+	struct binder_ref *ref;
+	struct binder_work *w;
+	int count;
+
+	count = 0;
+	hlist_for_each_entry(ref, &node->refs, node_entry)
+		count++;
+
+	seq_printf(m, "  node %d: u%016llx c%016llx pri %d:%d hs %d hw %d ls %d lw %d is %d iw %d tr %d",
+		   node->debug_id, (u64)node->ptr, (u64)node->cookie,
+		   node->sched_policy, node->min_priority,
+		   node->has_strong_ref, node->has_weak_ref,
+		   node->local_strong_refs, node->local_weak_refs,
+		   node->internal_strong_refs, count, node->tmp_refs);
+	if (count) {
+		seq_puts(m, " proc");
+		hlist_for_each_entry(ref, &node->refs, node_entry)
+			seq_printf(m, " %d", ref->proc->pid);
+	}
+	seq_puts(m, "\n");
+	if (node->proc) {
+		list_for_each_entry(w, &node->async_todo, entry)
+			print_binder_work_ilocked(m, node->proc, "    ",
+					  "    pending async transaction", w);
+	}
 }
 
 inline static void print_binder_ref_olocked(struct seq_file *m,
 				     struct binder_ref *ref)
 {
-	return;
+	binder_node_lock(ref->node);
+	seq_printf(m, "  ref %d: desc %d %snode %d s %d w %d d %pK\n",
+		   ref->data.debug_id, ref->data.desc,
+		   ref->node->proc ? "" : "dead ",
+		   ref->node->debug_id, ref->data.strong,
+		   ref->data.weak, ref->death);
+	binder_node_unlock(ref->node);
 }
 
 inline static void print_binder_proc(struct seq_file *m,
