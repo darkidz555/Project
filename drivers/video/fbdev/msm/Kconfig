@@ -370,3 +370,13 @@ config LGE_DISPLAY_DISPLAYPORT_EXTERNAL_BLOCK
 	bool "Use LGE_DISPLAY_DISPLAYPORT_EXTERNAL_BLOCK"
 	---help---
 	This feature support external display block.
+
+config FB_MSM_MDSS_KCAL_CTRL
+	depends on FB_MSM_MDSS
+	bool "MDSS color control"
+	default n
+	---help---
+	Enable sysfs for rgb/lut control for mdss-mdp display controllers
+	in the MDSS sub-system.
+
+endif
