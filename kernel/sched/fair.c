@@ -6021,15 +6021,18 @@ energy_diff(struct energy_env *eenv)
  * being client/server, worker/dispatcher, interrupt source or whatever is
  * irrelevant, spread criteria is apparent partner count exceeds socket size.
  */
-static int wake_wide(struct task_struct *p)
+static int wake_wide(struct task_struct *p, int sibling_count_hint)
 {
 	unsigned int master = current->wakee_flips;
 	unsigned int slave = p->wakee_flips;
-	int factor = this_cpu_read(sd_llc_size);
+	int llc_size = this_cpu_read(sd_llc_size);
+
+	if (sibling_count_hint >= llc_size)
+		return 1;
 
 	if (master < slave)
 		swap(master, slave);
-	if (slave < factor || master < slave * factor)
+	if (slave < llc_size || master < slave * llc_size)
 		return 0;
 	return 1;
 }
@@ -6992,7 +6995,8 @@ unlock:
  * preempt must be disabled.
  */
 static int
-select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags)
+select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_flags,
+		    int sibling_count_hint)
 {
 	struct sched_domain *tmp, *affine_sd = NULL, *sd = NULL;
 	int cpu = smp_processor_id();
@@ -7001,22 +7005,10 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
 	int sync = wake_flags & WF_SYNC;
 
 	if (sd_flag & SD_BALANCE_WAKE) {
-		/*
-		 * do wake_cap unconditionally as it causes task and cpu
-		 * utilization to be synced, and we need that for energy
-		 * aware wakeups
-		 */
-		if (cpumask_test_cpu(cpu, tsk_cpus_allowed(p))) {
-			int _wake_cap = wake_cap(p, cpu, prev_cpu);
-			bool about_to_idle = (cpu_rq(cpu)->nr_running < 2);
-			/*
-			 * note that sync flag takes precedence over wake_wide
-			 */
-			if (sysctl_sched_sync_hint_enable && sync &&
-			    !_wake_cap && about_to_idle)
-				return cpu;
-			want_affine = !wake_wide(p) && !_wake_cap;
-		}
+		record_wakee(p);
+		want_affine = !wake_wide(p, sibling_count_hint) &&
+			      !wake_cap(p, cpu, prev_cpu) &&
+			      cpumask_test_cpu(cpu, &p->cpus_allowed);
 	}
 
 	if (energy_aware() && !(cpu_rq(prev_cpu)->rd->overutilized))
