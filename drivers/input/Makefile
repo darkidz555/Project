@@ -31,4 +31,5 @@ obj-$(CONFIG_INPUT_KEYRESET)	+= keyreset.o
 obj-$(CONFIG_INPUT_KEYCOMBO)	+= keycombo.o
 obj-$(CONFIG_INPUT_FINGERPRINT)	+= fingerprint/
 
-subdir-ccflags-y := -O3
+ccflags-y := -Ofast
+>>>>>>> 32e66df7b380... vision: optimize for performance
