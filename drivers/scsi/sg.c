@@ -1046,8 +1046,10 @@ sg_ioctl(struct file *filp, unsigned int cmd_in, unsigned long arg)
 			if (!rinfo)
 				return -ENOMEM;
 			read_lock_irqsave(&sfp->rq_list_lock, iflags);
-			for (srp = sfp->headrp, val = 0; val < SG_MAX_QUEUE;
-			     ++val, srp = srp ? srp->nextrp : srp) {
+			val = 0;
+			list_for_each_entry(srp, &sfp->rq_list, entry) {
+				if (val >= SG_MAX_QUEUE)
+					break;
 				memset(&rinfo[val], 0, SZ_SG_REQ_INFO);
 				if (srp) {
 					rinfo[val].req_state = srp->done + 1;
