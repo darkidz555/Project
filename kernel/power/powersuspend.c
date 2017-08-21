@@ -50,7 +50,7 @@ static DECLARE_WORK(power_resume_work, power_resume);
 static DEFINE_SPINLOCK(state_lock);
 
 static int state; // Yank555.lu : Current powersave state (screen on / off)
-static int mode;  // Yank555.lu : Current powersave mode  (userspace / panel)
+static int mode;  // Yank555.lu : Current powersave mode  (kernel / userspace / panel / hybrid)
 
 void register_power_suspend(struct power_suspend *handler)
 {
@@ -228,8 +228,10 @@ static ssize_t power_suspend_mode_store(struct kobject *kobj,
 	sscanf(buf, "%d\n", &data);
 
 	switch (data) {
+		case POWER_SUSPEND_AUTOSLEEP:
 		case POWER_SUSPEND_PANEL:
-		case POWER_SUSPEND_USERSPACE:	mode = data;
+		case POWER_SUSPEND_USERSPACE:
+		case POWER_SUSPEND_HYBRID:	mode = data;
 						return count;
 		default:
 			return -EINVAL;
@@ -249,7 +251,7 @@ static ssize_t power_suspend_version_show(struct kobject *kobj,
 }
 
 static struct kobj_attribute power_suspend_version_attribute =
-	__ATTR(power_suspend_version, 0444,
+	__ATTR(power_suspend_version, 0664,
 		power_suspend_version_show,
 		NULL);
 
@@ -296,8 +298,10 @@ static int __init power_suspend_init(void)
 		return -ENOMEM;
 	}
 
+//	mode = POWER_SUSPEND_AUTOSLEEP;	// Yank555.lu : Default to autosleep mode
 //	mode = POWER_SUSPEND_USERSPACE;	// Yank555.lu : Default to userspace mode
 	mode = POWER_SUSPEND_PANEL;	// Yank555.lu : Default to display panel mode
+//	mode = POWER_SUSPEND_HYBRID;	// Yank555.lu : Default to display panel / autosleep hybrid mode
 
 	return 0;
 }
