@@ -783,12 +783,8 @@ struct rq {
 	u64 max_idle_balance_cost;
 #endif
 
-#ifdef CONFIG_SCHED_HMP
-	struct sched_cluster *cluster;
-	struct cpumask freq_domain_cpumask;
-	struct hmp_sched_stats hmp_stats;
-
-	int cstate, wakeup_latency, wakeup_energy;
+#ifdef CONFIG_SCHED_WALT
+	u64 cumulative_runnable_avg;
 	u64 window_start;
 	unsigned long hmp_flags;
 
