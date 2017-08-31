@@ -5939,7 +5939,10 @@ static void fg_cleanup(struct fg_chip *chip)
 {
 	int i;
 
-	power_supply_unreg_notifier(&chip->nb);
+	for (i = 0; i < FG_IRQ_MAX; i++) {
+		if (fg_irqs[i].irq)
+			devm_free_irq(chip->dev, fg_irqs[i].irq, chip);
+	}
 #ifdef CONFIG_LGE_PM
 #else
 	qpnp_misc_twm_notifier_unregister(&chip->twm_nb);
