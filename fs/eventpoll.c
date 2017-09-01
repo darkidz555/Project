@@ -1076,10 +1076,26 @@ out_unlock:
 	if (pwake)
 		ep_poll_safewake(&ep->poll_wait);
 
-	if (epi->event.events & EPOLLEXCLUSIVE)
-		return ewake;
+	if (!(epi->event.events & EPOLLEXCLUSIVE))
+		ewake = 1;
 
-	return 1;
+	if ((unsigned long)key & POLLFREE) {
+		/*
+		 * If we race with ep_remove_wait_queue() it can miss
+		 * ->whead = NULL and do another remove_wait_queue() after
+		 * us, so we can't use __remove_wait_queue().
+		 */
+		list_del_init(&wait->task_list);
+		/*
+		 * ->whead != NULL protects us from the race with ep_free()
+		 * or ep_remove(), ep_remove_wait_queue() takes whead->lock
+		 * held by the caller. Once we nullify it, nothing protects
+		 * ep/epi or even wait.
+		 */
+		smp_store_release(&ep_pwq_from_wait(wait)->whead, NULL);
+	}
+
+	return ewake;
 }
 
 /*
