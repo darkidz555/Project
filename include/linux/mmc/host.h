@@ -598,6 +598,7 @@ struct mmc_host {
 	 */
 	void *cmdq_private;
 	struct mmc_request	*err_mrq;
+
 #ifdef CONFIG_BLOCK
 	int			latency_hist_enabled;
 	struct io_latency_state io_lat_read;
@@ -605,6 +606,7 @@ struct mmc_host {
 #endif
 
 	bool sdr104_wa;
+
 	atomic_t rpmb_req_pending;
 	struct mutex		rpmb_req_mutex;
 	unsigned long		private[0] ____cacheline_aligned;
