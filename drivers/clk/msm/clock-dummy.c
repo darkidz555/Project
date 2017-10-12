@@ -111,7 +111,6 @@ struct clk dummy_clk = {
 static void *dummy_clk_dt_parser(struct device *dev, struct device_node *np)
 {
 	struct clk *c;
-	u32 rate;
 
 	c = devm_kzalloc(dev, sizeof(*c), GFP_KERNEL);
 	if (!c) {
@@ -119,9 +118,6 @@ static void *dummy_clk_dt_parser(struct device *dev, struct device_node *np)
 		return ERR_PTR(-ENOMEM);
 	}
 	c->ops = &clk_ops_dummy;
-
-	if (!of_property_read_u32(np, "clock-frequency", &rate))
-		c->rate = rate;
 
 	return msmclk_generic_clk_init(dev, np, c);
 }
