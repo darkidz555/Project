@@ -6459,17 +6459,8 @@ void mdss_mdp_footswitch_ctrl_handler(bool on)
 }
 
 static void mdss_mdp_signal_retire_fence(struct msm_fb_data_type *mfd,
-					 int retire_cnt)
+						int retire_cnt)
 {
-	struct mdss_overlay_private *mdp5_data;
-
-	if (!mfd)
-		return;
-
-	mdp5_data = mfd_to_mdp5_data(mfd);
-	if (!mdp5_data->ctl || !mdp5_data->ctl->ops.remove_vsync_handler)
-		return;
-
 	__vsync_retire_signal(mfd, retire_cnt);
 	pr_debug("Signaled (%d) pending retire fence\n", retire_cnt);
 }
@@ -6519,6 +6510,7 @@ int mdss_mdp_overlay_init(struct msm_fb_data_type *mfd)
 #if defined(CONFIG_LGE_DISPLAY_COMMON)
 	mdp5_interface->panel_reg_backup = mdss_mdp_panel_reg_backup;
 #endif
+	mdp5_interface->signal_retire_fence = mdss_mdp_signal_retire_fence;
 
 	/*
 	 * Register footswitch control only for primary fb pm
