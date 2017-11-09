@@ -77,14 +77,22 @@ pick_next_task_stop(struct rq *rq, struct task_struct *prev)
 static void
 enqueue_task_stop(struct rq *rq, struct task_struct *p, int flags)
 {
+#ifdef CONFIG_TDF_RQ_STATS
+	inc_nr_running(rq);
+#else
 	add_nr_running(rq, 1);
+#endif
 	inc_hmp_sched_stats_stop(rq, p);
 }
 
 static void
 dequeue_task_stop(struct rq *rq, struct task_struct *p, int flags)
 {
+#ifdef CONFIG_TDF_RQ_STATS
+	dec_nr_running(rq);
+#else
 	sub_nr_running(rq, 1);
+#endif
 	dec_hmp_sched_stats_stop(rq, p);
 }
 

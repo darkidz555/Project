@@ -1453,32 +1453,9 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 	if (!task_current(rq, p) && p->nr_cpus_allowed > 1)
 		enqueue_pushable_task(rq, p);
 
-	if (!schedtune_task_boost(p))
-		return;
-
-	/*
-	 * If schedtune timer is active, that means a boost was already
-	 * done, just cancel the timer so that deboost doesn't happen.
-	 * Otherwise, increase the boost. If an enqueued timer was
-	 * cancelled, put the task reference.
-	 */
-	if (hrtimer_try_to_cancel(&rt_se->schedtune_timer) == 1)
-		put_task_struct(p);
-
-	/*
-	 * schedtune_enqueued can be true in the following situation:
-	 * enqueue_task_rt grabs rq lock before timer fires
-	 *    or before its callback acquires rq lock
-	 * schedtune_enqueued can be false if timer callback is running
-	 * and timer just released rq lock, or if the timer finished
-	 * running and canceling the boost
-	 */
-	if (rt_se->schedtune_enqueued)
-		return;
-
-	rt_se->schedtune_enqueued = true;
-	schedtune_enqueue_task(p, cpu_of(rq));
-	cpufreq_update_this_cpu(rq, SCHED_CPUFREQ_RT);
+#ifdef CONFIG_TDF_RQ_STATS
+	inc_nr_running(rq);
+#endif
 }
 
 static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
@@ -1491,18 +1468,9 @@ static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 
 	dequeue_pushable_task(rq, p);
 
-	if (!rt_se->schedtune_enqueued)
-		return;
-
-	if (flags == DEQUEUE_SLEEP) {
-		get_task_struct(p);
-		start_schedtune_timer(rt_se);
-		return;
-	}
-
-	rt_se->schedtune_enqueued = false;
-	schedtune_dequeue_task(p, cpu_of(rq));
-	cpufreq_update_this_cpu(rq, SCHED_CPUFREQ_RT);
+#ifdef CONFIG_TDF_RQ_STATS
+	dec_nr_running(rq);
+#endif
 }
 
 /*
