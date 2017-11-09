@@ -1,0 +1,37 @@
+menu "TripNDroid Framework"
+
+config TRIPNDROID_FRAMEWORK
+	bool "TripNDroid Framework"
+	default n
+	help
+	  The TripNDroid framework is designed to be a kernel-in-kernel.
+	  See it as a engine. It takes over core parts and combines them
+	  into one controller.
+
+config TDF_DEBUG
+	bool "TDF debugging"
+	default n
+	help
+	  Say yes here to print alot of debug information to kmsg
+	  Leave disabled unless you want to help debugging.
+
+menuconfig TDF_CPU_MANAGEMENT
+	bool "TDF CPU Management"
+	depends on TRIPNDROID_FRAMEWORK
+	default n
+	help
+	  Choose this option if you want TDF to control the cpu's.
+
+	source "drivers/tripndroid/cpu_management/Kconfig"
+
+menuconfig TDF_SCHED_MANAGEMENT
+	bool "TDF Scheduler Management"
+	depends on TRIPNDROID_FRAMEWORK
+	default n
+	help
+	  Choose this option if you want TDF to control the scheduler
+
+	source "drivers/tripndroid/sched_management/Kconfig"
+
+
+endmenu

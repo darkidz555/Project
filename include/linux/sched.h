@@ -206,6 +206,12 @@ static inline int sched_set_wake_up_idle(struct task_struct *p,
 }
 #endif /* CONFIG_SMP */
 
+/* tdf scheduler defines */
+#ifdef CONFIG_TDF_RQ_STATS
+extern void sched_update_tdf(int cpu, unsigned long nr, bool inc);
+extern void sched_running_avg(int *avg);
+#endif
+
 extern void calc_global_load(unsigned long ticks);
 
 #if defined(CONFIG_SMP) && defined(CONFIG_NO_HZ_COMMON)
