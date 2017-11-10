@@ -689,6 +689,12 @@ ARCH_AFLAGS :=
 ARCH_CFLAGS :=
 include arch/$(SRCARCH)/Makefile
 
+ifeq ($(cc-name),clang)
+KBUILD_CFLAGS	+= -O3
+else
+KBUILD_CFLAGS	+= -O2
+endif
+
 KBUILD_CFLAGS	+= $(call cc-option,-fno-delete-null-pointer-checks,)
 KBUILD_CFLAGS	+= $(call cc-disable-warning,maybe-uninitialized,)
 KBUILD_CFLAGS	+= $(call cc-disable-warning,frame-address,)
@@ -701,12 +707,6 @@ KBUILD_CFLAGS	+= $(call cc-option,-fno-store-merging,)
 
 ## hide "error: cast to smaller integer type 'eSapStatus' from 'void *' "
 KBUILD_CFLAGS	+= $(call cc-disable-warning, pointer-to-int-cast)
-
-ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-KBUILD_CFLAGS	+= -Os
-else
-KBUILD_CFLAGS   += -O3
-endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
 KBUILD_CFLAGS	+= $(call cc-option,--param=allow-store-data-races=0)
