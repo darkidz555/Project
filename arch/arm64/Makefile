@@ -61,7 +61,9 @@ ifeq ($(CONFIG_COMPAT_VDSO), y)
     vdso32 := -DCONFIG_VDSO32=1
   endif
 endif
->>>>>>> 8930bdcb82d9... arm64: Optimize for CPU
+KBUILD_CFLAGS	+= $(call cc-option,-march=armv8-a+crypto+crc,)
+KBUILD_CFLAGS	+= $(call cc-option,-mcpu=kryo,)
+KBUILD_CFLAGS	+= $(call cc-option,-mtune=cortex-a73.cortex-a53,)
 
 ifeq ($(cc-name),clang)
 # This is a workaround for https://bugs.llvm.org/show_bug.cgi?id=30792.
