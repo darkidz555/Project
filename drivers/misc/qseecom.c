@@ -1899,9 +1899,14 @@ static int __qseecom_process_reentrancy_blocked_on_listener(
 		}
 		ptr_app->blocked_on_listener_id = resp->data;
 
-		pr_warn("Lsntr %d in_use %d, block session(%d) app(%d)\n",
-			resp->data, list_ptr->listener_in_use,
-			session_id, data->client.app_id);
+static int __qseecom_process_blocked_on_listener_smcinvoke(
+			struct qseecom_command_scm_resp *resp, uint32_t app_id)
+{
+	struct qseecom_registered_listener_list *list_ptr;
+	int ret = 0;
+	struct qseecom_continue_blocked_request_ireq ireq;
+	struct qseecom_command_scm_resp continue_resp;
+	unsigned int session_id;
 
 		/* sleep until listener is available */
 		sigfillset(&new_sigset);
@@ -1956,14 +1961,44 @@ static int __qseecom_process_reentrancy_blocked_on_listener(
 		pr_debug("unblock resp = %d\n", resp->result);
 	} while (resp->result == QSEOS_RESULT_BLOCKED_ON_LISTENER);
 
-	if (resp->result != QSEOS_RESULT_INCOMPLETE) {
-		pr_err("Unexpected unblock resp %d\n", resp->result);
-		ret = -EINVAL;
+	/* notify TZ that listener is available */
+	pr_warn("Lsntr %d is available, unblock session(%d) in TZ\n",
+			resp->data, session_id);
+	ireq.qsee_cmd_id = QSEOS_CONTINUE_BLOCKED_REQ_COMMAND;
+	ireq.app_or_session_id = session_id;
+	ret = qseecom_scm_call(SCM_SVC_TZSCHEDULER, 1,
+			&ireq, sizeof(ireq),
+			&continue_resp, sizeof(continue_resp));
+	if (ret) {
+		/* retry with legacy cmd */
+		qseecom.smcinvoke_support = false;
+		ireq.app_or_session_id = app_id;
+		ret = qseecom_scm_call(SCM_SVC_TZSCHEDULER, 1,
+			&ireq, sizeof(ireq),
+			&continue_resp, sizeof(continue_resp));
+		qseecom.smcinvoke_support = true;
+		if (ret) {
+			pr_err("cont block req for app %d or session %d fail\n",
+				app_id, session_id);
+			goto exit;
+		}
 	}
 exit:
 	return ret;
 }
 
+static int __qseecom_process_reentrancy_blocked_on_listener(
+				struct qseecom_command_scm_resp *resp,
+				struct qseecom_registered_app_list *ptr_app,
+				struct qseecom_dev_handle *data)
+{
+	if (!qseecom.smcinvoke_support)
+		return __qseecom_process_blocked_on_listener_legacy(
+			resp, ptr_app, data);
+	else
+		return __qseecom_process_blocked_on_listener_smcinvoke(
+			resp, data->client.app_id);
+}
 static int __qseecom_reentrancy_process_incomplete_cmd(
 					struct qseecom_dev_handle *data,
 					struct qseecom_command_scm_resp *resp)
