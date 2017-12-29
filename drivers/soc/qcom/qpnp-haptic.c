@@ -2303,7 +2303,9 @@ static void qpnp_timed_enable_worker(struct work_struct *work)
 
 	time_ms = (time_ms > hap->timeout_ms ? hap->timeout_ms : time_ms);
 
-	if (hap->vmax_mv == QPNP_HAP_VMAX_MIN_MV) {
+	register_haptic(time_ms);
+
+	if (hap->vmax_mv == 1200) {
 		spin_unlock(&hap->lock);
 		return;
 	}
