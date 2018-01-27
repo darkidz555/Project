@@ -26,8 +26,84 @@
 #include <linux/input.h>
 #include <linux/kthread.h>
 
-static const unsigned int max_boost_freq_lp = 1900800;
-static const unsigned int max_boost_freq_perf = 2592000;
+
+#ifndef CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
+static unsigned int use_input_evts_with_hi_slvt_detect;
+static struct mutex managed_cpus_lock;
+
+
+/* Maximum number to clusters that this module will manage*/
+static unsigned int num_clusters;
+struct cluster {
+	cpumask_var_t cpus;
+	/* Number of CPUs to maintain online */
+	int max_cpu_request;
+	/* To track CPUs that the module decides to offline */
+	cpumask_var_t offlined_cpus;
+	/* stats for load detection */
+	/* IO */
+	u64 last_io_check_ts;
+	unsigned int iowait_enter_cycle_cnt;
+	unsigned int iowait_exit_cycle_cnt;
+	spinlock_t iowait_lock;
+	unsigned int cur_io_busy;
+	bool io_change;
+	/* CPU */
+	unsigned int mode;
+	bool mode_change;
+	u64 last_mode_check_ts;
+	unsigned int single_enter_cycle_cnt;
+	unsigned int single_exit_cycle_cnt;
+	unsigned int multi_enter_cycle_cnt;
+	unsigned int multi_exit_cycle_cnt;
+	spinlock_t mode_lock;
+	/* Perf Cluster Peak Loads */
+	unsigned int perf_cl_peak;
+	u64 last_perf_cl_check_ts;
+	bool perf_cl_detect_state_change;
+	unsigned int perf_cl_peak_enter_cycle_cnt;
+	unsigned int perf_cl_peak_exit_cycle_cnt;
+	spinlock_t perf_cl_peak_lock;
+	/* Tunables */
+	unsigned int single_enter_load;
+	unsigned int pcpu_multi_enter_load;
+	unsigned int perf_cl_peak_enter_load;
+	unsigned int single_exit_load;
+	unsigned int pcpu_multi_exit_load;
+	unsigned int perf_cl_peak_exit_load;
+	unsigned int single_enter_cycles;
+	unsigned int single_exit_cycles;
+	unsigned int multi_enter_cycles;
+	unsigned int multi_exit_cycles;
+	unsigned int perf_cl_peak_enter_cycles;
+	unsigned int perf_cl_peak_exit_cycles;
+	unsigned int current_freq;
+	spinlock_t timer_lock;
+	unsigned int timer_rate;
+	struct timer_list mode_exit_timer;
+	struct timer_list perf_cl_peak_mode_exit_timer;
+};
+
+struct input_events {
+	unsigned int evt_x_cnt;
+	unsigned int evt_y_cnt;
+	unsigned int evt_pres_cnt;
+	unsigned int evt_dist_cnt;
+};
+
+struct trig_thr {
+	unsigned int pwr_cl_trigger_threshold;
+	unsigned int perf_cl_trigger_threshold;
+	unsigned int ip_evt_threshold;
+};
+static struct cluster **managed_clusters;
+static bool clusters_inited;
+static bool input_events_handler_registered;
+static struct input_events *ip_evts;
+static struct trig_thr thr;
+/* Work to evaluate the onlining/offlining CPUs */
+struct delayed_work evaluate_hotplug_work;
+#endif // CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
 
 /* To handle cpufreq min/max request */
 struct cpu_status {
@@ -36,6 +112,7 @@ struct cpu_status {
 };
 static DEFINE_PER_CPU(struct cpu_status, cpu_stats);
 
+#ifndef CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
 static unsigned int num_online_managed(struct cpumask *mask);
 static int init_cluster_control(void);
 static int rm_high_pwr_cost_cpus(struct cluster *cl);
@@ -67,7 +144,262 @@ struct events {
 static struct events events_group;
 static struct task_struct *events_notify_thread;
 
-/*******************************sysfs start************************************/
+#define LAST_UPDATE_TOL		USEC_PER_MSEC
+
+/* Bitmask to keep track of the workloads being detected */
+static unsigned int workload_detect;
+#define IO_DETECT	1
+#define MODE_DETECT	2
+#define PERF_CL_PEAK_DETECT	4
+
+
+/* IOwait related tunables */
+static unsigned int io_enter_cycles = 4;
+static unsigned int io_exit_cycles = 4;
+static u64 iowait_ceiling_pct = 25;
+static u64 iowait_floor_pct = 8;
+#define LAST_IO_CHECK_TOL	(3 * USEC_PER_MSEC)
+
+static unsigned int aggr_iobusy;
+static unsigned int aggr_mode;
+
+static struct task_struct *notify_thread;
+
+static struct input_handler *handler;
+
+/* CPU workload detection related */
+#define NO_MODE		(0)
+#define SINGLE		(1)
+#define MULTI		(2)
+#define MIXED		(3)
+#define PERF_CL_PEAK		(4)
+#define DEF_SINGLE_ENT		90
+#define DEF_PCPU_MULTI_ENT	85
+#define DEF_PERF_CL_PEAK_ENT	80
+#define DEF_SINGLE_EX		60
+#define DEF_PCPU_MULTI_EX	50
+#define DEF_PERF_CL_PEAK_EX		70
+#define DEF_SINGLE_ENTER_CYCLE	4
+#define DEF_SINGLE_EXIT_CYCLE	4
+#define DEF_MULTI_ENTER_CYCLE	4
+#define DEF_MULTI_EXIT_CYCLE	4
+#define DEF_PERF_CL_PEAK_ENTER_CYCLE	100
+#define DEF_PERF_CL_PEAK_EXIT_CYCLE	20
+#define LAST_LD_CHECK_TOL	(2 * USEC_PER_MSEC)
+#define CLUSTER_0_THRESHOLD_FREQ	147000
+#define CLUSTER_1_THRESHOLD_FREQ	190000
+#define INPUT_EVENT_CNT_THRESHOLD	15
+#define MAX_LENGTH_CPU_STRING	256
+
+
+
+/**************************sysfs start********************************/
+
+static int set_num_clusters(const char *buf, const struct kernel_param *kp)
+{
+	unsigned int val;
+
+	if (sscanf(buf, "%u\n", &val) != 1)
+		return -EINVAL;
+	if (num_clusters)
+		return -EINVAL;
+
+	num_clusters = val;
+
+	if (init_cluster_control()) {
+		num_clusters = 0;
+		return -ENOMEM;
+	}
+
+	return 0;
+}
+
+static int get_num_clusters(char *buf, const struct kernel_param *kp)
+{
+	return snprintf(buf, PAGE_SIZE, "%u", num_clusters);
+}
+
+static const struct kernel_param_ops param_ops_num_clusters = {
+	.set = set_num_clusters,
+	.get = get_num_clusters,
+};
+device_param_cb(num_clusters, &param_ops_num_clusters, NULL, 0644);
+
+static int set_max_cpus(const char *buf, const struct kernel_param *kp)
+{
+	unsigned int i, ntokens = 0;
+	const char *cp = buf;
+	int val;
+
+	if (!clusters_inited)
+		return -EINVAL;
+
+	while ((cp = strpbrk(cp + 1, ":")))
+		ntokens++;
+
+	if (ntokens != (num_clusters - 1))
+		return -EINVAL;
+
+	cp = buf;
+	for (i = 0; i < num_clusters; i++) {
+
+		if (sscanf(cp, "%d\n", &val) != 1)
+			return -EINVAL;
+		if (val > (int)cpumask_weight(managed_clusters[i]->cpus))
+			return -EINVAL;
+
+		managed_clusters[i]->max_cpu_request = val;
+
+		cp = strnchr(cp, strlen(cp), ':');
+		cp++;
+		trace_set_max_cpus(cpumask_bits(managed_clusters[i]->cpus)[0],
+								val);
+	}
+
+	schedule_delayed_work(&evaluate_hotplug_work, 0);
+
+	return 0;
+}
+
+static int get_max_cpus(char *buf, const struct kernel_param *kp)
+{
+	int i, cnt = 0;
+
+	if (!clusters_inited)
+		return cnt;
+
+	for (i = 0; i < num_clusters; i++)
+		cnt += snprintf(buf + cnt, PAGE_SIZE - cnt,
+				"%d:", managed_clusters[i]->max_cpu_request);
+	cnt--;
+	cnt += snprintf(buf + cnt, PAGE_SIZE - cnt, " ");
+	return cnt;
+}
+
+static const struct kernel_param_ops param_ops_max_cpus = {
+	.set = set_max_cpus,
+	.get = get_max_cpus,
+};
+
+#ifdef CONFIG_MSM_PERFORMANCE_HOTPLUG_ON
+device_param_cb(max_cpus, &param_ops_max_cpus, NULL, 0644);
+#endif
+
+static int set_managed_cpus(const char *buf, const struct kernel_param *kp)
+{
+	int i, ret;
+	struct cpumask tmp_mask;
+
+	if (!clusters_inited)
+		return -EINVAL;
+
+	ret = cpulist_parse(buf, &tmp_mask);
+
+	if (ret)
+		return ret;
+
+	for (i = 0; i < num_clusters; i++) {
+		if (cpumask_empty(managed_clusters[i]->cpus)) {
+			mutex_lock(&managed_cpus_lock);
+			cpumask_copy(managed_clusters[i]->cpus, &tmp_mask);
+			cpumask_clear(managed_clusters[i]->offlined_cpus);
+			mutex_unlock(&managed_cpus_lock);
+			break;
+		}
+	}
+
+	return ret;
+}
+
+static int get_managed_cpus(char *buf, const struct kernel_param *kp)
+{
+	int i, cnt = 0, total_cnt = 0;
+	char tmp[MAX_LENGTH_CPU_STRING] = "";
+
+	if (!clusters_inited)
+		return cnt;
+
+	for (i = 0; i < num_clusters; i++) {
+		cnt = cpumap_print_to_pagebuf(true, buf,
+						managed_clusters[i]->cpus);
+		if ((i + 1) < num_clusters &&
+		    (total_cnt + cnt + 1) <= MAX_LENGTH_CPU_STRING) {
+			snprintf(tmp + total_cnt, cnt, "%s", buf);
+			tmp[cnt-1] = ':';
+			tmp[cnt] = '\0';
+			total_cnt += cnt;
+		} else if ((i + 1) == num_clusters &&
+			   (total_cnt + cnt) <= MAX_LENGTH_CPU_STRING) {
+			snprintf(tmp + total_cnt, cnt, "%s", buf);
+			total_cnt += cnt;
+		} else {
+			pr_err("invalid string for managed_cpu:%s%s\n", tmp,
+				buf);
+			break;
+		}
+	}
+	snprintf(buf, PAGE_SIZE, "%s", tmp);
+	return total_cnt;
+}
+
+static const struct kernel_param_ops param_ops_managed_cpus = {
+	.set = set_managed_cpus,
+	.get = get_managed_cpus,
+};
+device_param_cb(managed_cpus, &param_ops_managed_cpus, NULL, 0644);
+
+/* Read-only node: To display all the online managed CPUs */
+static int get_managed_online_cpus(char *buf, const struct kernel_param *kp)
+{
+	int i, cnt = 0, total_cnt = 0;
+	char tmp[MAX_LENGTH_CPU_STRING] = "";
+	struct cpumask tmp_mask;
+	struct cluster *i_cl;
+
+	if (!clusters_inited)
+		return cnt;
+
+	for (i = 0; i < num_clusters; i++) {
+		i_cl = managed_clusters[i];
+
+		cpumask_clear(&tmp_mask);
+		cpumask_complement(&tmp_mask, i_cl->offlined_cpus);
+		cpumask_and(&tmp_mask, i_cl->cpus, &tmp_mask);
+
+		cnt = cpumap_print_to_pagebuf(true, buf, &tmp_mask);
+		if ((i + 1) < num_clusters &&
+		    (total_cnt + cnt + 1) <= MAX_LENGTH_CPU_STRING) {
+			snprintf(tmp + total_cnt, cnt, "%s", buf);
+			tmp[cnt-1] = ':';
+			tmp[cnt] = '\0';
+			total_cnt += cnt;
+		} else if ((i + 1) == num_clusters &&
+			   (total_cnt + cnt) <= MAX_LENGTH_CPU_STRING) {
+			snprintf(tmp + total_cnt, cnt, "%s", buf);
+			total_cnt += cnt;
+		} else {
+			pr_err("invalid string for managed_cpu:%s%s\n", tmp,
+				buf);
+			break;
+		}
+	}
+	snprintf(buf, PAGE_SIZE, "%s", tmp);
+	return total_cnt;
+}
+
+static const struct kernel_param_ops param_ops_managed_online_cpus = {
+	.get = get_managed_online_cpus,
+};
+
+#ifdef CONFIG_MSM_PERFORMANCE_HOTPLUG_ON
+device_param_cb(managed_online_cpus, &param_ops_managed_online_cpus,
+							NULL, 0444);
+#endif
+#endif // CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
+/*
+ * Userspace sends cpu#:min_freq_value to vote for min_freq_value as the new
+ * scaling_min. To withdraw its vote it needs to enter cpu#:0
+ */
 static int set_cpu_min_freq(const char *buf, const struct kernel_param *kp)
 {
 #if 0
@@ -214,7 +546,43 @@ static const struct kernel_param_ops param_ops_cpu_max_freq = {
 };
 module_param_cb(cpu_max_freq, &param_ops_cpu_max_freq, NULL, 0644);
 
-static struct kobject *events_kobj;
+#ifndef CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
+static int set_ip_evt_trigger_threshold(const char *buf,
+		const struct kernel_param *kp)
+{
+	unsigned int val;
+
+	if (sscanf(buf, "%u\n", &val) != 1)
+		return -EINVAL;
+
+	thr.ip_evt_threshold = val;
+	return 0;
+}
+
+static int get_ip_evt_trigger_threshold(char *buf,
+		const struct kernel_param *kp)
+{
+	return snprintf(buf, PAGE_SIZE, "%u", thr.ip_evt_threshold);
+}
+
+static const struct kernel_param_ops param_ops_ip_evt_trig_thr = {
+	.set = set_ip_evt_trigger_threshold,
+	.get = get_ip_evt_trigger_threshold,
+};
+device_param_cb(ip_evt_trig_thr, &param_ops_ip_evt_trig_thr, NULL, 0644);
+
+
+static int set_perf_cl_trigger_threshold(const char *buf,
+		 const struct kernel_param *kp)
+{
+	unsigned int val;
+
+	if (sscanf(buf, "%u\n", &val) != 1)
+		return -EINVAL;
+
+	thr.perf_cl_trigger_threshold = val;
+	return 0;
+}
 
 static ssize_t show_cpu_hotplug(struct kobject *kobj,
 					struct kobj_attribute *attr, char *buf)
@@ -1108,6 +1476,7 @@ static unsigned int num_online_managed(struct cpumask *mask)
 
 	return cpumask_weight(&tmp_mask);
 }
+#endif // CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
 
 static int perf_adjust_notify(struct notifier_block *nb, unsigned long val,
 							void *data)
@@ -1137,6 +1506,7 @@ static struct notifier_block perf_cpufreq_nb = {
 	.notifier_call = perf_adjust_notify,
 };
 
+#ifndef CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
 static bool check_notify_status(void)
 {
 	int i;
@@ -2295,19 +2665,27 @@ static int init_events_group(void)
 
 	return 0;
 }
+#endif // CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
 
 static int __init msm_performance_init(void)
 {
 	unsigned int cpu;
 
 	cpufreq_register_notifier(&perf_cpufreq_nb, CPUFREQ_POLICY_NOTIFIER);
+#ifndef CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
+	cpufreq_register_notifier(&perf_govinfo_nb, CPUFREQ_GOVINFO_NOTIFIER);
+	cpufreq_register_notifier(&perf_cputransitions_nb,
+					CPUFREQ_TRANSITION_NOTIFIER);
+#endif // CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
 
 	for_each_present_cpu(cpu)
 		per_cpu(cpu_stats, cpu).max = UINT_MAX;
 
+#ifndef CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
 	register_cpu_notifier(&msm_performance_cpu_notifier);
 
 	init_events_group();
+#endif // CONFIG_MSM_PERFORMANCE_CPUFREQ_LIMITS_VOTING_ONLY
 
 	return 0;
 }
