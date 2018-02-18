@@ -328,7 +328,11 @@ done:
 static noinline
 bool rwsem_spin_on_owner(struct rw_semaphore *sem, struct task_struct *owner)
 {
-	long count;
+	struct task_struct *owner = READ_ONCE(sem->owner);
+	int i = 0;
+
+	if (!rwsem_owner_is_writer(owner))
+		goto out;
 
 	rcu_read_lock();
 	while (sem->owner == owner) {
@@ -346,7 +350,8 @@ bool rwsem_spin_on_owner(struct rw_semaphore *sem, struct task_struct *owner)
 			return false;
 		}
 
-		cpu_relax_lowlatency();
+		if (i++ > 1000)
+			cpu_relax_lowlatency();
 	}
 	rcu_read_unlock();
 
