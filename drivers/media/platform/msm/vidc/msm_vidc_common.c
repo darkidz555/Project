@@ -1135,8 +1135,7 @@ static void handle_event_change(enum hal_command_response cmd, void *data)
 	case HAL_EVENT_SEQ_CHANGED_SUFFICIENT_RESOURCES:
 		rc = msm_comm_g_ctrl_for_id(inst,
 			V4L2_CID_MPEG_VIDC_VIDEO_CONTINUE_DATA_TRANSFER);
-		if (!is_thumbnail_session(inst) &&
-			(IS_ERR_VALUE(rc) || rc == false))
+		if ((IS_ERR_VALUE(rc) || rc == false))
 			event = V4L2_EVENT_SEQ_CHANGED_INSUFFICIENT;
 		else
 			event = V4L2_EVENT_SEQ_CHANGED_SUFFICIENT;
