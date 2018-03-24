@@ -60,10 +60,8 @@ struct exfat_mount_options {
 	char *iocharset;
 	unsigned char casesensitive;
 	unsigned char tz_utc;
-	unsigned char errors;
-#ifdef CONFIG_EXFAT_DISCARD
 	unsigned char discard;
-#endif
+	unsigned char errors;
 };
 
 #define EXFAT_HASH_BITS    8
@@ -108,11 +106,6 @@ struct exfat_inode_info {
 
 static inline struct exfat_inode_info *EXFAT_I(struct inode *inode) {
 	return container_of(inode, struct exfat_inode_info, vfs_inode);
-}
-
-static inline bool exfat_readonly(struct super_block *sb)
-{
-	return sb->s_flags & MS_RDONLY;
 }
 
 static inline int exfat_mode_can_hold_ro(struct inode *inode)
