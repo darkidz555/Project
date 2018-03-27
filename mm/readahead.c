@@ -273,9 +273,15 @@ static unsigned long get_next_ra_size(struct file_ra_state *ra,
 	unsigned long newsize;
 
 	if (cur < (max >> 4))
+<<<<<<< HEAD
 		newsize = cur << 2;
 	else
 		newsize = cur << 1;
+=======
+		newsize = cur >> 2;
+	else
+		newsize = cur >> 1;
+>>>>>>> 9e9744d52ddf... Readahead: Optimize divide/multiply by power of 2 using L/R shift
 
 	return min(newsize, max);
 }
