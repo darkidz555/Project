@@ -144,8 +144,8 @@ static DEVICE_ATTR(cmd, S_IWUSR | S_IWGRP, NULL, store_cmd);
 static DEVICE_ATTR(cmd_status, S_IRUGO, show_cmd_status, NULL);
 static DEVICE_ATTR(cmd_result, S_IRUGO, show_cmd_result, NULL);
 static DEVICE_ATTR(cmd_list, S_IRUGO, cmd_list_show, NULL);
-static DEVICE_ATTR(fw_upgrade, S_IWUSR | S_IWGRP, NULL, store_upgrade);
-static DEVICE_ATTR(check_fw, S_IWUSR | S_IWGRP, NULL, store_check_fw);
+static DEVICE_ATTR(fw_upgrade, S_IWUSR, NULL, store_upgrade);
+static DEVICE_ATTR(check_fw, S_IWUSR, NULL, store_check_fw);
 static DEVICE_ATTR(version, S_IRUGO, show_version_info, NULL);
 
 static struct attribute *touch_pdc_attributes[] = {
@@ -195,7 +195,7 @@ static ssize_t store_upgrade(struct device *dev,
 	struct fts_ts_info *info = dev_get_drvdata(dev);
 	int ret = 0;
 
-	if (sscanf(buf, "%255s", &info->test_fwpath[0]) <= 0) {
+	if (strlcpy(info->test_fwpath, buf, sizeof(info->test_fwpath)) <= 0) {
 		tsp_debug_err(&info->client->dev, "%s: invalid firmware name\n", __func__);
 		return -EINVAL;
 	}
@@ -289,6 +289,12 @@ static ssize_t store_cmd(struct device *dev, struct device_attribute *devattr,
 	if (!info->input_dev) {
 		tsp_debug_err(&info->client->dev,
 				"%s: No input_dev data found\n", __func__);
+		return -EINVAL;
+	}
+
+	if (count == 0) {
+		tsp_debug_err(&info->client->dev,
+				"%s: no argument provided\n", __func__);
 		return -EINVAL;
 	}
 
