@@ -19,8 +19,8 @@ typedef unsigned __bitwise__ lowpan_rx_result;
 struct lowpan_create_arg {
 	u16 tag;
 	u16 d_size;
-	const struct ieee802154_addr *src;
-	const struct ieee802154_addr *dst;
+	struct ieee802154_addr src;
+	struct ieee802154_addr dst;
 };
 
 /* Equivalent of ipv4 struct ip
