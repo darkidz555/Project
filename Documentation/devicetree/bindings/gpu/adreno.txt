@@ -135,6 +135,32 @@ Optional Properties:
 				mask   - mask for the relevant bits in the efuse register.
 				shift  - number of bits to right shift to get the speed bin
 				value.
+
+- qcom,gpu-speed-bin-vectors:
+				GPU speed bin vectors property is the series of all the vectors
+				in format specified below. Values from individual fuses are read,
+				masked and shifted to form a value. At the end all fuse values
+				are ordered together to form final speed bin value.
+				<offset mask shift>
+				<offset mask shift>
+				<  ..   ..    ..  >
+				offset - offset of the efuse register from the base.
+				mask   - mask for the relevant bits in the efuse register.
+				shift  - number of bits to right shift.
+
+- qcom,gpu-disable-fuse:	GPU disable fuse
+				<offset mask shift>
+				offset - offset of the efuse register from the base.
+				mask   - mask for the relevant bits in the efuse register.
+				shift  - number of bits to right shift to get the disable_gpu
+				fuse bit value.
+
+- qcom,soc-hw-rev-efuse:	SOC hardware revision fuse information in the format
+				<offset bit_position mask>
+				offset - offset of the efuse register from the base.
+				bit_position - hardware revision starting bit in the efuse register.
+				mask - mask for the relevant bits in the efuse register.
+
 - qcom,highest-bank-bit:
 				Specify the bit of the highest DDR bank. This
 				is programmed into protected registers and also
