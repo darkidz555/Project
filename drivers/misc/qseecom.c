@@ -8756,6 +8756,11 @@ static int qseecom_remove(struct platform_device *pdev)
 		}
 	}
 
+exit_free_kc_handle:
+	kzfree(kclient->handle);
+exit_free_kclient:
+	kzfree(kclient);
+
 	spin_unlock_irqrestore(&qseecom.registered_kclient_list_lock, flags);
 
 	if (qseecom.qseos_version > QSEEE_VERSION_00)
