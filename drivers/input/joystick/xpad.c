@@ -1580,8 +1580,6 @@ static void xpad_set_up_abs(struct input_dev *input_dev, signed short abs)
 {
 	struct usb_xpad *xpad = input_get_drvdata(input_dev);
 
-	set_bit(abs, input_dev->absbit);
-
 	switch (abs) {
 	case ABS_X:
 	case ABS_Y:
@@ -1642,8 +1640,6 @@ static int xpad_init_input(struct usb_xpad *xpad)
 		input_dev->open = xpad_open;
 		input_dev->close = xpad_close;
 	}
-
-	__set_bit(EV_KEY, input_dev->evbit);
 
 	if (!(xpad->mapping & MAP_STICKS_TO_NULL)) {
 		/* set up axes */
