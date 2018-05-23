@@ -896,6 +896,20 @@ void a5xx_snapshot(struct adreno_device *adreno_dev,
 				snapshot, a5xx_snapshot_registers, &regs);
 	}
 
+	regs.regs = a5xx_registers;
+	regs.size = ARRAY_SIZE(a5xx_registers);
+
+	kgsl_snapshot_add_section(device, KGSL_SNAPSHOT_SECTION_REGS, snapshot,
+			a5xx_snapshot_registers, &regs);
+
+	if (ADRENO_FEATURE(adreno_dev, ADRENO_GPMU)) {
+		regs.regs = a5xx_gpmu_registers;
+		regs.size = ARRAY_SIZE(a5xx_gpmu_registers);
+
+		kgsl_snapshot_add_section(device, KGSL_SNAPSHOT_SECTION_REGS,
+				snapshot, a5xx_snapshot_registers, &regs);
+	}
+
 
 	/* Dump SP TP HLSQ registers */
 	kgsl_snapshot_add_section(device, KGSL_SNAPSHOT_SECTION_REGS, snapshot,
