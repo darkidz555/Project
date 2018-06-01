@@ -407,6 +407,11 @@ static int lvl_multiplicator_map_3[] = {9,1,1,1,1,10,8    ,1,1};
 static int lvl_divider_map_3[] = {10,1,1,1,1,14,12    ,1,1};
 #endif
 
+#ifdef CONFIG_ADRENO_IDLER
+extern int adreno_idler(struct devfreq_dev_status stats, struct devfreq *devfreq,
+		 unsigned long *freq);
+#endif
+
 static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 								u32 *flag)
 {
