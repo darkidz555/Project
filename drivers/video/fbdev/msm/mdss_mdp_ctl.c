@@ -29,7 +29,7 @@
 #include "mdss_debug.h"
 #include "mdss_dsi.h"
 
-#if defined(CONFIG_LGE_INTERVAL_MONITOR)
+#ifdef CONFIG_LGE_INTERVAL_MONITOR
 #include "lge/lge_interval_monitor.h"
 #endif
 
