@@ -340,7 +340,3 @@
 #else
 #define __diag_GCC_8(s)
 #endif
-
-#if GCC_VERSION >= 50100
-#define COMPILER_HAS_GENERIC_BUILTIN_OVERFLOW 1
-#endif
