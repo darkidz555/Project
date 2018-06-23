@@ -476,20 +476,23 @@ static struct mux_clk gfxcc_dbg_clk = {
 */
 
 static struct clk_regmap *gpucc_msm8998_clocks[] = {
-	[GPUCC_XO] = &gpucc_xo.clkr,
 	[GPU_PLL0_PLL] = &gpu_pll0_pll.clkr,
 	[GPU_PLL0_PLL_OUT_EVEN] = &gpu_pll0_out_even.clkr,
 	[GPU_PLL0_PLL_OUT_ODD] = &gpu_pll0_out_odd.clkr,
 	[GFX3D_CLK_SRC] = &gfx3d_clk_src.clkr,
 	[RBBMTIMER_CLK_SRC] = &rbbmtimer_clk_src.clkr,
 	[GFX3D_ISENSE_CLK_SRC] = &gfx3d_isense_clk_src.clkr,
-	[RBCPR_CLK_SRC] = &rbcpr_clk_src.clkr,
 	[GPUCC_RBBMTIMER_CLK] = &gpucc_rbbmtimer_clk.clkr,
 	[GPUCC_GFX3D_ISENSE_CLK] = &gpucc_gfx3d_isense_clk.clkr,
-	[GPUCC_RBCPR_CLK] = &gpucc_rbcpr_clk.clkr,
 	[GPUCC_GFX3D_CLK] = &gpucc_gfx3d_clk.clkr,
 	//[GPUCC_DBG_CLK] = &gfxcc_dbg_clk.clkr,
 	//[GPUCC_GCC_DBG_CLK] = &gpucc_gcc_dbg_clk.clkr,
+};
+
+static struct clk_regmap *gpucc_msm8998_early_clocks[] = {
+	[GPUCC_XO] = &gpucc_xo.clkr,
+	[RBCPR_CLK_SRC] = &rbcpr_clk_src.clkr,
+	[GPUCC_RBCPR_CLK] = &gpucc_rbcpr_clk.clkr,
 };
 
 static const struct regmap_config gpucc_msm8998_regmap_config = {
@@ -580,12 +583,6 @@ int gpucc_msm8998_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to register GPUCC clocks\n");
 		return rc;
 	}
-
-	/*
-	 * gpucc_xo works as the root clock for all GPUCC RCGs and GDSCs.
-	 *  Keep it enabled always.
-	 */
-	clk_prepare_enable(gpucc_xo.clkr.hw.clk);
 
 	enable_gfx_crc();
 
@@ -682,8 +679,6 @@ int gpucc_early_msm8998_probe(struct platform_device *pdev)
 		return rc;
 	}
 
-	/* Set the rate for GPU XO to make the clk API happy */
-	clk_set_rate(gpucc_xo.clkr.hw.clk, 19200000);
 
 	/*
 	 * gpucc_xo works as the root clock for all GPUCC RCGs and GDSCs.
