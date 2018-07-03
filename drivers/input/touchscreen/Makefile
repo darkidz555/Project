@@ -104,6 +104,9 @@ obj-$(CONFIG_TOUCHSCREEN_FTM4)        += stm/
 obj-$(CONFIG_TOUCHSCREEN_ST)		+= st/
 obj-$(CONFIG_TOUCHSCREEN_SCROFF_VOLCTR)	+= scroff_volctr.o sovc_notifier.o
 obj-$(CONFIG_BOEFFLA_POWERKEY_HELPER) += boeffla_powerkey_helper.o
+obj-$(CONFIG_TOUCHSCREEN_FTS)		+= focaltech_touch/
+obj-$(CONFIG_TOUCHSCREEN_HIMAX_CHIPSET)	+= hxchipset/
+obj-$(CONFIG_TOUCHSCREEN_GT9XX_v28)		+= gt9xx_v2.8/
 
 subdir-ccflags-y += \
 	-Wno-typedef-redefinition \
