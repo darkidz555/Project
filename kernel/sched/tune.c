@@ -8,6 +8,7 @@
 #include <linux/list.h>
 
 #include <trace/events/sched.h>
+#include <linux/list.h>
 
 #include "sched.h"
 #include "tune.h"
