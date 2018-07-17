@@ -737,8 +737,12 @@ static int kgsl_suspend_device(struct kgsl_device *device, pm_message_t state)
 <<<<<<< HEAD
 =======
 	if (status == 0)
+<<<<<<< HEAD
 		device->ftbl->dispatcher_halt(device);
 >>>>>>> 0d903198b12c... Revert "msm: kgsl: Don't halt dispatcher if device is not in SUSPEND state"
+=======
+		device->ftbl->suspend_device(device, state);
+>>>>>>> 5c12771a0d8d... msm: kgsl: unload/reload zap shader
 	mutex_unlock(&device->mutex);
 
 	KGSL_PWR_WARN(device, "suspend end\n");
@@ -753,6 +757,10 @@ static int kgsl_resume_device(struct kgsl_device *device)
 	KGSL_PWR_WARN(device, "resume start\n");
 	mutex_lock(&device->mutex);
 	if (device->state == KGSL_STATE_SUSPEND) {
+<<<<<<< HEAD
+=======
+		device->ftbl->resume_device(device);
+>>>>>>> 5c12771a0d8d... msm: kgsl: unload/reload zap shader
 		kgsl_pwrctrl_change_state(device, KGSL_STATE_SLUMBER);
 	} else if (device->state != KGSL_STATE_INIT) {
 		/*
@@ -775,10 +783,23 @@ static int kgsl_resume_device(struct kgsl_device *device)
 
 static int kgsl_suspend(struct device *dev)
 {
-
-	pm_message_t arg = {0};
 	struct kgsl_device *device = dev_get_drvdata(dev);
-	return kgsl_suspend_device(device, arg);
+
+	return kgsl_suspend_device(device, PMSG_SUSPEND);
+}
+
+static int kgsl_freeze(struct device *dev)
+{
+	struct kgsl_device *device = dev_get_drvdata(dev);
+
+	return kgsl_suspend_device(device, PMSG_FREEZE);
+}
+
+static int kgsl_poweroff(struct device *dev)
+{
+	struct kgsl_device *device = dev_get_drvdata(dev);
+
+	return kgsl_suspend_device(device, PMSG_HIBERNATE);
 }
 
 static int kgsl_resume(struct device *dev)
@@ -800,6 +821,13 @@ static int kgsl_runtime_resume(struct device *dev)
 const struct dev_pm_ops kgsl_pm_ops = {
 	.suspend = kgsl_suspend,
 	.resume = kgsl_resume,
+<<<<<<< HEAD
+=======
+	.freeze = kgsl_freeze,
+	.thaw = kgsl_resume,
+	.poweroff = kgsl_poweroff,
+	.restore = kgsl_resume,
+>>>>>>> 5c12771a0d8d... msm: kgsl: unload/reload zap shader
 	.runtime_suspend = kgsl_runtime_suspend,
 	.runtime_resume = kgsl_runtime_resume,
 };

@@ -15,6 +15,7 @@
 
 #include <linux/slab.h>
 #include <linux/idr.h>
+#include <linux/pm.h>
 #include <linux/pm_qos.h>
 #include <linux/sched.h>
 
@@ -171,6 +172,12 @@ struct kgsl_functable {
 	void (*gpu_model)(struct kgsl_device *device, char *str,
 		size_t bufsz);
 	void (*stop_fault_timer)(struct kgsl_device *device);
+<<<<<<< HEAD
+=======
+	void (*suspend_device)(struct kgsl_device *device,
+		pm_message_t pm_state);
+	void (*resume_device)(struct kgsl_device *device);
+>>>>>>> 5c12771a0d8d... msm: kgsl: unload/reload zap shader
 };
 
 struct kgsl_ioctl {
