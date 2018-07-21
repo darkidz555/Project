@@ -436,6 +436,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fsched2-use-superblocks \
 		   -march=armv8-a+crypto+crc \
 		   -mcpu=cortex-a73+crypto+crc \
+		   -Wno-unused-value -Wno-unused-parameter \
+		   -Wno-missing-field-initializers -fno-delete-null-pointer-checks \
 		   -std=gnu89 $(call cc-option,-fno-PIE)
 
 ifeq ($(TARGET_BOARD_TYPE),auto)
