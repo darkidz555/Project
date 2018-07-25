@@ -4724,10 +4724,16 @@ static void hdd_ipa_uc_fw_op_event_handler(struct work_struct *work)
 
 	cds_ssr_protect(__func__);
 
-	msg = uc_op_work->msg;
-	uc_op_work->msg = NULL;
-	HDD_IPA_LOG(QDF_TRACE_LEVEL_DEBUG,
-			"posted msg %d",  msg->op_code);
+	/*
+	 * If wake_lock is released immediately, kernel would try to suspend
+	 * immediately as well, Just avoid ping-pong between suspend-resume
+	 * while there is healthy amount of data transfer going on by
+	 * releasing the wake_lock after some delay.
+	 */
+	queue_delayed_work(system_power_efficient_wq,
+			&hdd_ipa->wake_lock_work,
+			      msecs_to_jiffies
+				      (HDD_IPA_RX_INACTIVITY_MSEC_DELAY));
 
 	hdd_ipa_uc_op_cb(msg, hdd_ipa->hdd_ctx);
 
