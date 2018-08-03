@@ -438,6 +438,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -mcpu=cortex-a73+crypto+crc \
 		   -Wno-unused-value -Wno-unused-parameter \
 		   -Wno-missing-field-initializers -fno-delete-null-pointer-checks \
+		   -fmodulo-sched -fmodulo-sched-allow-regmoves \
+		   -fivopts \
 		   -std=gnu89 $(call cc-option,-fno-PIE)
 
 ifeq ($(TARGET_BOARD_TYPE),auto)
