@@ -511,6 +511,23 @@ int kgsl_context_init(struct kgsl_device_private *dev_priv,
 	struct kgsl_device *device = dev_priv->device;
 	char name[64];
 	int ret = 0, id;
+	struct kgsl_process_private  *proc_priv = dev_priv->process_priv;
+
+	/*
+	 * Read and increment the context count under lock to make sure
+	 * no process goes beyond the specified context limit.
+	 */
+	spin_lock(&proc_priv->ctxt_count_lock);
+	if (atomic_read(&proc_priv->ctxt_count) > KGSL_MAX_CONTEXTS_PER_PROC) {
+		KGSL_DRV_ERR_RATELIMIT(device,
+			"Per process context limit reached for pid %u",
+			dev_priv->process_priv->pid);
+		spin_unlock(&proc_priv->ctxt_count_lock);
+		return -ENOSPC;
+	}
+
+	atomic_inc(&proc_priv->ctxt_count);
+	spin_unlock(&proc_priv->ctxt_count_lock);
 
 	id = _kgsl_get_context_id(device);
 	if (id == -ENOSPC) {
