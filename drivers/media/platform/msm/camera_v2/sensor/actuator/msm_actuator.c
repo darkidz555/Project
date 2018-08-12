@@ -609,6 +609,9 @@ static int32_t msm_actuator_move_focus(
 		return -EINVAL;
 	}
 
+	cpu_input_boost_kick_max(150);
+	devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 200);
+
 	if ((dest_step_pos == a_ctrl->curr_step_pos) ||
 		((dest_step_pos <= a_ctrl->total_steps) &&
 		(a_ctrl->step_position_table[dest_step_pos] ==
