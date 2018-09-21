@@ -4,7 +4,7 @@
 
 config HZ
 	int "Timer frequency"
-	default "250"
+	default "500"
 	range 12 12288
 	help
 	 Allows the configuration of the timer frequency. It is customary
@@ -29,6 +29,22 @@ config HZ
 	 while also showing good interactive responsiveness even
 	 on SMP and NUMA systems and exactly dividing by both PAL and
 	 NTSC frame rates for video and multimedia work.
+
+        config HZ_400
+		bool "400 
+ 
+         help
+	  400 Hz is a balanced timer frequency that can provide exact jiffy
+	  lengths while not sacrificing battery life or causing increased
+	  thermal output on mobile devices.
+
+        config HZ_500
+		bool "500 HZ"
+
+        help
+	 500 Hz is a balanced timer frequency. Provides fast interactivity
+	 on desktops with great smoothness without increasing CPU power
+	 consumption and sacrificing the battery life on laptops.
 
 	 1000 Hz is the preferred choice for desktop systems and other
 	 systems requiring fast interactive responses to events.
