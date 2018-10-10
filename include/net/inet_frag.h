@@ -32,7 +32,9 @@ enum {
  * @list: hash bucket list
  * @refcnt: reference count of the queue
  * @fragments: received fragments head
+ * @rb_fragments: received fragments rb-tree root
  * @fragments_tail: received fragments tail
+ * @last_run_head: the head of the last "run". see ip_fragment.c
  * @stamp: timestamp of the last received fragment
  * @len: total length of the original datagram
  * @meat: length of received fragments so far
@@ -48,6 +50,7 @@ struct inet_frag_queue {
 	atomic_t		refcnt;
 	struct sk_buff		*fragments;
 	struct sk_buff		*fragments_tail;
+	struct sk_buff		*last_run_head;
 	ktime_t			stamp;
 	int			len;
 	int			meat;
@@ -106,13 +109,8 @@ void inet_frags_fini(struct inet_frags *);
 
 static inline int inet_frags_init_net(struct netns_frags *nf)
 {
-<<<<<<< HEAD
-	atomic_set(&nf->mem, 0);
-	return 0;
-=======
 	atomic_long_set(&nf->mem, 0);
 	return rhashtable_init(&nf->rhashtable, &nf->f->rhash_params);
->>>>>>> 567ef0554b91... inet: frags: break the 2GB limit for frags storage
 }
 void inet_frags_exit_net(struct netns_frags *nf, struct inet_frags *f);
 
@@ -125,7 +123,10 @@ void inet_frag_kill(struct inet_frag_queue *q);
 void inet_frag_destroy(struct inet_frag_queue *q);
 struct inet_frag_queue *inet_frag_find(struct netns_frags *nf, void *key);
 
-static inline void inet_frag_put(struct inet_frag_queue *q, struct inet_frags *f)
+/* Free all skbs in the queue; return the sum of their truesizes. */
+unsigned int inet_frag_rbtree_purge(struct rb_root *root);
+
+static inline void inet_frag_put(struct inet_frag_queue *q)
 {
 	if (atomic_dec_and_test(&q->refcnt))
 		inet_frag_destroy(q, f);
