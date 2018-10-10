@@ -596,8 +596,13 @@ struct sk_buff *nf_ct_frag6_gather(struct net *net, struct sk_buff *skb, u32 use
 	hdr = ipv6_hdr(clone);
 	fhdr = (struct frag_hdr *)skb_transport_header(clone);
 
-	fq = fq_find(net, fhdr->identification, user, &hdr->saddr, &hdr->daddr,
-		     skb->dev ? skb->dev->ifindex : 0, ip6_frag_ecn(hdr));
+	if (clone->len - skb_network_offset(clone) < IPV6_MIN_MTU &&
+	    fhdr->frag_off & htons(IP6_MF))
+		goto ret_orig;
+
+	skb_orphan(skb);
+	fq = fq_find(net, fhdr->identification, user, hdr,
+		     skb->dev ? skb->dev->ifindex : 0);
 	if (fq == NULL) {
 		pr_debug("Can't find and can't create new queue\n");
 		goto ret_orig;
