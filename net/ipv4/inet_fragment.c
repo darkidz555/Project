@@ -385,57 +385,42 @@ static struct inet_frag_queue *inet_frag_alloc(struct netns_frags *nf,
 }
 
 static struct inet_frag_queue *inet_frag_create(struct netns_frags *nf,
-						struct inet_frags *f,
-						void *arg)
+						void *arg,
+						struct inet_frag_queue **prev)
 {
 	struct inet_frag_queue *q;
 
 	q = inet_frag_alloc(nf, f, arg);
-	if (!q)
+	if (!q) {
+		*prev = ERR_PTR(-ENOMEM);
 		return NULL;
+	}
+	mod_timer(&q->timer, jiffies + nf->timeout);
 
-	return inet_frag_intern(nf, q, f, arg);
-}
+	*prev = rhashtable_lookup_get_insert_key(&nf->rhashtable, &q->key,
+						 &q->node, f->rhash_params);
+	if (*prev) {
+		q->flags |= INET_FRAG_COMPLETE;
+		inet_frag_kill(q);
+		inet_frag_destroy(q);
+		return NULL;
+	}
 
-struct inet_frag_queue *inet_frag_find(struct netns_frags *nf,
-				       struct inet_frags *f, void *key,
-				       unsigned int hash)
+/* TODO : call from rcu_read_lock() and no longer use refcount_inc_not_zero() */
+struct inet_frag_queue *inet_frag_find(struct netns_frags *nf, void *key)
 {
-	struct inet_frag_bucket *hb;
-	struct inet_frag_queue *q;
-	int depth = 0;
+	struct inet_frag_queue *fq = NULL, *prev;
 
-	if (!nf->high_thresh || frag_mem_limit(nf) > nf->high_thresh) {
-		inet_frag_schedule_worker(f);
-		return NULL;
+	rcu_read_lock();
+	prev = rhashtable_lookup(&nf->rhashtable, key, nf->f->rhash_params);
+	if (!prev)
+		fq = inet_frag_create(nf, key, &prev);
+	if (prev && !IS_ERR(prev)) {
+		fq = prev;
+		if (!atomic_inc_not_zero(&fq->refcnt))
+			fq = NULL;
 	}
-
-	if (frag_mem_limit(nf) > nf->low_thresh)
-		inet_frag_schedule_worker(f);
-
-	hash &= (INETFRAGS_HASHSZ - 1);
-	hb = &f->hash[hash];
-
-	spin_lock(&hb->chain_lock);
-	hlist_for_each_entry(q, &hb->chain, list) {
-		if (q->net == nf && f->match(q, key)) {
-			atomic_inc(&q->refcnt);
-			spin_unlock(&hb->chain_lock);
-			return q;
-		}
-		depth++;
-	}
-	spin_unlock(&hb->chain_lock);
-
-	if (depth <= INETFRAGS_MAXDEPTH)
-		return inet_frag_create(nf, f, key);
-
-	if (inet_frag_may_rebuild(f)) {
-		if (!f->rebuild)
-			f->rebuild = true;
-		inet_frag_schedule_worker(f);
-	}
-
-	return ERR_PTR(-ENOBUFS);
+	rcu_read_unlock();
+	return fq;
 }
 EXPORT_SYMBOL(inet_frag_find);
