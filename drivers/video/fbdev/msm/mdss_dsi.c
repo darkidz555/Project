@@ -2518,6 +2518,103 @@ static void mdss_dsi_avr_config(struct mdss_dsi_ctrl_pdata *ctrl_pdata,
 	MDSS_XLOG(ctrl_pdata->ndx, enabled, data);
 }
 
+static int __mdss_dsi_dynamic_clock_switch(struct mdss_panel_data *pdata,
+	u64 new_clk_rate)
+{
+	int rc = 0;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
+	struct mdss_panel_info *pinfo;
+	u32 phy_rev;
+	u64 clk_rate_bkp;
+
+	pr_debug("%s+:\n", __func__);
+
+	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
+			panel_data);
+
+	phy_rev = ctrl_pdata->shared_data->phy_rev;
+	pinfo = &pdata->panel_info;
+
+	/* get the fps configured in HW */
+	clk_rate_bkp = pinfo->clk_rate;
+
+	__mdss_dsi_mask_dfps_errors(ctrl_pdata, true);
+
+	if (phy_rev == DSI_PHY_REV_20) {
+		rc = mdss_dsi_phy_calc_timing_param(pinfo, phy_rev,
+				new_clk_rate);
+		if (rc) {
+			pr_err("PHY calculations failed-%lld\n", new_clk_rate);
+			goto end_update;
+		}
+	}
+
+	rc = __mdss_dsi_dfps_calc_clks(pdata, new_clk_rate);
+	if (rc) {
+		pr_err("error calculating clocks for %lld\n", new_clk_rate);
+		goto error_clks;
+	}
+
+	rc = __mdss_dsi_dfps_update_clks(pdata);
+	if (rc) {
+		pr_err("Dynamic refresh failed-%lld\n", new_clk_rate);
+		goto error_dfps;
+	}
+	return rc;
+error_dfps:
+	if (__mdss_dsi_dfps_calc_clks(pdata, clk_rate_bkp))
+		pr_err("error reverting clock calculations for %lld\n",
+				clk_rate_bkp);
+error_clks:
+	if (mdss_dsi_phy_calc_timing_param(pinfo, phy_rev, clk_rate_bkp))
+		pr_err("Unable to revert phy timing-%lld\n", clk_rate_bkp);
+end_update:
+	return rc;
+}
+
+static int mdss_dsi_dynamic_bitclk_config(struct mdss_panel_data *pdata)
+{
+	int rc = 0;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
+	struct mdss_panel_info *pinfo;
+
+	pr_debug("%s+:\n", __func__);
+
+	if (pdata == NULL) {
+		pr_err("%s: Invalid input data\n", __func__);
+		return -EINVAL;
+	}
+
+	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
+			panel_data);
+
+	if (!ctrl_pdata->panel_data.panel_info.dynamic_bitclk) {
+		pr_err("Dynamic bitclk not enabled for this panel\n");
+		return -EINVAL;
+	}
+
+	pinfo = &pdata->panel_info;
+
+	if (!pinfo->new_clk_rate || (pinfo->clk_rate == pinfo->new_clk_rate)) {
+		pr_debug("Bit clock update is not needed\n");
+		return 0;
+	}
+
+	rc = __mdss_dsi_dynamic_clock_switch(&ctrl_pdata->panel_data,
+		pinfo->new_clk_rate);
+	if (!rc && mdss_dsi_is_hw_config_split(ctrl_pdata->shared_data)) {
+		struct mdss_dsi_ctrl_pdata *octrl =
+			mdss_dsi_get_other_ctrl(ctrl_pdata);
+		rc = __mdss_dsi_dynamic_clock_switch(&octrl->panel_data,
+			pinfo->new_clk_rate);
+		if (rc)
+			pr_err("failed to switch DSI bitclk for sctrl\n");
+	} else if (rc) {
+		pr_err("failed to switch DSI bitclk\n");
+	}
+	return rc;
+}
+
 static int mdss_dsi_dfps_config(struct mdss_panel_data *pdata, int new_fps)
 {
 	int rc = 0;
@@ -3072,6 +3169,158 @@ static void mdss_dsi_timing_db_ctrl(struct mdss_dsi_ctrl_pdata *ctrl,
 		  MDSS_DSI_CORE_CLK, MDSS_DSI_CLK_OFF);
 }
 
+static struct mdss_dsi_ctrl_pdata *mdss_dsi_get_drvdata(struct device *dev)
+{
+	struct msm_fb_data_type *mfd;
+	struct mdss_panel_data *pdata;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = NULL;
+	struct fb_info *fbi = dev_get_drvdata(dev);
+
+	if (fbi) {
+		mfd = (struct msm_fb_data_type *)fbi->par;
+		pdata = dev_get_platdata(&mfd->pdev->dev);
+
+		ctrl_pdata = container_of(pdata,
+			struct mdss_dsi_ctrl_pdata, panel_data);
+	}
+
+	return ctrl_pdata;
+}
+
+static ssize_t supp_bitclk_list_sysfs_rda(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	ssize_t ret = 0;
+	int i = 0;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = mdss_dsi_get_drvdata(dev);
+	struct mdss_panel_info *pinfo = NULL;
+
+	if (!ctrl_pdata) {
+		pr_err("%s: invalid input\n", __func__);
+		return -EINVAL;
+	}
+
+	pinfo = &ctrl_pdata->panel_data.panel_info;
+	if (!pinfo) {
+		pr_err("no panel connected\n");
+		return -ENODEV;
+	}
+
+	if (!pinfo->dynamic_bitclk) {
+		pr_err_once("%s: Dynamic bitclk not enabled for this panel\n",
+				__func__);
+		return -EINVAL;
+	}
+
+	buf[0] = 0;
+	for (i = 0; i < pinfo->supp_bitclk_len; i++) {
+		if (ret > 0)
+			ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+				",%d", pinfo->supp_bitclks[i]);
+		else
+			ret += scnprintf(buf + ret, PAGE_SIZE - ret,
+				"%d", pinfo->supp_bitclks[i]);
+	}
+
+	ret += scnprintf(buf + ret, PAGE_SIZE - ret, "\n");
+
+	return ret;
+}
+
+static ssize_t dynamic_bitclk_sysfs_wta(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	int rc = 0, i = 0;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = mdss_dsi_get_drvdata(dev);
+	struct mdss_panel_info *pinfo = NULL;
+	int clk_rate = 0;
+
+	if (!ctrl_pdata) {
+		pr_err("%s: invalid input\n", __func__);
+		return -EINVAL;
+	}
+
+	pinfo = &ctrl_pdata->panel_data.panel_info;
+	if (!pinfo) {
+		pr_err("no panel connected\n");
+		return -ENODEV;
+	}
+
+	if (!pinfo->dynamic_bitclk) {
+		pr_err_once("%s: Dynamic bitclk not enabled for this panel\n",
+				__func__);
+		return -EINVAL;
+	}
+
+	if (mdss_panel_is_power_off(pinfo->panel_power_state)) {
+		pr_err_once("%s: Panel powered off!\n", __func__);
+		return -EINVAL;
+	}
+
+	rc = kstrtoint(buf, 10, &clk_rate);
+	if (rc) {
+		pr_err("%s: kstrtoint failed. rc=%d\n", __func__, rc);
+		return rc;
+	}
+
+	for (i = 0; i < pinfo->supp_bitclk_len; i++) {
+		if (pinfo->supp_bitclks[i] == clk_rate)
+			break;
+	}
+	if (i == pinfo->supp_bitclk_len) {
+		pr_err("Requested bitclk: %d not supported\n", clk_rate);
+		return -EINVAL;
+	}
+
+	pinfo->new_clk_rate = clk_rate;
+	if (mdss_dsi_is_hw_config_split(ctrl_pdata->shared_data)) {
+		struct mdss_dsi_ctrl_pdata *octrl =
+			mdss_dsi_get_other_ctrl(ctrl_pdata);
+		struct mdss_panel_info *opinfo = &octrl->panel_data.panel_info;
+
+		opinfo->new_clk_rate = clk_rate;
+	}
+	return count;
+} /* dynamic_bitclk_sysfs_wta */
+
+static ssize_t dynamic_bitclk_sysfs_rda(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	ssize_t ret;
+	struct mdss_dsi_ctrl_pdata *ctrl_pdata = mdss_dsi_get_drvdata(dev);
+	struct mdss_panel_info *pinfo = NULL;
+
+	if (!ctrl_pdata) {
+		pr_err("%s: invalid input\n", __func__);
+		return -EINVAL;
+	}
+
+	pinfo = &ctrl_pdata->panel_data.panel_info;
+	if (!pinfo) {
+		pr_err("no panel connected\n");
+		return -ENODEV;
+	}
+
+	ret = snprintf(buf, PAGE_SIZE, "%llu\n", pinfo->clk_rate);
+	pr_debug("%s: '%llu'\n", __func__, pinfo->clk_rate);
+
+	return ret;
+} /* dynamic_bitclk_sysfs_rda */
+
+static DEVICE_ATTR(dynamic_bitclk, S_IRUGO | S_IWUSR | S_IWGRP,
+	dynamic_bitclk_sysfs_rda, dynamic_bitclk_sysfs_wta);
+static DEVICE_ATTR(supported_bitclk, S_IRUGO, supp_bitclk_list_sysfs_rda, NULL);
+
+static struct attribute *dynamic_bitclk_fs_attrs[] = {
+	&dev_attr_dynamic_bitclk.attr,
+	&dev_attr_supported_bitclk.attr,
+	NULL,
+};
+
+static struct attribute_group mdss_dsi_fs_attrs_group = {
+	.attrs = dynamic_bitclk_fs_attrs,
+};
+
 static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 				  int event, void *arg)
 {
@@ -3250,34 +3499,14 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 	case MDSS_EVENT_AVR_MODE:
 		mdss_dsi_avr_config(ctrl_pdata, (int)(unsigned long) arg);
 		break;
-#if defined(CONFIG_LGE_DISPLAY_AMBIENT_SUPPORTED)
-	case MDSS_EVENT_PANEL_ULP_TO_LP_MODE:
-		rc = lge_mdss_ambient_change_lp_mode(pdata, (int)(unsigned long)arg);
+	case MDSS_EVENT_DSI_DYNAMIC_BITCLK:
+		if (ctrl_pdata->panel_data.panel_info.dynamic_bitclk) {
+			rc = mdss_dsi_dynamic_bitclk_config(pdata);
+			if (rc)
+				pr_err("unable to change bitclk error-%d\n",
+					rc);
+		}
 		break;
-	case MDSS_EVENT_PANEL_LP_TO_ULP_MODE:
-		rc = lge_mdss_ambient_change_lp_mode(pdata, (int)(unsigned long)arg);
-		break;
-#if defined(CONFIG_LGE_DISPLAY_CHANGE_PARTIAL_AREA_IN_KICKOFF)
-	case MDSS_EVENT_PANEL_CHANGE_PARTIAL_AREA:
-		rc = lge_mdss_ambient_change_partial_area(pdata, (int)(unsigned long)arg);
-		break;
-#if defined(CONFIG_LGE_DISPLAY_BIST_MODE)
-	case MDSS_EVENT_PANEL_BIST_OFF:
-		rc = lge_mdss_ambient_post_change_partial_area(pdata, (int)(unsigned long)arg);
-		break;
-#if defined(CONFIG_LGE_DISPLAY_DYNAMIC_RESOLUTION_SWITCH)
-	case MDSS_EVENT_PANEL_BIST_VERIFY:
-		rc = lge_mdss_ambient_bist_verify(pdata, (int)(unsigned long)arg);
-		break;
-#endif /* CONFIG_LGE_DISPLAY_DYNAMIC_RESOLUTION_SWITCH */
-#endif /* CONFIG_LGE_DISPLAY_BIST_MODE */
-#endif /* CONFIG_LGE_DISPLAY_CHANGE_PARTIAL_AREA_IN_KICKOFF */
-#endif /* CONFIG_LGE_DISPLAY_AMBIENT_SUPPORTED */
-#if defined(CONFIG_LGE_DISPLAY_COMMON)
-	case MDSS_EVENT_PANEL_REG_BACKUP:
-		rc = lge_mdss_dsi_panel_reg_backup(ctrl_pdata);
-		break;
-#endif
 	default:
 		pr_debug("%s: unhandled event=%d\n", __func__, event);
 		break;
