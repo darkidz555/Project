@@ -26,11 +26,11 @@ struct panel_id {
 	u16 type;
 };
 
-#define DEFAULT_FRAME_RATE	60
+#define DEFAULT_FRAME_RATE	80
 #define DEFAULT_ROTATOR_FRAME_RATE 120
-#define ROTATOR_LOW_FRAME_RATE 30
+#define ROTATOR_LOW_FRAME_RATE 60
 
-#define MDSS_DSI_MAX_ESC_CLK_RATE_HZ	19200000
+#define MDSS_DSI_MAX_ESC_CLK_RATE_HZ	21120000
 
 #define MDSS_DSI_RST_SEQ_LEN	10
 /* worst case prefill lines for all chipsets including all vertical blank */
@@ -338,22 +338,7 @@ enum mdss_intf_events {
 	MDSS_EVENT_DSI_TIMING_DB_CTRL,
 	MDSS_EVENT_AVR_MODE,
 	MDSS_EVENT_REGISTER_CLAMP_HANDLER,
-#if defined(CONFIG_LGE_DISPLAY_AMBIENT_SUPPORTED)
-	MDSS_EVENT_PANEL_ULP_TO_LP_MODE,
-	MDSS_EVENT_PANEL_LP_TO_ULP_MODE,
-#if defined(CONFIG_LGE_DISPLAY_CHANGE_PARTIAL_AREA_IN_KICKOFF)
-	MDSS_EVENT_PANEL_CHANGE_PARTIAL_AREA,
-#if defined(CONFIG_LGE_DISPLAY_BIST_MODE)
-	MDSS_EVENT_PANEL_BIST_OFF,
-#if defined(CONFIG_LGE_DISPLAY_DYNAMIC_RESOLUTION_SWITCH)
-	MDSS_EVENT_PANEL_BIST_VERIFY,
-#endif /* CONFIG_LGE_DISPLAY_DYNAMIC_RESOLUTION_SWITCH */
-#endif /* CONFIG_LGE_DISPLAY_BIST_MODE */
-#endif /* CONFIG_LGE_DISPLAY_CHANGE_PARTIAL_AREA_IN_KICKOFF */
-#endif /* CONFIG_LGE_DISPLAY_AMBIENT_SUPPORTED */
-#if defined(CONFIG_LGE_DISPLAY_COMMON)
-	MDSS_EVENT_PANEL_REG_BACKUP,
-#endif
+	MDSS_EVENT_DSI_DYNAMIC_BITCLK,
 	MDSS_EVENT_MAX,
 };
 
@@ -872,6 +857,8 @@ struct mdss_panel_info {
 	bool esd_check_enabled;
 	bool allow_phy_power_off;
 	char dfps_update;
+	/* new requested bitclk before it is updated in hw */
+	int new_clk_rate;
 	/* new requested fps before it is updated in hw */
 	int new_fps;
 	/* stores initial fps after boot */
