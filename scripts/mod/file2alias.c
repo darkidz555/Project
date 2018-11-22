@@ -47,7 +47,7 @@ typedef struct {
 struct devtable {
 	const char *device_id; /* name of table, __mod_<name>__*_device_table. */
 	unsigned long id_size;
-	void *function;
+	int (*do_entry)(const char *filename, void *symval, char *alias);
 };
 
 #define ___cat(a,b) a ## b
@@ -1283,12 +1283,11 @@ static bool sym_is(const char *name, unsigned namelen, const char *symbol)
 static void do_table(void *symval, unsigned long size,
 		     unsigned long id_size,
 		     const char *device_id,
-		     void *function,
+		     int (*do_entry)(const char *filename, void *symval, char *alias),
 		     struct module *mod)
 {
 	unsigned int i;
 	char alias[500];
-	int (*do_entry)(const char *, void *entry, char *alias) = function;
 
 	device_id_check(mod->name, device_id, size, id_size, symval);
 	/* Leave last one: it's the terminator. */
@@ -1357,10 +1356,9 @@ void handle_moddevtable(struct module *mod, struct elf_info *info,
 		struct devtable **p;
 		INIT_SECTION(__devtable);
 
-		for (p = __start___devtable; p < __stop___devtable; p++) {
-			if (sym_is(name, namelen, (*p)->device_id)) {
-				do_table(symval, sym->st_size, (*p)->id_size,
-					 (*p)->device_id, (*p)->function, mod);
+			if (sym_is(name, namelen, p->device_id)) {
+				do_table(symval, sym->st_size, p->id_size,
+					 p->device_id, p->do_entry, mod);
 				break;
 			}
 		}
