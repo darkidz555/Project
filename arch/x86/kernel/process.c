@@ -348,7 +348,24 @@ static __always_inline void __speculation_ctrl_update(unsigned long tifp,
 		wrmsrl(MSR_IA32_SPEC_CTRL, msr);
 }
 
-void speculative_store_bypass_update(unsigned long tif)
+static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
+{
+	if (test_and_clear_tsk_thread_flag(tsk, TIF_SPEC_FORCE_UPDATE)) {
+		if (task_spec_ssb_disable(tsk))
+			set_tsk_thread_flag(tsk, TIF_SSBD);
+		else
+			clear_tsk_thread_flag(tsk, TIF_SSBD);
+
+		if (task_spec_ib_disable(tsk))
+			set_tsk_thread_flag(tsk, TIF_SPEC_IB);
+		else
+			clear_tsk_thread_flag(tsk, TIF_SPEC_IB);
+	}
+	/* Return the updated threadinfo flags*/
+	return task_thread_info(tsk)->flags;
+}
+
+void speculation_ctrl_update(unsigned long tif)
 {
 	/* Forced update. Make sure all relevant TIF flags are different */
 	preempt_disable();
