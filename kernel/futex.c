@@ -1943,7 +1943,7 @@ retry_private:
 				 * tried to enqueue it on the rtmutex.
 				 */
 				this->pi_state = NULL;
-				free_pi_state(pi_state);
+				put_pi_state(pi_state);
 				continue;
 			} else if (ret) {
 				/*
