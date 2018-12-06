@@ -328,15 +328,13 @@ static struct rchan_callbacks default_channel_callbacks = {
 
 /**
  *	wakeup_readers - wake up readers waiting on a channel
- *	@work: contains the channel buffer
+ *	@data: contains the channel buffer
  *
- *	This is the function used to defer reader waking
+ *	This is the timer function used to defer reader waking.
  */
-static void wakeup_readers(struct irq_work *work)
+static void wakeup_readers(unsigned long data)
 {
-	struct rchan_buf *buf;
-
-	buf = container_of(work, struct rchan_buf, wakeup_work);
+	struct rchan_buf *buf = (struct rchan_buf *)data;
 	wake_up_interruptible(&buf->read_wait);
 }
 
@@ -354,10 +352,9 @@ static void __relay_reset(struct rchan_buf *buf, unsigned int init)
 	if (init) {
 		init_waitqueue_head(&buf->read_wait);
 		kref_init(&buf->kref);
-		init_irq_work(&buf->wakeup_work, wakeup_readers);
-	} else {
-		irq_work_sync(&buf->wakeup_work);
-	}
+		setup_timer(&buf->timer, wakeup_readers, (unsigned long)buf);
+	} else
+		del_timer_sync(&buf->timer);
 
 	buf->subbufs_produced = 0;
 	buf->subbufs_consumed = 0;
@@ -482,7 +479,7 @@ free_buf:
 static void relay_close_buf(struct rchan_buf *buf)
 {
 	buf->finalized = 1;
-	irq_work_sync(&buf->wakeup_work);
+	del_timer_sync(&buf->timer);
 	buf->chan->cb->remove_buf_file(buf->dentry);
 	kref_put(&buf->kref, relay_remove_buf);
 }
@@ -740,15 +737,14 @@ size_t relay_switch_subbuf(struct rchan_buf *buf, size_t length)
 			buf->early_bytes += buf->chan->subbuf_size -
 					    buf->padding[old_subbuf];
 		smp_mb();
-		if (waitqueue_active(&buf->read_wait)) {
+		if (waitqueue_active(&buf->read_wait))
 			/*
 			 * Calling wake_up_interruptible() from here
 			 * will deadlock if we happen to be logging
 			 * from the scheduler (trying to re-grab
 			 * rq->lock), so defer it.
 			 */
-			irq_work_queue(&buf->wakeup_work);
-		}
+			mod_timer(&buf->timer, jiffies + 1);
 	}
 
 	old = buf->data;
