@@ -358,6 +358,30 @@ void  rt_down_write(struct rw_semaphore *rwsem)
 }
 EXPORT_SYMBOL(rt_down_write);
 
+int  rt_down_write_killable(struct rw_semaphore *rwsem)
+{
+	int ret;
+
+	rwsem_acquire(&rwsem->dep_map, 0, 0, _RET_IP_);
+	ret = rt_mutex_lock_killable(&rwsem->lock);
+	if (ret)
+		rwsem_release(&rwsem->dep_map, 1, _RET_IP_);
+	return ret;
+}
+EXPORT_SYMBOL(rt_down_write_killable);
+
+int  rt_down_write_killable_nested(struct rw_semaphore *rwsem, int subclass)
+{
+	int ret;
+
+	rwsem_acquire(&rwsem->dep_map, subclass, 0, _RET_IP_);
+	ret = rt_mutex_lock_killable(&rwsem->lock);
+	if (ret)
+		rwsem_release(&rwsem->dep_map, 1, _RET_IP_);
+	return ret;
+}
+EXPORT_SYMBOL(rt_down_write_killable_nested);
+
 void  rt_down_write_nested(struct rw_semaphore *rwsem, int subclass)
 {
 	rwsem_acquire(&rwsem->dep_map, subclass, 0, _RET_IP_);
