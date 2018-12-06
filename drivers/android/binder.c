@@ -2775,8 +2775,6 @@ static void binder_transaction(struct binder_proc *proc,
 			 * the transaction, and nothing is queued to the
 			 * todo list while the thread is on waiting_threads.
 			 */
-			binder_user_error("%d:%d new transaction not allowed when there is a transaction on thread todo\n",
-					  proc->pid, thread->pid);
 			binder_inner_proc_unlock(proc);
 			return_error = BR_FAILED_REPLY;
 			return_error_param = -EPROTO;
