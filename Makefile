@@ -409,6 +409,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fdiagnostics-color=always \
 		   -Wno-unused-value -Wno-unused-parameter \
 		   -Wno-missing-field-initializers \
+		   -Wno-return-type \
 		   -fdelete-null-pointer-checks -fisolate-erroneous-paths-dereference \
 		   -fivopts \
 		   -fgcse -fgcse-lm -fgcse-sm -fgcse-after-reload \
