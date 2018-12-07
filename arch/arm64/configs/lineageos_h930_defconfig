@@ -6170,8 +6170,8 @@ CONFIG_TRANSPARENT_HUGEPAGE=y
 # CONFIG_WAKEUP_LATENCY_HIST is not set
 # CONFIG_MISSED_TIMER_OFFSETS_HIST is not set
 # CONFIG_HWLAT_DETECTOR is not set
-CONFIG_PREEMPT__LL=y # former default
-# CONFIG_PREEMPT_RTB is not set
+# CONFIG_PREEMPT__LL is not set # former default
+CONFIG_PREEMPT_RTB=y
 # CONFIG_PREEMPT_RT_FULL is not set # when it's done
 # CONFIG_TRACE_IRQFLAGS is not set
 
