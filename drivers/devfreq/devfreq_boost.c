@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Copyright (C) 2018-2019 Sultan Alsawaf <sultan@kerneltoast.com>.
+ * Copyright (C) 2018 Sultan Alsawaf <sultan@kerneltoast.com>.
  */
 
 #define pr_fmt(fmt) "devfreq_boost: " fmt
@@ -207,8 +207,8 @@ static void devfreq_max_unboost(struct work_struct *work)
 	return 0;
 }
 
-static int fb_notifier_cb(struct notifier_block *nb, unsigned long action,
-			  void *data)
+static int fb_notifier_cb(struct notifier_block *nb,
+			  unsigned long action, void *data)
 {
 	struct df_boost_drv *d = container_of(nb, typeof(*d), fb_notif);
 	int i, *blank = ((struct fb_event *)data)->data;
