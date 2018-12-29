@@ -2043,7 +2043,7 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags,
 	       int sibling_count_hint)
 {
 	unsigned long flags;
-	int cpu, success = 0;
+	int cpu, src_cpu, success = 0;
 #ifdef CONFIG_SMP
 	struct rq *rq;
 	u64 wallclock;

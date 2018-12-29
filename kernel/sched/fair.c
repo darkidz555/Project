@@ -4936,7 +4936,13 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 		if (unlikely(p->nr_cpus_allowed == 1))
 			rq->nr_pinned_tasks++;
 
-                walt_inc_cumulative_runnable_avg(rq, p);
+	if (!se) {
+		walt_inc_cumulative_runnable_avg(rq, p);
+		if (!task_new && !rq->rd->overutilized &&
+		    cpu_overutilized(rq->cpu)) {
+			rq->rd->overutilized = true;
+			trace_sched_overutilized(true);
+		}
 	}
 
 	util_est_enqueue(&rq->cfs, p);
@@ -5027,6 +5033,16 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 	}
 
 #ifdef CONFIG_SMP
+
+	/*
+	 * Update SchedTune accounting
+	 *
+	 * We do it before updating the CPU capacity to ensure the
+	 * boost value of the current task is accounted for in the
+	 * selection of the OPP.
+	 */
+	schedtune_dequeue_task(p, cpu_of(rq));
+
 	if (!se)
 		walt_dec_cumulative_runnable_avg(rq, p);
 #endif /* CONFIG_SMP */
@@ -6062,7 +6078,18 @@ static int wake_affine(struct sched_domain *sd, struct task_struct *p,
 	return 1;
 }
 
-static inline unsigned long boosted_task_util(struct task_struct *p);
+static inline unsigned long task_util(struct task_struct *p)
+{
+#ifdef CONFIG_SCHED_WALT
+       if (!walt_disabled && sysctl_sched_use_walt_task_util) {
+               unsigned long demand = p->ravg.demand;
+               return (demand << 10) / walt_ravg_window;
+       }
+#endif
+	return p->se.avg.util_avg;
+}
+
+static inline unsigned long boosted_task_util(struct task_struct *task);
 
 static inline bool __task_fits(struct task_struct *p, int cpu, int util)
 {

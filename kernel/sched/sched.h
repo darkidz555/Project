@@ -428,6 +428,9 @@ struct cfs_rq {
 #endif
 
 #ifdef CONFIG_CFS_BANDWIDTH
+
+
+#ifdef CONFIG_CFS_BANDWIDTH
 	int runtime_enabled;
 	u64 runtime_expires;
 	s64 runtime_remaining;
