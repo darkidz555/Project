@@ -2730,6 +2730,7 @@ _aware(struct kgsl_device *device)
 		break;
 	default:
 		status = -EINVAL;
+		return status;
 	}
 	if (status)
 		kgsl_pwrctrl_request_state(device, KGSL_STATE_NONE);
@@ -2839,8 +2840,9 @@ static int _suspend(struct kgsl_device *device)
 {
 	int ret = 0;
 
-	if ((KGSL_STATE_NONE == device->state) ||
-			(KGSL_STATE_INIT == device->state))
+	if ((device->state == KGSL_STATE_NONE) ||
+			(device->state == KGSL_STATE_INIT) ||
+			(device->state == KGSL_STATE_SUSPEND))
 		return ret;
 
 	/* drain to prevent from more commands being submitted */
