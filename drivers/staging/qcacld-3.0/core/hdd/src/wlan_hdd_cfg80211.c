@@ -10202,7 +10202,10 @@ static int __wlan_hdd_cfg80211_set_nud_stats(struct wiphy *wiphy,
 	qdf_mem_zero(&adapter->hdd_stats.hdd_arp_stats,
 		     sizeof(adapter->hdd_stats.hdd_arp_stats));
 
-	arp_stats_params.pkt_type = WLAN_NUD_STATS_ARP_PKT_TYPE;
+	QDF_TRACE(QDF_MODULE_ID_HDD, QDF_TRACE_LEVEL_DEBUG,
+		  "%s STATS_SET_START Received flag %d!!", __func__,
+		  arp_stats_params.flag);
+
 	arp_stats_params.vdev_id = adapter->sessionId;
 
 	if (QDF_STATUS_SUCCESS !=
