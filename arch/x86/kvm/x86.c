@@ -5500,8 +5500,8 @@ restart:
 		toggle_interruptibility(vcpu, ctxt->interruptibility);
 		vcpu->arch.emulate_regs_need_sync_to_vcpu = false;
 		kvm_rip_write(vcpu, ctxt->eip);
-		if (r == EMULATE_DONE)
-			kvm_vcpu_check_singlestep(vcpu, rflags, &r);
+		if (r == EMULATE_DONE && ctxt->tf)
+			kvm_vcpu_do_singlestep(vcpu, &r);
 		if (!ctxt->have_exception ||
 		    exception_type(ctxt->exception.vector) == EXCPT_TRAP)
 			__kvm_set_rflags(vcpu, ctxt->eflags);
