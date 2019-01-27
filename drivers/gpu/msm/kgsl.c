@@ -734,6 +734,11 @@ static int kgsl_suspend_device(struct kgsl_device *device, pm_message_t state)
 
 	mutex_lock(&device->mutex);
 	status = kgsl_pwrctrl_change_state(device, KGSL_STATE_SUSPEND);
+<<<<<<< HEAD
+=======
+	if (status == 0)
+		device->ftbl->dispatcher_halt(device);
+>>>>>>> 0d903198b12c... Revert "msm: kgsl: Don't halt dispatcher if device is not in SUSPEND state"
 	mutex_unlock(&device->mutex);
 
 	KGSL_PWR_WARN(device, "suspend end\n");
