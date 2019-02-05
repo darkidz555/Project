@@ -253,6 +253,15 @@ config SND_LGE_MABL
 	help
 	 To support LGE DSP MABL
 
+<<<<<<< HEAD
+=======
+config SND_LGE_DTS
+	bool "LGE DSP DTS"
+	default y
+	help
+	 To support LGE DSP DTS
+
+>>>>>>> 992318561eff... sound/soc/msm/Kconfig: set SND_LGE_DTS default =y
 config SND_LGE_DSDP_DUAL_AUDIO
 	bool "LGE DSDP DUAL AUDIO"
 	default n
