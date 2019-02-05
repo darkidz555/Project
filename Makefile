@@ -1251,7 +1251,8 @@ MRPROPER_FILES += .config .config.old .version .old_version \
 # clean - Delete most, but leave enough to build external modules
 #
 clean: rm-dirs  := $(CLEAN_DIRS)
-clean: rm-files := $(CLEAN_FILES)
+clean: rm-files := $(CLEAN_FILES) drivers/platform/msm/ipa/ipa_common
+clean: rm-files := $(CLEAN_FILES) arch/arm64/boot/dts/*.dtb
 clean-dirs      := $(addprefix _clean_, . $(vmlinux-alldirs) Documentation samples)
 
 PHONY += $(clean-dirs) clean archclean vmlinuxclean
