@@ -25,7 +25,7 @@
     dsi_dummy_qhd_video: qcom,mdss_dsi_dummy_dsc_qhd_video {
         qcom,mdss-dsi-panel-name = "dummy video mode dsi no panel";
 		qcom,mdss-dsi-panel-type = "dsi_video_mode";
-		qcom,mdss-dsi-panel-framerate = <60>;
+		qcom,mdss-dsi-panel-framerate = <80>;
 		qcom,mdss-dsi-virtual-channel-id = <0>;
 		qcom,mdss-dsi-stream = <0>;
 		qcom,mdss-dsi-panel-width = <1440>;
