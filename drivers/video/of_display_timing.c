@@ -71,13 +71,9 @@ static int of_parse_display_timing(const struct device_node *np,
 	ret |= parse_timing_property(np, "vback-porch", &dt->vback_porch);
 	ret |= parse_timing_property(np, "vfront-porch", &dt->vfront_porch);
 	ret |= parse_timing_property(np, "vactive", &dt->vactive);
-	ret |= parse_timing_property(np, "vsync-len", &dt->vsync_len);
 	ret |= parse_timing_property(np, "clock-frequency", &dt->pixelclock);
 
-	dt->flags = 0;
-	if (!of_property_read_u32(np, "vsync-active", &val))
-		dt->flags |= val ? DISPLAY_FLAGS_VSYNC_HIGH :
-				DISPLAY_FLAGS_VSYNC_LOW;
+
 	if (!of_property_read_u32(np, "hsync-active", &val))
 		dt->flags |= val ? DISPLAY_FLAGS_HSYNC_HIGH :
 				DISPLAY_FLAGS_HSYNC_LOW;
