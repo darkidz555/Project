@@ -43,7 +43,6 @@ config IOSCHED_CFQ
 
 	  This is the default I/O scheduler.
 
-
 config IOSCHED_FIOPS
 	tristate "IOPS based I/O scheduler"
 	default y
