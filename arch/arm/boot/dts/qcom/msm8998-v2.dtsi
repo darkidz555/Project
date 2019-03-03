@@ -1010,12 +1010,12 @@
 
 &pm8005_s1 {
 	regulator-min-microvolt = <516000>;
-	regulator-max-microvolt = <1088000>;
+	regulator-max-microvolt = <1288000>;
 };
 
 &gfx_cpr {
 	compatible = "qcom,cpr4-msm8998-v2-mmss-regulator";
-	qcom,cpr-aging-ref-voltage = <1088000>;
+	qcom,cpr-aging-ref-voltage = <1208000>;
 };
 
 &gfx_vreg {
@@ -1029,14 +1029,14 @@
 	qcom,cpr-corner-fmax-map = <1 3 5 8>;
 
 	qcom,cpr-voltage-ceiling =
-		<716000 716000 772000 880000 908000 948000 1016000 1088000>,
-		<724000 724000 772000 832000 916000 968000 1024000 1088000>,
-		<724000 724000 772000 832000 916000 968000 1024000 1088000>,
-		<724000 724000 772000 832000 916000 968000 1024000 1088000>,
-		<724000 724000 772000 832000 916000 968000 1024000 1088000>,
-		<724000 724000 772000 832000 916000 968000 1024000 1088000>,
-		<724000 724000 772000 832000 916000 968000 1024000 1088000>,
-		<724000 724000 772000 832000 916000 968000 1024000 1088000>;
+		<816000 816000 872000 980000 1008000 1048000 1116000 1208000>,
+		<824000 824000 872000 932000 1016000 1068000 1124000 1208000>,
+		<824000 824000 872000 932000 1016000 1068000 1124000 1208000>,
+		<824000 824000 872000 932000 1016000 1068000 1124000 1208000>,
+		<824000 824000 872000 932000 1016000 1068000 1124000 1208000>,
+		<824000 824000 872000 932000 1016000 1068000 1124000 1208000>,
+		<824000 824000 872000 932000 1016000 1068000 1124000 1208000>,
+		<824000 824000 872000 932000 1016000 1068000 1124000 1208000>;
 
 	qcom,cpr-voltage-floor =
 		<516000 516000 532000 584000 632000 672000 712000 756000>;
@@ -1209,7 +1209,7 @@
 &msm_gpu {
 	/* Updated chip ID */
 	qcom,chipid = <0x05040001>;
-	qcom,initial-pwrlevel = <7>;
+	qcom,initial-pwrlevel = <0>;
 
 	qcom,gpu-pwrlevels {
 		#address-cells = <1>;
@@ -1219,34 +1219,34 @@
 
 		qcom,gpu-pwrlevel@0 {
 			reg = <0>;
-			qcom,gpu-freq = <750000000>;
-			qcom,bus-freq = <12>;
-			qcom,bus-min = <12>;
-			qcom,bus-max = <12>;
+			qcom,gpu-freq = <850000000>;
+			qcom,bus-freq = <14>;
+			qcom,bus-min = <14>;
+			qcom,bus-max = <14>;
 		};
 
 		qcom,gpu-pwrlevel@1 {
 			reg = <1>;
-			qcom,gpu-freq = <670000000>;
-			qcom,bus-freq = <12>;
-			qcom,bus-min = <11>;
-			qcom,bus-max = <12>;
+			qcom,gpu-freq = <770000000>;
+			qcom,bus-freq = <14>;
+			qcom,bus-min = <12>;
+			qcom,bus-max = <14>;
 		};
 
 		qcom,gpu-pwrlevel@2 {
 			reg = <2>;
-			qcom,gpu-freq = <596000000>;
-			qcom,bus-freq = <11>;
-			qcom,bus-min = <9>;
-			qcom,bus-max = <12>;
+			qcom,gpu-freq = <696000000>;
+			qcom,bus-freq = <13>;
+			qcom,bus-min = <12>;
+			qcom,bus-max = <14>;
 		};
 
 		qcom,gpu-pwrlevel@3 {
 			reg = <3>;
-			qcom,gpu-freq = <515000000>;
-			qcom,bus-freq = <11>;
-			qcom,bus-min = <9>;
-			qcom,bus-max = <12>;
+			qcom,gpu-freq = <615000000>;
+			qcom,bus-freq = <13>;
+			qcom,bus-min = <12>;
+			qcom,bus-max = <14>;
 		};
 
 		qcom,gpu-pwrlevel@4 {
