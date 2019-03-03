@@ -522,9 +522,7 @@ void cpufreq_unregister_governor(struct cpufreq_governor *governor);
  * Performance governor is fallback governor if any other gov failed to auto
  * load due latency restrictions
  */
-#ifdef CONFIG_CPU_FREQ_GOV_PERFORMANCE
-extern struct cpufreq_governor cpufreq_gov_performance;
-#endif
+
 #ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_performance)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE)
@@ -554,7 +552,12 @@ extern struct cpufreq_governor cpufreq_gov_blu_schedutil;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_PWRUTILX)
 extern struct cpufreq_governor cpufreq_gov_pwrutilx;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_pwrutilx)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_DARKUTIL)
+extern struct cpufreq_governor cpufreq_gov_darkutil;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_darkutil)
+
 #endif
+
 
 static inline void cpufreq_policy_apply_limits(struct cpufreq_policy *policy)
 {
