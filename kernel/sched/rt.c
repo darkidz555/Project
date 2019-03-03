@@ -1039,13 +1039,6 @@ void init_rt_schedtune_timer(struct sched_rt_entity *rt_se)
 	rt_se->schedtune_enqueued = false;
 }
 
-static void start_schedtune_timer(struct sched_rt_entity *rt_se)
-{
-	struct hrtimer *timer = &rt_se->schedtune_timer;
-
-	hrtimer_start(timer, ns_to_ktime(RT_SCHEDTUNE_INTERVAL),
-			HRTIMER_MODE_REL_PINNED);
-}
 
 /*
  * Update the current task's runtime statistics. Skip current tasks that
