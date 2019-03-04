@@ -159,6 +159,8 @@ static void devfreq_max_unboost(struct work_struct *work)
 
 static void devfreq_update_boosts(struct boost_dev *b, unsigned long state)
 {
+	struct boost_dev *b = container_of(to_delayed_work(work),
+					   typeof(*b), input_unboost);
 	struct devfreq *df = b->df;
 
 	mutex_lock(&df->lock);
@@ -196,9 +198,11 @@ static int devfreq_boost_thread(void *data)
 		if (should_stop)
 			break;
 
-		old_state = curr_state;
-		devfreq_update_boosts(b, curr_state);
-	}
+static void devfreq_max_unboost(struct work_struct *work)
+{
+	struct boost_dev *b = container_of(to_delayed_work(work),
+					   typeof(*b), max_unboost);
+	struct devfreq *df = b->df;
 
 	return 0;
 }
