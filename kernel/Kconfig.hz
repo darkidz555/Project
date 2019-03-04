@@ -46,7 +46,7 @@ config HZ
 	 1000 Hz is the preferred choice for desktop systems and other
 	 systems requiring fast interactive responses to events.
 
-endchoice
+
 
 config HZ
 	int
