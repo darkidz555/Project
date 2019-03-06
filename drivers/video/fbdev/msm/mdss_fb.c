@@ -58,6 +58,7 @@
 #include "mdss_smmu.h"
 #include "mdss_mdp.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_MACH_LGE
 #include <soc/qcom/lge/board_lge.h>
 #include <linux/timer.h>
@@ -66,8 +67,11 @@
 #ifdef CONFIG_LGE_DISPLAY_COMMON
 #include "lge/lge_mdss_display.h"
 #endif
-#if defined(CONFIG_LGE_INTERVAL_MONITOR)
+#ifdef CONFIG_LGE_INTERVAL_MONITOR
 #include "lge/lge_interval_monitor.h"
+#endif
+#ifdef CONFIG_KLAPSE
+#include "klapse.h"
 #endif
 
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
@@ -391,6 +395,10 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 #endif
 
 	mfd->bl_level_usr = bl_lvl;
+
+#ifdef CONFIG_KLAPSE
+	set_rgb_slider(bl_lvl);
+#endif
 }
 
 static enum led_brightness mdss_fb_get_bl_brightness(
