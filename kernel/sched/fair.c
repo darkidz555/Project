@@ -134,6 +134,8 @@ unsigned int capacity_margin = 1280; /* ~20% */
 
 static unsigned int __maybe_unused sched_small_task_threshold = 102;
 
+static unsigned int __maybe_unused sched_small_task_threshold = 102;
+
 static inline void update_load_add(struct load_weight *lw, unsigned long inc)
 {
 	lw->weight += inc;
