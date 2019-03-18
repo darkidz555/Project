@@ -39,8 +39,8 @@ extern unsigned int tdf_suspend_state;
 extern unsigned int tdf_powersave_active;
 #endif
 
-#define DEFAULT_GO_HISPEED_LOAD     85
-#define DEFAULT_DOWN_SAMPLE_TIME    (30 * USEC_PER_MSEC)
+#define DEFAULT_GO_HISPEED_LOAD     95
+#define DEFAULT_DOWN_SAMPLE_TIME    (10 * USEC_PER_MSEC)
 #define DEFAULT_UP_SAMPLE_TIME      (10 * USEC_PER_MSEC)
 #define DEFAULT_TIMER_RATE          (2 * HZ)
 
