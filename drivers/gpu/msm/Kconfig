@@ -9,6 +9,9 @@ config QCOM_KGSL
 	select DEVFREQ_GOV_PERFORMANCE
 	select DEVFREQ_GOV_QCOM_ADRENO_TZ
 	select DEVFREQ_GOV_QCOM_GPUBW_MON
+	select DEVFREQ_GOV_MSM_ADRENO_TZ
+	select DEVFREQ_GOV_MSM_ADRENO_PLUS
+	select DEVFREQ_GOV_MSM_GPUBW_MON
 	select ONESHOT_SYNC if SYNC
 	---help---
 	  3D graphics driver for the Adreno family of GPUs from Qualcomm.
