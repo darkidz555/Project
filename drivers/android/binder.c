@@ -4835,6 +4835,58 @@ static const struct file_operations binder_fops = {
 	.release = binder_release,
 };
 
+BINDER_DEBUG_ENTRY(state);
+BINDER_DEBUG_ENTRY(stats);
+BINDER_DEBUG_ENTRY(transactions);
+BINDER_DEBUG_ENTRY(transaction_log);
+
+static int proc_state_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, binder_state_show, inode->i_private);
+}
+
+static int proc_transactions_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, binder_transactions_show, inode->i_private);
+}
+
+static int proc_transaction_log_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, binder_transaction_log_show,
+                &binder_transaction_log);
+}
+
+static const struct file_operations proc_state_operations = {
+	.open       = proc_state_open,
+	.read       = seq_read,
+	.llseek     = seq_lseek,
+	.release    = single_release,
+};
+
+static const struct file_operations proc_transactions_operations = {
+	.open       = proc_transactions_open,
+	.read       = seq_read,
+	.llseek     = seq_lseek,
+	.release    = single_release,
+};
+
+static const struct file_operations proc_transaction_log_operations = {
+	.open       = proc_transaction_log_open,
+	.read       = seq_read,
+	.llseek     = seq_lseek,
+	.release    = single_release,
+};
+
+static int binder_proc_init(void)
+{
+	proc_create("proc_state", 0, NULL,
+			&proc_state_operations);
+	proc_create("proc_transactions", 0, NULL,
+			&proc_transactions_operations);
+	proc_create("proc_transaction_log", 0, NULL,
+			&proc_transaction_log_operations);
+	return 0;
+}
 static int __init init_binder_device(const char *name)
 {
 	int ret;
