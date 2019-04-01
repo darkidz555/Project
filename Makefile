@@ -401,7 +401,7 @@ LINUXINCLUDE    := \
 KBUILD_CPPFLAGS := -D__KERNEL__
 
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-		   -fno-strict-aliasing -fno-common \
+		   -fno-strict-aliasing -fno-common -Wno-unused-function \
 		   -Werror-implicit-function-declaration \
 		   -Wno-maybe-uninitialized -Wno-misleading-indentation \
 		   -Wno-array-bounds -Wno-shift-overflow \
