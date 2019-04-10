@@ -137,6 +137,12 @@ config CPU_FREQ_DEFAULT_GOV_BLU_ACTIVE
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
 
+config CPU_FREQ_DEFAULT_GOV_BIOSHOCK
+	bool "BioShock"
+	select CPU_FREQ_GOV_BIOSHOCK
+	help
+Default governor of BioShock kernel
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -326,6 +332,17 @@ config WAKE_BOOST_DURATION_MS
 config INPUT_BOOST_FREQ_LP
 	int "Low-power cluster boost freq"
 	default "0"
+
+config CPU_FREQ_GOV_BIOSHOCK
+	tristate "'bioshock' cpufreq bioshock"
+	depends on CPU_FREQ
+	help
+'bioshock' - More aggressive version of conservative
+
+config CPU_FREQ_WAKEUP_BOOST
+	bool "CPU frequency boost during wakeup"
+	depends on CPU_FREQ_GOV_ONDEMAND
+	default y
 	help
 	  Input boost frequency for the low-power CPU cluster.
 
