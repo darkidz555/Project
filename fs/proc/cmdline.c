@@ -2,12 +2,11 @@
 #include <linux/init.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
-#include <asm/setup.h>
 #include <soc/qcom/lge/board_lge.h>
+#include <asm/setup.h>
 #include <linux/slab.h>
 
 static char updated_command_line[COMMAND_LINE_SIZE];
-
 static void proc_cmdline_set(char *name, char *value)
 {
 	char *flag_pos, *flag_after;
@@ -29,12 +28,10 @@ static void proc_cmdline_set(char *name, char *value)
 
 static int cmdline_proc_show(struct seq_file *m, void *v)
 {
-#ifdef CONFIG_MACH_LGE
-	if (lge_get_boot_mode() == LGE_BOOT_MODE_CHARGERLOGO) {
-		proc_cmdline_set("androidboot.mode", "charger");
-	}
-#endif
-	seq_printf(m, "%s\n", updated_command_line);
+	proc_cmdline_set("androidboot.verifiedbootstate", "green");
+
+
+	seq_printf(m, "%s\n", saved_command_line);
 	return 0;
 }
 
