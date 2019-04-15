@@ -84,21 +84,25 @@ int msm_audio_effects_enable_extn(struct audio_client *ac,
 	param_hdr.param_id = AUDPROC_PARAM_ID_ENABLE;
 	param_hdr.param_size = VIRTUALIZER_ENABLE_PARAM_SZ;
 	if (effects->virtualizer.enable_flag)
-		rc = q6asm_pack_and_set_pp_param_in_band(ac, param_hdr,
-							 (u8 *) &flag_param);
-
-	param_hdr.module_id = AUDPROC_MODULE_ID_BASS_BOOST;
-	param_hdr.instance_id = INSTANCE_ID_0;
-	param_hdr.param_id = AUDPROC_PARAM_ID_ENABLE;
-	param_hdr.param_size = BASS_BOOST_ENABLE_PARAM_SZ;
+		q6asm_send_audio_effects_params(ac, (char *)&updt_params[0],
+					params_length);
+	memset(updt_params, 0, sizeof(updt_params));
+	params_length = 0;
+	updt_params[0] = AUDPROC_MODULE_ID_BASS_BOOST;
+	updt_params[1] = AUDPROC_PARAM_ID_ENABLE;
+	updt_params[2] = BASS_BOOST_ENABLE_PARAM_SZ;
+	updt_params[3] = flag;
+	params_length += COMMAND_PAYLOAD_SZ + BASS_BOOST_ENABLE_PARAM_SZ;
 	if (effects->bass_boost.enable_flag)
-		rc = q6asm_pack_and_set_pp_param_in_band(ac, param_hdr,
-							 (u8 *) &flag_param);
-
-	param_hdr.module_id = AUDPROC_MODULE_ID_POPLESS_EQUALIZER;
-	param_hdr.instance_id = INSTANCE_ID_0;
-	param_hdr.param_id = AUDPROC_PARAM_ID_ENABLE;
-	param_hdr.param_size = EQ_ENABLE_PARAM_SZ;
+		q6asm_send_audio_effects_params(ac, (char *)&updt_params[0],
+					params_length);
+	memset(updt_params, 0, sizeof(updt_params));
+	params_length = 0;
+	updt_params[0] = AUDPROC_MODULE_ID_POPLESS_EQUALIZER;
+	updt_params[1] = AUDPROC_PARAM_ID_ENABLE;
+	updt_params[2] = EQ_ENABLE_PARAM_SZ;
+	updt_params[3] = flag;
+	params_length += COMMAND_PAYLOAD_SZ + EQ_ENABLE_PARAM_SZ;
 	if (effects->equalizer.enable_flag)
 		rc = q6asm_pack_and_set_pp_param_in_band(ac, param_hdr,
 							 (u8 *) &flag_param);
