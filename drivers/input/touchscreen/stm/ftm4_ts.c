@@ -747,12 +747,10 @@ static unsigned char fts_event_handler_type_b(struct fts_ts_info *info,
 			data[EventNum * FTS_EVENT_SIZE+7]);
 #endif
 
-	/* tsp_debug_info(&info->client->dev, "fts_power_state ( %d )\n",info->fts_power_state ); */
-
-	if (info->fts_power_state == FTS_POWER_STATE_LOWPOWER)
-		EventID = data[EventNum * FTS_EVENT_SIZE] & 0xFF;
-	else
-		EventID = data[EventNum * FTS_EVENT_SIZE] & 0x0F;
+		if (info->fts_power_state == FTS_POWER_STATE_LOWPOWER)
+			EventID = data[EventNum * FTS_EVENT_SIZE] & 0xFF;
+		else
+			EventID = data[EventNum * FTS_EVENT_SIZE] & 0x0F;
 
 		if ((EventID >= 3) && (EventID <= 5)) {
 			LastLeftEvent = 0;
