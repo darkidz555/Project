@@ -254,9 +254,9 @@ static int audio_open(struct inode *inode, struct file *file)
 #ifdef CONFIG_DEBUG_FS
 	/* 4 bytes represents decoder number, 1 byte for terminate string */
 	char name[sizeof "msm_ape_" + 5];
-	audio = kzalloc(sizeof(struct q6audio_aio), GFP_KERNEL);
 #endif
 
+	audio = kzalloc(sizeof(struct q6audio_aio), GFP_KERNEL);
 	if (!audio) {
 		pr_err("Could not allocate memory for ape decode driver\n");
 		return -ENOMEM;
