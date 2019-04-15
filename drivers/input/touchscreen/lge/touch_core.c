@@ -514,11 +514,10 @@ static int touch_fb_notifier_callback(struct notifier_block *self,
 
 	if (ev && ev->data) {
 		int *blank = (int *)ev->data;
-		if (event == FB_EARLY_EVENT_BLANK && *blank != FB_BLANK_UNBLANK) {
-			touch_suspend(ts->dev);
-		} else if (event == FB_EVENT_BLANK && *blank == FB_BLANK_UNBLANK) {
-			touch_resume(ts->dev);
-		}
+
+		flush_work(&ts->pm_work);
+		ts->screen_off = (event == FB_EARLY_EVENT_BLANK && *blank != FB_BLANK_UNBLANK);
+		schedule_work(&ts->pm_work);
 	}
 
 	return 0;

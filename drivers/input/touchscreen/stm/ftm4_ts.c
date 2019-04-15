@@ -1797,7 +1797,7 @@ static int fts_probe(struct i2c_client *client, const struct i2c_device_id *idp)
 		__func__, info->irq);
 #endif
 
-#ifdef CONFIG_FB
+#if defined(CONFIG_FB)
 	INIT_WORK(&info->resume_work, touch_resume_worker);
 	INIT_WORK(&info->suspend_work, touch_suspend_worker);
 	info->fb_notif.notifier_call = touch_fb_notifier_callback;
@@ -2308,10 +2308,13 @@ static int touch_fb_notifier_callback(struct notifier_block *self,
 
 	if (ev && ev->data) {
 		int *blank = (int *)ev->data;
-		if (event == FB_EARLY_EVENT_BLANK && *blank != FB_BLANK_UNBLANK)
-			fts_suspend(info->client, PMSG_SUSPEND);
-		else if (event == FB_EVENT_BLANK && *blank == FB_BLANK_UNBLANK)
-			fts_resume(info->client);
+		if (event == FB_EARLY_EVENT_BLANK && *blank != FB_BLANK_UNBLANK) {
+			flush_work(&info->resume_work);
+			schedule_work(&info->suspend_work);
+		} else if (event == FB_EVENT_BLANK && *blank == FB_BLANK_UNBLANK) {
+			flush_work(&info->suspend_work);
+			schedule_work(&info->resume_work);
+		}
 	}
 
 	return 0;

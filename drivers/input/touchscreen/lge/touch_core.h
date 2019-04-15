@@ -500,6 +500,8 @@ struct touch_core_data {
 	struct notifier_block fb_notif;
 	struct work_struct pm_work;
 	bool screen_off;
+	struct work_struct ftm4_pm_work;
+	bool ftm4_screen_off;
 #endif
 	void *touch_device_data;
 
