@@ -803,9 +803,6 @@ static int touch_core_probe_normal(struct platform_device *pdev)
 		goto error_init_input;
 	}
 
-	pm_qos_add_request(&ts->pm_qos_req, PM_QOS_CPU_DMA_LATENCY,
-			   PM_QOS_DEFAULT_VALUE);
-
 	ts->irqflags |= IRQF_ONESHOT | IRQF_PERF_CRITICAL;
 	ret = touch_request_irq(ts->irq, touch_irq_handler, touch_irq_thread,
 				ts->irqflags, LGE_TOUCH_NAME, ts);
