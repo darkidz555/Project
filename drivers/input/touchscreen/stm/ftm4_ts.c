@@ -1615,7 +1615,21 @@ static int fts_probe(struct i2c_client *client, const struct i2c_device_id *idp)
 
 	info->enabled = true;
 
-	retval = fts_irq_enable(info, true);
+	tsp_debug_info(&info->client->dev,
+			"installing direct irq on GPIO %d\n",
+			info->board->gpio);
+	retval = msm_gpio_install_direct_irq(info->board->gpio, 0, 0);
+	if (retval) {
+		tsp_debug_info(&info->client->dev,
+				"%s: Failed to install direct irq, ret = %d\n",
+				__func__, retval);
+		goto err_enable_irq;
+	}
+
+	info->board->irq_type |= IRQF_PERF_CRITICAL;
+	retval = request_threaded_irq(info->irq, NULL,
+			fts_interrupt_handler, info->board->irq_type,
+			FTS_TS_DRV_NAME, info);
 	if (retval < 0) {
 		tsp_debug_info(&info->client->dev,
 						"%s: Failed to enable attention interrupt\n",
