@@ -59,9 +59,8 @@
 #include <linux/delay.h>
 #include <linux/cpuset.h>
 #include <linux/atomic.h>
+#include <linux/binfmts.h>
 #include <linux/cpu_input_boost.h>
-#include <linux/devfreq_boost.h>
-#include <linux/state_notifier.h>
 
 /*
  * pidlists linger the following amount before being destroyed.  The goal
@@ -2777,19 +2776,10 @@ static ssize_t __cgroup_procs_write(struct kernfs_open_file *of, char *buf,
 	if (!ret)
 		ret = cgroup_attach_task(cgrp, tsk, threadgroup);
 
-	/* Boost CPU to the max for 1000 ms when launcher becomes a top app */
-	if ((!memcmp(tsk->comm, "s.nexuslauncher", sizeof("s.nexuslauncher")) &&
-		!memcmp(cgrp->kn->name, "top-app", sizeof("top-app")) && !ret) ||
-		(!memcmp(tsk->comm, "com.teslacoilsw.launcher", sizeof("com.teslacoilsw.launcher")) &&
-		!memcmp(cgrp->kn->name, "top-app", sizeof("top-app")) && !ret) ||
-		(!memcmp(tsk->comm, "pe.lawnchair.ci", sizeof("pe.lawnchair.ci")) &&
-		!memcmp(cgrp->kn->name, "top-app", sizeof("top-app")) && !ret) ||
-		(!memcmp(tsk->comm, "ch.deletescape.lawnchair.plah", sizeof("ch.deletescape.lawnchair.plah")) &&
-		!memcmp(cgrp->kn->name, "top-app", sizeof("top-app")) &&
-		!ret && !state_suspended)) {
+	/* This covers boosting for app launches and app transitions */
+	if (!ret && !threadgroup && !strcmp(of->kn->parent->name, "top-app") &&
+	    task_is_zygote(tsk->parent))
 		cpu_input_boost_kick_max(1000);
-		devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 1000);
-	}
 
 	put_task_struct(tsk);
 	goto out_unlock_threadgroup;
