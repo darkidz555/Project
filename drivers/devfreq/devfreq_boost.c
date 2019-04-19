@@ -129,8 +129,13 @@ static void devfreq_max_unboost(struct work_struct *work)
 	struct boost_dev *b = container_of(to_delayed_work(work),
 					   typeof(*b), max_unboost);
 
+<<<<<<< HEAD
 	queue_delayed_work(b->wq, &b->input_unboost,
 		msecs_to_jiffies(input_boost_duration));
+=======
+	clear_bit(MAX_BOOST, &b->state);
+	wake_up(&b->boost_waitq);
+>>>>>>> 2b6f8b48dbe8... devfreq_boost: Introduce devfreq boost driver
 }
 
 static void devfreq_update_boosts(struct boost_dev *b, unsigned long state)
@@ -193,11 +198,22 @@ static int fb_notifier_cb(struct notifier_block *nb, unsigned long action,
 	for (i = 0; i < DEVFREQ_MAX; i++) {
 		struct boost_dev *b = d->devices + i;
 
+<<<<<<< HEAD
 		for (i = 0; i < DEVFREQ_MAX; i++)
 			__devfreq_boost_kick_max(d->devices + i,
 				wake_boost_duration);
 	} else {
 		devfreq_unboost_all(d);
+=======
+		if (*blank == FB_BLANK_UNBLANK) {
+			clear_bit(SCREEN_OFF, &b->state);
+			__devfreq_boost_kick_max(b,
+				CONFIG_DEVFREQ_WAKE_BOOST_DURATION_MS);
+		} else {
+			set_bit(SCREEN_OFF, &b->state);
+			wake_up(&b->boost_waitq);
+		}
+>>>>>>> 2b6f8b48dbe8... devfreq_boost: Introduce devfreq boost driver
 	}
 
 	return NOTIFY_OK;
@@ -296,8 +312,13 @@ static int __init devfreq_boost_init(void)
 	for (i = 0; i < DEVFREQ_MAX; i++) {
 		struct boost_dev *b = d->devices + i;
 
+<<<<<<< HEAD
 		thread[i] = kthread_run_perf_critical(devfreq_boost_thread, b,
 						      "devfreq_boostd/%d", i);
+=======
+		thread[i] = kthread_run(devfreq_boost_thread, b,
+					"devfreq_boostd/%d", i);
+>>>>>>> 2b6f8b48dbe8... devfreq_boost: Introduce devfreq boost driver
 		if (IS_ERR(thread[i])) {
 			ret = PTR_ERR(thread[i]);
 			pr_err("Failed to create kthread, err: %d\n", ret);
@@ -305,9 +326,12 @@ static int __init devfreq_boost_init(void)
 		}
 	}
 
+<<<<<<< HEAD
 	d->devices[DEVFREQ_MSM_CPUBW].boost_freq =
 		msm_cpubw_boost_freq;
 
+=======
+>>>>>>> 2b6f8b48dbe8... devfreq_boost: Introduce devfreq boost driver
 	devfreq_boost_input_handler.private = d;
 	ret = input_register_handler(&devfreq_boost_input_handler);
 	if (ret) {
