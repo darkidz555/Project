@@ -6222,19 +6222,40 @@ CONFIG_STRICT_DEVMEM=y # If this option is disabled,
 # CONFIG_DEBUG_LIST=y
 # CONFIG_DEBUG_SG=y # This can help find problems with drivers that do not properly initialize their sg tables.
 
-# disable workarounds NOT applicable to our hardware (modified later revision cortex A53, A73)
-# (some of those actually ARE applied)
+# use thin archives instead of ld -r
+# needs (k)build infrastructure changes (scripts/ folder)
+# CONFIG_THIN_ARCHIVES is not set
 
-# keep legacy emulation, compatibility w.r.t. ARMv8
-# disabling breaks WeChat (crash on startup) and others ...
-CONFIG_ARMV8_DEPRECATED=y
-CONFIG_SWP_EMULATION=y
-CONFIG_CP15_BARRIER_EMULATION=y
-CONFIG_SETEND_EMULATION=y
-
-# LGE Stock ROM bits
-# disable LG cancun & triton, it's broken on non-stock (needs triton binary)
-# Cancun: LGE CPU Cancun Project [hooks into lge_monitor_thermal.c, kgsl_pwrctrl.c]
-# Triton: "Cpu Freq Helper Driver"
-CONFIG_LGE_PM_TRITON=y
-CONFIG_LGE_PM_CANCUN=y
+# thermal, msm_thermal_simple
+#
+# CONFIG_SENSORS_ACPI_POWER is not set
+CONFIG_THERMAL=y
+CONFIG_THERMAL_HWMON=y
+CONFIG_THERMAL_OF=y
+CONFIG_THERMAL_WRITABLE_TRIPS=y
+CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=y
+# CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE is not set
+# CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE is not set
+# CONFIG_THERMAL_DEFAULT_GOV_POWER_ALLOCATOR is not set
+# CONFIG_THERMAL_GOV_FAIR_SHARE is not set
+CONFIG_THERMAL_GOV_STEP_WISE=y
+# CONFIG_THERMAL_GOV_BANG_BANG is not set
+# CONFIG_THERMAL_GOV_USER_SPACE is not set
+# CONFIG_THERMAL_GOV_POWER_ALLOCATOR is not set
+CONFIG_CPU_THERMAL=y
+# CONFIG_DEVFREQ_THERMAL is not set
+# CONFIG_THERMAL_EMULATION is not set
+CONFIG_LIMITS_MONITOR=y
+CONFIG_LIMITS_LITE_HW=y
+CONFIG_THERMAL_MONITOR=y
+CONFIG_THERMAL_TSENS8974=y
+# CONFIG_IMX_THERMAL is not set
+CONFIG_THERMAL_QPNP=y
+CONFIG_THERMAL_QPNP_ADC_TM=y
+CONFIG_QCOM_THERMAL_LIMITS_DCVS=y
+# CONFIG_QCOM_SPMI_TEMP_ALARM is not set
+CONFIG_LGE_PM_THERMAL_LOG=y
+CONFIG_LGE_PM_THERMAL_VTS=y
+CONFIG_LGE_PM_THERMAL_SEPARATE_BOOT_FREQ_MITIGATION=y
+# CONFIG_WATCHDOG is not set
+CONFIG_SSB_POSSIBLE=y
