@@ -6259,18 +6259,194 @@ CONFIG_RSEQ=y
 # for better performance with those services.
 CONFIG_AIO=y
 
-# LGE_USB_SUPPORT_LIST_NETWORK
-CONFIG_USB_NET_DRIVERS=y # needed by LGE_USB_SUPPORT_LIST_NETWORK (USB_NET_DRIVERS && USB_NET_CDC_SUBSET) 
-CONFIG_USB_NET_CDC_SUBSET=y
+# network filesystems - NFS, CIFS - enable if needed - security (!)
+# CONFIG_NETWORK_FILESYSTEMS is not set
 
-# tshoot for bringup, etc.
-CONFIG_USB_F_CDEV=y
-CONFIG_USB_CONFIGFS_F_CDEV=y
+# IP tunnel stuff
+CONFIG_NET_IP_TUNNEL=y
+# CONFIG_IP_MROUTE is not set
+CONFIG_NET_IPVTI=y
+CONFIG_NET_UDP_TUNNEL=y
+# CONFIG_NET_FOU is not set
+# CONFIG_NET_FOU_IP_TUNNELS is not set
 
-# LGE_USB_SUPPORT_LIST_INPUT
-CONFIG_INPUT_MOUSE=y
+# [eval]joan_spr_us/joan_vzv
+CONFIG_MACH_LGE=y
+CONFIG_MACH_MSM8998_JOAN=y
+# CONFIG_MACH_MSM8998_JOAN_GLOBAL_COM is not set
+CONFIG_MACH_MSM8998_JOAN_SPR_US=y
+# CONFIG_MACH_MSM8998_JOAN_TMO_US is not set # config similar to sprint
+# CONFIG_MACH_MSM8998_JOAN_VZW is not set
 
-# tshoot security features
-# CONFIG_SEEMP_CORE is not set
-# TTBR0 PAN emulation
-# CONFIG_ARM64_SW_TTBR0_PAN is not set
+# CONFIG_TOUCHSCREEN_FTS=y # for tmo_us-perf (config doesn't exist !)
+
+# "feature for usb diag access lock" - perhaps shouldn't even used in production ...
+CONFIG_LGE_USB_DIAG_LOCK=y
+CONFIG_LGE_USB_DIAG_LOCK_SPR=y # SET on spr_us
+# CONFIG_LGE_USB_DIAG_LOCK_TRF is not set # assuming TMO
+# CONFIG_LGE_USB_DIAG_LOCK_VZW is not set # NOT set on vzw ?!
+
+# CONFIG_LGE_PM_BATT_MANAGER is not set # GLOBAL # NOT spr, vzw, tmo
+# CONFIG_IDTP9223_CHARGER_WPC_ONLY is not set # GLOBAL # NOT spr, vzw, tmo
+
+# CONFIG_LGE_PM_LGE_POWER_CLASS_VZW_REQ is not set # vzw ONLY
+
+CONFIG_USB_ANNOUNCE_NEW_DEVICES=y # off for spr ? , debug information in syslog
+CONFIG_USB_SERIAL=y # off for spr ? , issues when enabled (?)
+
+CONFIG_USB_HOST_NOTIFY=y # off for spr/vzw ?
+CONFIG_USB_CONFIGFS_F_CCID=y # off for spr ? , =y vzw ; (windows visibility ?)
+
+# CONFIG_LGE_USB_GADGET_AUTORUN_VZW is not set # vzw ONLY
+CONFIG_LGE_USB_GADGET=y # ALL
+
+
+# disable LG stuff
+CONFIG_LGE_DM_APP=y # global_com, spr_us - NOT vzw
+
+CONFIG_MDFPP_CCAUDIT=y # main branch config (3) , spr/vzw/tmo (=y)
+CONFIG_SDP=y
+CONFIG_CRYPTO_DEV_KEY_INTEGRITY_CHECK=y
+
+# CONFIG_SYSTEM_TRUSTED_KEYS="verity.x509.pem" # joan_global_com ONLY
+# CONFIG_SD_ENCRYPTION_MANAGER=y # joan_global_com ONLY , no spr/vzw
+
+#klcm , SPR_US/VZW/TMO ONLY
+CONFIG_CRYPTODEV=y
+CONFIG_LGCRYPTO_FIPS_ENABLE=y
+CONFIG_LGECRYPTO_FIPS_ADDED_SIGNATURE_SIZE=710
+CONFIG_LGE_PKM=y
+
+# tmo/vzw ONLY
+# CONFIG_TRUSTONIC_TEE is not set
+# CONFIG_LGE_QSDL_SUPPORT is not set # NOT for tmo_us ? "Support for Quality Statistics Data Logging"
+
+# LG_VPN_V36 (SPR_US/VZW/TMO)
+CONFIG_LG_VPN_V36=y
+CONFIG_VPNCLIENT_SECURITY=y # spr (=m)
+
+CONFIG_IKCONFIG_PROC=y # spr
+CONFIG_BLK_DEV_BSG=y # spr # eval
+# CONFIG_PM_DEBUG is not set # spr (non-perf)
+# CONFIG_DPM_WATCHDOG is not set # spr (=y)
+CONFIG_DPM_WATCHDOG_TIMEOUT=10 # spr , way too strict
+# CONFIG_INET_DIAG is not set # spr (=y)
+# CONFIG_INET_DIAG_DESTROY=y
+# CONFIG_L2TP_DEBUGFS is not set # spr (=y)
+# CONFIG_DNS_RESOLVER is not set # spr (non-perf)
+# CONFIG_REGMAP_ALLOW_WRITE_DEBUGFS is not set # spr (non-perf), DANGEROUS! "Regmap, allow direct register writes through debugfs"
+# CONFIG_SCSI_LOGGING is not set # spr (=y) [needs to be enabled via /proc/sys/dev/scsi/logging_level
+# CONFIG_SCSI_UFSHCD_CMD_LOGGING is not set # spr (=y)
+
+# CONFIG_VIDEO_ADV_DEBUG is not set # spr (non-perf)
+# CONFIG_MSM_CAMERA_DEBUG is not set # spr (non-perf)
+# CONFIG_MSMB_CAMERA_DEBUG is not set # spr (non-perf)
+# CONFIG_ESOC_DEBUG is not set # spr (=y)
+# CONFIG_ESOC_MDM_DBG_ENG is not set # spr (=y)
+# CONFIG_EFIVAR_FS is not set # pointless ?
+# CONFIG_PAGE_OWNER is not set # spr (=y) "Eats a fair amount of memory if enabled."
+# CONFIG_PAGE_OWNER_ENABLE_DEFAULT is not set # spr (=y)
+
+# CONFIG_BOOTPARAM_HARDLOCKUP_PANIC is not set # EVAL
+# CONFIG_BOOTPARAM_SOFTLOCKUP_PANIC is not set # EVAL
+# CONFIG_PANIC_ON_SCHED_BUG is not set # EVAL
+# CONFIG_PANIC_ON_RT_THROTTLING is not set # EVAL
+# CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=140
+# CONFIG_RCU_CPU_STALL_TIMEOUT=100
+
+# CONFIG_PAGE_POISONING is not set # spr (non-perf), "This results in a large slowdown, but helps to find certain types of memory corruption."
+# CONFIG_PAGE_POISONING_ENABLE_DEFAULT is not set
+
+# XZ/LZMA(2) data compression
+CONFIG_XZ_DEC=y
+CONFIG_XZ_DEC_BCJ=y # branch/call/jump filters
+
+# zstd and alternative compression algorithms
+CONFIG_XXHASH=y
+CONFIG_ZSTD_COMPRESS=y
+CONFIG_ZSTD_DECOMPRESS=y
+CONFIG_CRYPTO_ZSTD=y
+
+# SERIAL_MSM_CONSOLE
+CONFIG_SERIAL_MSM=y
+CONFIG_SERIAL_MSM_CONSOLE=y
+
+# lge-oreo, stock config; and other discoveries
+CONFIG_BT_BDA=y
+CONFIG_SPI_SLAVE=y # SPI slave protocol handlers
+
+# audio mods
+# headphone, mic, earpiece gain control
+CONFIG_SOUND_CONTROL=y
+# CONFIG_MSM_ULTRASOUND is not set
+
+# dynamic fsync
+CONFIG_DYNAMIC_FSYNC=y
+CONFIG_DYNAMIC_FSYNC_BG_SYNC=y
+CONFIG_SUSPEND_SKIP_SYNC=y
+# CONFIG_PM_SUSPEND_BG_SYNC is not set
+
+# transparent hugepages | mutually exclusive with RT_FULL but perhaps beneficial for java/Android
+# CONFIG_TRANSPARENT_HUGEPAGE is not set
+
+# rt-kernel/rt-devel
+# CONFIG_INTERRUPT_OFF_HIST is not set
+# CONFIG_PREEMPT_OFF_HIST is not set
+# CONFIG_WAKEUP_LATENCY_HIST is not set
+# CONFIG_MISSED_TIMER_OFFSETS_HIST is not set
+# CONFIG_HWLAT_DETECTOR is not set
+# CONFIG_PREEMPT__LL is not set # former default
+# CONFIG_PREEMPT_RTB is not set
+# CONFIG_PREEMPT_RT_FULL is not set # when it's done
+
+# ARM64 CRYPTO
+CONFIG_ARM64_CRYPTO=y
+CONFIG_CRYPTO_SHA1_ARM64_CE=y
+CONFIG_CRYPTO_SHA2_ARM64_CE=y
+CONFIG_CRYPTO_GHASH_ARM64_CE=y
+CONFIG_CRYPTO_POLY_HASH_ARM64_CE=y
+CONFIG_CRYPTO_AES_ARM64_CE=y
+CONFIG_CRYPTO_AES_ARM64_CE_CCM=y
+CONFIG_CRYPTO_AES_ARM64_CE_BLK=y
+CONFIG_CRYPTO_AES_ARM64_NEON_BLK=y
+CONFIG_CRYPTO_CRC32_ARM64=y
+CONFIG_CRYPTO_AES_ARM64=y # slower than CE (crypto extensions)!, fallback though
+CONFIG_CRYPTO_CHACHA20_NEON=y
+
+# use thin archives instead of ld -r
+# needs (k)build infrastructure changes (scripts/ folder)
+# CONFIG_THIN_ARCHIVES is not set
+
+# thermal, msm_thermal_simple
+#
+# CONFIG_SENSORS_ACPI_POWER is not set
+CONFIG_THERMAL=y
+CONFIG_THERMAL_HWMON=y
+CONFIG_THERMAL_OF=y
+CONFIG_THERMAL_WRITABLE_TRIPS=y
+CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE=y
+# CONFIG_THERMAL_DEFAULT_GOV_FAIR_SHARE is not set
+# CONFIG_THERMAL_DEFAULT_GOV_USER_SPACE is not set
+# CONFIG_THERMAL_DEFAULT_GOV_POWER_ALLOCATOR is not set
+# CONFIG_THERMAL_GOV_FAIR_SHARE is not set
+CONFIG_THERMAL_GOV_STEP_WISE=y
+# CONFIG_THERMAL_GOV_BANG_BANG is not set
+# CONFIG_THERMAL_GOV_USER_SPACE is not set
+# CONFIG_THERMAL_GOV_POWER_ALLOCATOR is not set
+CONFIG_CPU_THERMAL=y
+# CONFIG_DEVFREQ_THERMAL is not set
+# CONFIG_THERMAL_EMULATION is not set
+CONFIG_LIMITS_MONITOR=y
+CONFIG_LIMITS_LITE_HW=y
+CONFIG_THERMAL_MONITOR=y
+CONFIG_THERMAL_TSENS8974=y
+# CONFIG_IMX_THERMAL is not set
+CONFIG_THERMAL_QPNP=y
+CONFIG_THERMAL_QPNP_ADC_TM=y
+CONFIG_QCOM_THERMAL_LIMITS_DCVS=y
+# CONFIG_QCOM_SPMI_TEMP_ALARM is not set
+CONFIG_LGE_PM_THERMAL_LOG=y
+CONFIG_LGE_PM_THERMAL_VTS=y
+CONFIG_LGE_PM_THERMAL_SEPARATE_BOOT_FREQ_MITIGATION=y
+# CONFIG_WATCHDOG is not set
+CONFIG_SSB_POSSIBLE=y
