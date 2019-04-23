@@ -398,6 +398,8 @@ KBUILD_CFLAGS   := -mcpu=cortex-a73 -mtune=cortex-a73 \
 		   -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
+		   -Wno-maybe-uninitialized -Wno-misleading-indentation \
+		   -Wno-array-bounds -Wno-shift-overflow \
 		   -Wno-format-security \
 		   -std=gnu89 $(call cc-option,-fno-PIE) \
 		   -fmodulo-sched -fmodulo-sched-allow-regmoves
