@@ -1040,21 +1040,21 @@ static void csr_neighbor_roam_info_ctx_init(
 				qdf_mem_free(pMac->roam.pReassocResp);
 				pMac->roam.pReassocResp = NULL;
 			}
-		} else
+		} else {
 #endif
 
 			csr_roam_offload_scan(pMac, session_id,
 				ROAM_SCAN_OFFLOAD_START,
 				REASON_CTX_INIT);
 
-			if (session->pCurRoamProfile &&
-				 session->pCurRoamProfile->do_not_roam) {
+			if (roam_profile &&
+				roam_profile->supplicant_disabled_roaming) {
 				sme_debug("Supplicant disabled driver roaming");
-
 				csr_roam_offload_scan(pMac, session_id,
 					ROAM_SCAN_OFFLOAD_STOP,
 					REASON_SUPPLICANT_DISABLED_ROAMING);
 			}
+		}
 
 	}
 }
