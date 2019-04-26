@@ -35,18 +35,18 @@
 		qcom,active-only;
 		qcom,bw-tbl =
 			<     0 /*  off     */ >,
-			<   762 /*  100 MHz */ >,
-			<  1144 /*  150 MHz */ >,
-			<  1525 /*  200 MHz */ >,
-			<  2288 /*  300 MHz */ >,
-			<  3143 /*  412 MHz */ >,
-			<  4173 /*  547 MHz */ >,
-			<  5195 /*  681 MHz */ >,
-			<  5859 /*  768 MHz */ >,
-			<  7759 /*  1017 MHz */ >,
-			<  9887 /*  1296 MHz */ >,
-			<  11863 /*  1555 MHz */ >,
-			<  13763 /*  1804 MHz */ >;
+			<   962 /*  500 MHz */ >,
+			<  1344 /*  550 MHz */ >,
+			<  1725 /*  600 MHz */ >,
+			<  2488 /*  700 MHz */ >,
+			<  3543 /*  812 MHz */ >,
+			<  4373 /*  947 MHz */ >,
+			<  5395 /*  1081 MHz */ >,
+			<  6059 /*  1168 MHz */ >,
+			<  7959 /*  1417 MHz */ >,
+			<  10087 /*  1696 MHz */ >,
+			<  12063 /*  1955 MHz */ >,
+			<  13963 /*  2204 MHz */ >;
 	};
 
 	msm_gpu: qcom,kgsl-3d0@5000000 {
@@ -64,7 +64,7 @@
 		qcom,base-leakage-coefficient = <34>;
 		qcom,lm-limit = <6000>;
 
-		qcom,initial-pwrlevel = <5>;
+		qcom,initial-pwrlevel = <0>;
 
 		qcom,idle-timeout = <64>;
 		qcom,deep-nap-timeout = <100>; //msecs
