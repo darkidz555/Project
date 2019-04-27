@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-2.0
 #
-# Copyright (C) 2015-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+# Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
 
 PKG_CONFIG ?= pkg-config
 PREFIX ?= /usr
@@ -51,6 +51,9 @@ LIBMNL_LDLIBS := $(shell $(PKG_CONFIG) --libs libmnl 2>/dev/null || echo -lmnl)
 CFLAGS += $(LIBMNL_CFLAGS)
 LDLIBS += $(LIBMNL_LDLIBS)
 endif
+ifeq ($(PLATFORM),haiku)
+LDLIBS += -lnetwork -lbsd
+endif
 
 ifneq ($(V),1)
 BUILT_IN_LINK.o := $(LINK.o)
@@ -89,6 +92,6 @@ install: wg
 help:
 	@cat INSTALL
 
-.PHONY: clean install check help
+.PHONY: clean install help
 
 -include *.d

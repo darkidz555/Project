@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-2.0
 #
-# Copyright (C) 2015-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+# Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
 #
 
 set -e -o pipefail
@@ -385,7 +385,7 @@ execute_hooks() {
 
 cmd_usage() {
 	cat >&2 <<-_EOF
-	Usage: $PROGRAM [ up | down | save ] [ CONFIG_FILE | INTERFACE ]
+	Usage: $PROGRAM [ up | down | save | strip ] [ CONFIG_FILE | INTERFACE ]
 
 	  CONFIG_FILE is a configuration file, whose filename is the interface name
 	  followed by \`.conf'. Otherwise, INTERFACE is an interface name, with
@@ -452,6 +452,10 @@ cmd_save() {
 	save_config
 }
 
+cmd_strip() {
+	echo "$WG_CONFIG"
+}
+
 # ~~ function override insertion point ~~
 
 if [[ $# -eq 1 && ( $1 == --help || $1 == -h || $1 == help ) ]]; then
@@ -468,6 +472,10 @@ elif [[ $# -eq 2 && $1 == save ]]; then
 	auto_su
 	parse_options "$2"
 	cmd_save
+elif [[ $# -eq 2 && $1 == strip ]]; then
+	auto_su
+	parse_options "$2"
+	cmd_strip
 else
 	cmd_usage
 	exit 1
