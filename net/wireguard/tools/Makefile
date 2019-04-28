@@ -51,9 +51,6 @@ LIBMNL_LDLIBS := $(shell $(PKG_CONFIG) --libs libmnl 2>/dev/null || echo -lmnl)
 CFLAGS += $(LIBMNL_CFLAGS)
 LDLIBS += $(LIBMNL_LDLIBS)
 endif
-ifeq ($(PLATFORM),haiku)
-LDLIBS += -lnetwork -lbsd
-endif
 
 ifneq ($(V),1)
 BUILT_IN_LINK.o := $(LINK.o)
@@ -92,6 +89,6 @@ install: wg
 help:
 	@cat INSTALL
 
-.PHONY: clean install help
+.PHONY: clean install check help
 
 -include *.d
