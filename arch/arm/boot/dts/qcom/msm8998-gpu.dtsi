@@ -64,7 +64,7 @@
 		qcom,base-leakage-coefficient = <34>;
 		qcom,lm-limit = <6000>;
 
-		qcom,initial-pwrlevel = <0>;
+		qcom,initial-pwrlevel = <5>;
 
 		qcom,idle-timeout = <64>;
 		qcom,deep-nap-timeout = <100>; //msecs
@@ -87,7 +87,7 @@
 
 		/* DRM settings */
 		qcom,gpmu-tsens = <0x000c000d>;
-		qcom,max-power = <5448>;
+		qcom,max-power = <7000>;
 		qcom,gpmu-firmware = "a540_gpmu.fw2";
 		qcom,gpmu-version = <3 0>;
 		qcom,zap-shader = "a540_zap";
@@ -190,7 +190,7 @@
 
 			qcom,gpu-pwrlevel@0 {
 				reg = <0>;
-				qcom,gpu-freq = <650000000>;
+				qcom,gpu-freq = <780000000>;
 				qcom,bus-freq = <12>;
 				qcom,bus-min = <11>;
 				qcom,bus-max = <12>;
@@ -199,7 +199,7 @@
 
 			qcom,gpu-pwrlevel@1 {
 				reg = <1>;
-				qcom,gpu-freq = <504000000>;
+				qcom,gpu-freq = <700000000>;
 				qcom,bus-freq = <11>;
 				qcom,bus-min = <10>;
 				qcom,bus-max = <12>;
@@ -207,7 +207,7 @@
 
 			qcom,gpu-pwrlevel@2 {
 				reg = <2>;
-				qcom,gpu-freq = <403000000>;
+				qcom,gpu-freq = <626000000>;
 				qcom,bus-freq = <10>;
 				qcom,bus-min = <9>;
 				qcom,bus-max = <11>;
@@ -215,7 +215,7 @@
 
 			qcom,gpu-pwrlevel@3 {
 				reg = <3>;
-				qcom,gpu-freq = <332000000>;
+				qcom,gpu-freq = <545000000>;
 				qcom,bus-freq = <7>;
 				qcom,bus-min = <6>;
 				qcom,bus-max = <8>;
@@ -223,7 +223,7 @@
 
 			qcom,gpu-pwrlevel@4 {
 				reg = <4>;
-				qcom,gpu-freq = <251000000>;
+				qcom,gpu-freq = <444000000>;
 				qcom,bus-freq = <4>;
 				qcom,bus-min = <3>;
 				qcom,bus-max = <5>;
@@ -231,7 +231,7 @@
 
 			qcom,gpu-pwrlevel@5 {
 				reg = <5>;
-				qcom,gpu-freq = <171000000>;
+				qcom,gpu-freq = <372000000>;
 				qcom,bus-freq = <3>;
 				qcom,bus-min = <1>;
 				qcom,bus-max = <4>;
