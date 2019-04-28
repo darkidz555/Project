@@ -166,14 +166,14 @@ static struct clk_freq_tbl ftbl_gfx3d_clk_src[] = {
 };
 
 static struct clk_freq_tbl ftbl_gfx3d_clk_src_v2[] = {
-	F_SLEW( 210000000,  390000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 287000000,  544000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 372000000,  714000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 444000000,  858000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 545000000, 1060000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 626000000, 1222000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 700000000, 1370000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 780000000, 1450000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 180000000,  360000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 257000000,  514000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 342000000,  684000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 414000000,  828000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 515000000, 1030000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 596000000, 1192000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 670000000, 1340000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 750000000, 1420000000, gpu_pll0_pll_out_even,    1, 0, 0),
 	F_END
 };
 
@@ -240,8 +240,8 @@ static struct rcg_clk gfx3d_isense_clk_src = {
 	.c = {
 		.dbg_name = "gfx3d_isense_clk_src",
 		.ops = &clk_ops_rcg,
-		VDD_DIG_FMAX_MAP4(MIN, 42200000, LOWER, 63000000,
-				LOW, 430000000, HIGH, 530000000),
+		VDD_DIG_FMAX_MAP4(MIN, 19200000, LOWER, 40000000,
+				LOW, 200000000, HIGH, 300000000),
 		CLK_INIT(gfx3d_isense_clk_src.c),
 	},
 };
@@ -606,13 +606,13 @@ static struct clk_lookup msm_clocks_gfxcc_8998[] = {
 
 static void msm_gfxcc_hamster_fixup(void)
 {
-	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 3450000500;
+	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1420000500;
 	gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_vq;
 }
 
 static void msm_gfxcc_8998_v2_fixup(void)
 {
-	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 3450000500;
+	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1420000500;
 	gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_v2;
 }
 
