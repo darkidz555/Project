@@ -12,7 +12,7 @@
 
 &i2c_5 {
 	status = "okay";
-	qcom,clk-freq-out = <800000>;
+	qcom,clk-freq-out = <400000>;
 
 	qcom,use-bam;
 	qcom,bam-consumer-pipe-index = <14>;
@@ -45,8 +45,8 @@
 		max_width_minor = <2879>;
 		max_orientation = <90>;
 		max_id = <10>;
-		hw_reset_delay = <5>;
-		sw_reset_delay = <5>;
+		hw_reset_delay = <10>;
+		sw_reset_delay = <10>;
 
 		/* Role */
 		use_lpwg = <1>;
