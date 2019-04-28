@@ -107,7 +107,7 @@ static struct alpha_pll_clk gpu_pll0_pll = {
 		.parent = &gpucc_xo.c,
 		.dbg_name = "gpu_pll0_pll",
 		.ops = &clk_ops_fabia_alpha_pll,
-		VDD_GPU_PLL_FMAX_MAP1(MIN, 3300000500),
+		VDD_GPU_PLL_FMAX_MAP1(MIN, 1300000500),
 		CLK_INIT(gpu_pll0_pll.c),
 	},
 };
@@ -218,16 +218,16 @@ static struct rcg_clk rbbmtimer_clk_src = {
 	.c = {
 		.dbg_name = "rbbmtimer_clk_src",
 		.ops = &clk_ops_rcg,
-		VDD_DIG_FMAX_MAP1(MIN, 39200000),
+		VDD_DIG_FMAX_MAP1(MIN, 19200000),
 		CLK_INIT(rbbmtimer_clk_src.c),
 	},
 };
 
 static struct clk_freq_tbl ftbl_gfx3d_isense_clk_src[] = {
-	F(  39200000, gpucc_cxo_clk,    1,    0,     0),
-	F(  60000000,   gpucc_gpll0,   15,    0,     0),
-	F( 400000000,   gpucc_gpll0,    3,    0,     0),
-	F( 500000000,   gpucc_gpll0,    2,    0,     0),
+	F(  19200000, gpucc_cxo_clk,    1,    0,     0),
+	F(  40000000,   gpucc_gpll0,   15,    0,     0),
+	F( 200000000,   gpucc_gpll0,    3,    0,     0),
+	F( 300000000,   gpucc_gpll0,    2,    0,     0),
 	F_END
 };
 
@@ -240,8 +240,8 @@ static struct rcg_clk gfx3d_isense_clk_src = {
 	.c = {
 		.dbg_name = "gfx3d_isense_clk_src",
 		.ops = &clk_ops_rcg,
-		VDD_DIG_FMAX_MAP4(MIN, 19200000, LOWER, 40000000,
-				LOW, 200000000, HIGH, 300000000),
+		VDD_DIG_FMAX_MAP4(MIN, 22200000, LOWER, 43000000,
+				LOW, 230000000, HIGH, 330000000),
 		CLK_INIT(gfx3d_isense_clk_src.c),
 	},
 };
@@ -261,7 +261,7 @@ static struct rcg_clk rbcpr_clk_src = {
 	.c = {
 		.dbg_name = "rbcpr_clk_src",
 		.ops = &clk_ops_rcg,
-		VDD_DIG_FMAX_MAP2(MIN, 39200000, NOMINAL, 70000000),
+		VDD_DIG_FMAX_MAP2(MIN, 19200000, NOMINAL, 50000000),
 		CLK_INIT(rbcpr_clk_src.c),
 	},
 };
@@ -606,13 +606,13 @@ static struct clk_lookup msm_clocks_gfxcc_8998[] = {
 
 static void msm_gfxcc_hamster_fixup(void)
 {
-	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1420000500;
+	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1450000500;
 	gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_vq;
 }
 
 static void msm_gfxcc_8998_v2_fixup(void)
 {
-	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1420000500;
+	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1450000500;
 	gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_v2;
 }
 
