@@ -260,7 +260,7 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.gpmu_major = 3,
 		.gpmu_minor = 0,
 		.gpmu_tsens = 0x000C000D,
-		.max_power = 7000,
+		.max_power = 5448,
 	},
 	{
 		.gpurev = ADRENO_REV_A540,
@@ -282,7 +282,7 @@ static const struct adreno_gpu_core adreno_gpulist[] = {
 		.gpmu_major = 3,
 		.gpmu_minor = 0,
 		.gpmu_tsens = 0x000C000D,
-		.max_power = 7000,
+		.max_power = 5448,
 	},
 	{
 		.gpurev = ADRENO_REV_A512,
