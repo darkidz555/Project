@@ -82,7 +82,6 @@
 
 static DEFINE_IDR(loop_index_idr);
 static DEFINE_MUTEX(loop_index_mutex);
-static DEFINE_MUTEX(loop_ctl_mutex);
 
 static int max_part;
 static int part_shift;
@@ -1647,7 +1646,7 @@ static void lo_release(struct gendisk *disk, fmode_t mode)
 	if (atomic_dec_return(&lo->lo_refcnt))
 		goto unlock_index;
 
-	mutex_lock(&loop_ctl_mutex);
+	mutex_lock(&lo->lo_ctl_mutex);
 	if (lo->lo_flags & LO_FLAGS_AUTOCLEAR) {
 		/*
 		 * In autoclear mode, stop the loop thread
@@ -1664,8 +1663,13 @@ static void lo_release(struct gendisk *disk, fmode_t mode)
 		loop_flush(lo);
 	}
 
-	mutex_unlock(&loop_ctl_mutex);
-unlock_index:
+	mutex_unlock(&lo->lo_ctl_mutex);
+}
+
+static void lo_release(struct gendisk *disk, fmode_t mode)
+{
+	mutex_lock(&loop_index_mutex);
+	__lo_release(disk->private_data);
 	mutex_unlock(&loop_index_mutex);
 }
 
@@ -1984,17 +1988,19 @@ static long loop_control_ioctl(struct file *file, unsigned int cmd,
 		ret = loop_lookup(&lo, parm);
 		if (ret < 0)
 			break;
-		mutex_lock(&loop_ctl_mutex);
+		mutex_lock(&lo->lo_ctl_mutex);
 		if (lo->lo_state != Lo_unbound) {
 			ret = -EBUSY;
+			mutex_unlock(&lo->lo_ctl_mutex);
 			break;
 		}
 		if (atomic_read(&lo->lo_refcnt) > 0) {
 			ret = -EBUSY;
+			mutex_unlock(&lo->lo_ctl_mutex);
 			break;
 		}
 		lo->lo_disk->private_data = NULL;
-		mutex_unlock(&loop_ctl_mutex);
+		mutex_unlock(&lo->lo_ctl_mutex);
 		idr_remove(&loop_index_idr, lo->lo_number);
 		loop_remove(lo);
 		break;
