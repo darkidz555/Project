@@ -47,8 +47,8 @@
  * (to see the precise effective timeslice length of your workload,
  *  run vmstat and monitor the context-switches (cs) field)
  */
-unsigned int sysctl_sched_latency = 3000000ULL;
-unsigned int normalized_sysctl_sched_latency = 3000000ULL;
+unsigned int sysctl_sched_latency = 1000000ULL;
+unsigned int normalized_sysctl_sched_latency = 1000000ULL;
 
 unsigned int sysctl_sched_sync_hint_enable = 1;
 unsigned int sysctl_sched_initial_task_util = 0;
@@ -70,13 +70,13 @@ enum sched_tunable_scaling sysctl_sched_tunable_scaling
  * Minimal preemption granularity for CPU-bound tasks:
  * (default: 0.75 msec * (1 + ilog(ncpus)), units: nanoseconds)
  */
-unsigned int sysctl_sched_min_granularity = 300000ULL;
-unsigned int normalized_sysctl_sched_min_granularity = 300000ULL;
+unsigned int sysctl_sched_min_granularity = 100000ULL;
+unsigned int normalized_sysctl_sched_min_granularity = 100000ULL;
 
 /*
  * is kept at sysctl_sched_latency / sysctl_sched_min_granularity
  */
-static unsigned int sched_nr_latency = 3;
+static unsigned int sched_nr_latency = 1;
 
 /*
  * After fork, child runs first. If set to 0 (default) then

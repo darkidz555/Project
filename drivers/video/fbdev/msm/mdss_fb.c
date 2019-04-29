@@ -66,8 +66,9 @@
 #ifdef CONFIG_LGE_DISPLAY_COMMON
 #include "lge/lge_mdss_display.h"
 #endif
-#ifdef(CONFIG_LGE_INTERVAL_MONITOR)
+#ifdef CONFIG_LGE_INTERVAL_MONITOR
 #include "lge/lge_interval_monitor.h"
+#endif
 #ifdef CONFIG_KLAPSE
 #include "klapse.h"
 #endif
