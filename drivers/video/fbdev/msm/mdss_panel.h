@@ -26,7 +26,7 @@ struct panel_id {
 	u16 type;
 };
 
-#define DEFAULT_FRAME_RATE	60
+#define DEFAULT_FRAME_RATE	120
 #define DEFAULT_ROTATOR_FRAME_RATE 120
 #define ROTATOR_LOW_FRAME_RATE 30
 
