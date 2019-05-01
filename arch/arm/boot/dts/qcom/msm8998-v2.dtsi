@@ -351,7 +351,6 @@
 	compatible = "qcom,gfxcc-8998-v2";
 	qcom,gfxfreq-speedbin0 =
 		<         0 0                           0 >,
-		< 190000000 1 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 267000000 2 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 352000000 3 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 424000000 4 RPM_SMD_REGULATOR_LEVEL_SVS >,
@@ -361,7 +360,6 @@
 		< 780000000 8 RPM_SMD_REGULATOR_LEVEL_TURBO >;
 	qcom,gfxfreq-mx-speedbin0 =
 		<         0                           0 >,
-		< 190000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 267000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 352000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 424000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
@@ -1052,7 +1050,7 @@
 	qcom,mem-acc-voltage = <1 1 1 2 2 2 2 2>;
 
 	qcom,corner-frequencies =
-		<190000000 267000000 352000000 424000000
+		<267000000 352000000 424000000
 		 525000000 606000000 680000000 780000000>;
 
 	qcom,cpr-target-quotients =
@@ -1279,14 +1277,6 @@
 			qcom,bus-freq = <5>;
 			qcom,bus-min = <3>;
 			qcom,bus-max = <8>;
-		};
-
-		qcom,gpu-pwrlevel@7 {
-			reg = <7>;
-			qcom,gpu-freq = <190000000>;
-			qcom,bus-freq = <3>;
-			qcom,bus-min = <2>;
-			qcom,bus-max = <5>;
 		};
 
 		qcom,gpu-pwrlevel@8 {
