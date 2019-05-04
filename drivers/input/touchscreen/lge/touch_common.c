@@ -34,10 +34,10 @@
 
 void touch_msleep(unsigned int msecs)
 {
-	if (msecs >= 5)
+	if (msecs >= 1)
 		msleep(msecs);
 	else
-		usleep_range(msecs * 100, msecs * 100);
+		usleep_range(msecs * 10, msecs * 10);
 }
 
 void touch_interrupt_control(struct device *dev, int on_off)

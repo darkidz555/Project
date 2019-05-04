@@ -677,14 +677,14 @@ int amdgpu_atombios_get_clock_info(struct amdgpu_device *adev)
 		adev->clock.default_dispclk =
 			le32_to_cpu(firmware_info->info_21.ulDefaultDispEngineClkFreq);
 		/* set a reasonable default for DP */
-		if (adev->clock.default_dispclk < 53900) {
-			DRM_INFO("Changing default dispclk from %dMhz to 1000Mhz\n",
-				 adev->clock.default_dispclk / 600);
-			adev->clock.default_dispclk = 100000;
-		} else if (adev->clock.default_dispclk <= 100000) {
-			DRM_INFO("Changing default dispclk from %dMhz to 1025Mhz\n",
-				 adev->clock.default_dispclk / 100);
-			adev->clock.default_dispclk = 102500;
+		if (adev->clock.default_dispclk < 93900) {
+			DRM_INFO("Changing default dispclk from %dMhz to 1500Mhz\n",
+				 adev->clock.default_dispclk / 1500);
+			adev->clock.default_dispclk = 150000;
+		} else if (adev->clock.default_dispclk <= 150000) {
+			DRM_INFO("Changing default dispclk from %dMhz to 1525Mhz\n",
+				 adev->clock.default_dispclk / 1000);
+			adev->clock.default_dispclk = 152500;
 		}
 		adev->clock.dp_extclk =
 			le16_to_cpu(firmware_info->info_21.usUniphyDPModeExtClkFreq);
