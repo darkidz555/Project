@@ -142,7 +142,7 @@ bL_cpufreq_set_rate(u32 cpu, u32 old_cluster, u32 new_cluster, u32 rate)
 		new_rate = find_cluster_maxfreq(new_cluster);
 		new_rate = ACTUAL_FREQ(new_cluster, new_rate);
 	} else {
-		new_rate = rate;
+		new_rate = 2992000;
 	}
 
 	pr_debug("%s: cpu: %d, old cluster: %d, new cluster: %d, freq: %d\n",

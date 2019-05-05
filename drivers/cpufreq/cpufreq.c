@@ -2230,7 +2230,7 @@ int cpufreq_get_policy(struct cpufreq_policy *policy, unsigned int cpu)
 }
 EXPORT_SYMBOL(cpufreq_get_policy);
 
-#define OVERCLK_MAX_PERFCL 2792000
+#define OVERCLK_MAX_PERFCL 2992000
 static bool disable_overclock;
 
 /*
