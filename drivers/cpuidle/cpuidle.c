@@ -676,7 +676,18 @@ static void wake_up_idle_cpus(void *v)
 static int cpuidle_latency_notify(struct notifier_block *b,
 		unsigned long l, void *v)
 {
-	wake_up_idle_cpus(v);
+	static unsigned long prev_latency = ULONG_MAX;
+	struct cpumask cpus;
+
+	if (l < prev_latency) {
+		cpumask_andnot(&cpus, cpu_online_mask, cpu_isolated_mask);
+		preempt_disable();
+		smp_call_function_many(&cpus, smp_callback, NULL, false);
+		preempt_enable();
+	}
+
+	prev_latency = l;
+
 	return NOTIFY_OK;
 }
 
