@@ -29,8 +29,6 @@
 #include <linux/of.h>
 #include <trace/events/power.h>
 
-#define CONFIG_CPU_FREQ_MAX_CLUSTER2	2992000
-
 static DEFINE_MUTEX(l2bw_lock);
 
 static struct clk *cpu_clk[NR_CPUS];
