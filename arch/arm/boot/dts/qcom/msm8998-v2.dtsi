@@ -232,18 +232,12 @@
 
 &msm_cpufreq {
 	qcom,cpufreq-table-0 =
-		<  1824000 >,
-		<  1900800 >,
 		<  2035200 >,
 		<  2112000 >;
 
 	qcom,cpufreq-table-4 =
-		<  1804800 >,
-		<  1958400 >,
-		<  2112000 >,
-		<  2265600 >,
-		<  2323200 >,
-		<  2457600 >;
+		<  2457600 >,
+                <  2592000 >;
 };
 
 &bwmon {
@@ -304,7 +298,7 @@
 		< 515000000 5 RPM_SMD_REGULATOR_LEVEL_NOM >,
 		< 596000000 6 RPM_SMD_REGULATOR_LEVEL_NOM >,
 		< 670000000 7 RPM_SMD_REGULATOR_LEVEL_TURBO >,
-		< 750000000 8 RPM_SMD_REGULATOR_LEVEL_TURBO >;
+		< 755000000 8 RPM_SMD_REGULATOR_LEVEL_TURBO >;
 	qcom,gfxfreq-mx-speedbin0 =
 		<         0                           0 >,
 		< 180000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
@@ -314,7 +308,7 @@
 		< 515000000 RPM_SMD_REGULATOR_LEVEL_NOM >,
 		< 596000000 RPM_SMD_REGULATOR_LEVEL_NOM >,
 		< 670000000 RPM_SMD_REGULATOR_LEVEL_TURBO >,
-		< 750000000 RPM_SMD_REGULATOR_LEVEL_TURBO >;
+		< 755000000 RPM_SMD_REGULATOR_LEVEL_TURBO >;
 };
 
 &mdss_mdp {
@@ -999,7 +993,7 @@
 
 	qcom,corner-frequencies =
 		<180000000 257000000 342000000 414000000
-		 515000000 596000000 670000000 750000000>;
+		 515000000 596000000 670000000 755000000>;
 
 	qcom,cpr-target-quotients =
 		<   0    0    0    0  331  357    0    0
@@ -1173,7 +1167,7 @@
 
 		qcom,gpu-pwrlevel@0 {
 			reg = <0>;
-			qcom,gpu-freq = <750000000>;
+			qcom,gpu-freq = <755000000>;
 			qcom,bus-freq = <12>;
 			qcom,bus-min = <12>;
 			qcom,bus-max = <12>;
