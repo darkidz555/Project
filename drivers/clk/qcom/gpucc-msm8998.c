@@ -59,9 +59,9 @@ static int vdd_gpucc_corner[] = {
 	VDD_GFX_SVS_MINUS,	/* LOW:  SVS-		*/
 	VDD_GFX_SVS,		/* LOW:  SVS		*/
 	VDD_GFX_SVS_PLUS,	/* LOW:  SVS+		*/
-	VDD_GFX_NOMINAL,	/*       NOMINAL	*/
-	VDD_GFX_TURBO,		/* HIGH: TURBO		*/
-	VDD_GFX_TURBO_L1,	/* HIGH: TURBO_L1	*/
+	VDD_GFX_NOMINAL,	/*       SUPER_TURBO	*/
+	VDD_GFX_TURBO,		/* HIGH: SUPER_TURBO		*/
+	VDD_GFX_TURBO_L1,	/* HIGH: SUPER_TURBO	*/
 	VDD_GFX_SUPER_TURBO,	/* HIGH: SUPER_TURBO	*/
 };
 
@@ -187,10 +187,11 @@ static struct freq_tbl ftbl_gfx3d_clk_src[] = {
 	F_GFX( 342000000, 0, 1, 0, 0,  684000000),
 	F_GFX( 414000000, 0, 1, 0, 0,  828000000),
 	F_GFX( 515000000, 0, 1, 0, 0, 1030000000),
-	F_GFX( 596000000, 0, 1, 0, 0, 1192000000),
-	F_GFX( 670000000, 0, 1, 0, 0, 1340000000),
-	F_GFX( 710000000, 0, 1, 0, 0, 1420000000),
-/*	F_GFX( 750000000, 0, 1, 0, 0, 1500000000),*/
+	F_GFX( 696000000, 0, 1, 0, 0, 1192000000),
+	F_GFX( 770000000, 0, 1, 0, 0, 1340000000),
+	F_GFX( 850000000, 0, 1, 0, 0, 1420000000),
+	F_GFX( 950000000, 0, 1, 0, 0, 1500000000),
+
 	{ }
 };
 
@@ -205,9 +206,9 @@ static struct clk_init_data gfx3d_clk_data = {
 			  SVS_MINUS,342000000,
 			  SVS,      414000000,
 			  SVS_PLUS, 515000000,
-			  NOMINAL,  596000000,
-			  TURBO,    670000000,
-			  TURBO_L1, 710000000),
+			  NOMINAL,  696000000,
+			  TURBO,    770000000,
+			  TURBO_L1, 850000000),
 };
 
 static struct clk_rcg2 gfx3d_clk_src = {
@@ -295,8 +296,8 @@ static struct clk_branch gpucc_gfx3d_clk = {
 			.flags = CLK_SET_RATE_PARENT,
 			.ops = &clk_branch2_ops,
 			VDD_GPU_MX_FMAX_MAP3(LOW, 414000000,
-					     NOMINAL, 596000000,
-					     HIGH, 710000000),
+					     NOMINAL, 770000000,
+					     HIGH, 850000000),
 		},
 	}
 };
@@ -375,7 +376,7 @@ static void enable_gfx_crc(void)
 	u32 regval;
 
 	/* Set graphics clock at a safe frequency */
-	clk_set_rate(gpucc_gfx3d_clk.clkr.hw.clk, 342000000);
+	clk_set_rate(gpucc_gfx3d_clk.clkr.hw.clk, 850000000);
 
 	/* Turn on the GPU_CX GDSC */
 	regval = readl_relaxed(virt_base_gfx + GPU_CX_GDSCR_OFFSET);
