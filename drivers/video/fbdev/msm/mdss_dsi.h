@@ -19,6 +19,8 @@
 #include <linux/irqreturn.h>
 #include <linux/pinctrl/consumer.h>
 #include <linux/gpio.h>
+#include <linux/wait.h>
+#include <linux/pm_qos.h>
 
 #include "mdss_panel.h"
 #include "mdss_dsi_cmd.h"
@@ -663,6 +665,41 @@ struct mdss_dsi_ctrl_pdata {
 	struct dsi_panel_cmds bist_on_cmds;
 	struct dsi_panel_cmds bist_off_cmds;
 #endif
+	bool rdy_err_detect;
+	bool err_detect_irq_en;
+
+	/* alpm brightness setting */
+	struct dsi_panel_cmds alpm_mode_cmds[ALPM_MODE_MAX];
+	enum alpm_mode_type alpm_mode;
+	u32 alpm_bl_threshold;
+	u32 alpm_dim_threshold;
+
+	/* rgb calibration */
+	struct dsi_cmd_pos rgb_gain_pos;
+	struct rgb_gain rgb_gain;
+
+	struct notifier_block wake_notif;
+	struct task_struct *wake_thread;
+	struct completion wake_comp;
+	wait_queue_head_t wake_waitq;
+	atomic_t disp_en;
+
+	struct pm_qos_request pm_qos_req;
+};
+
+enum {
+	MDSS_DISPLAY_OFF,
+	MDSS_DISPLAY_WAKING,
+	MDSS_DISPLAY_ON
+};
+
+struct te_data {
+	bool irq_enabled;
+	bool err_fg;
+	int irq;
+	unsigned long ts_vsync;
+	unsigned long ts_last_check;
+	spinlock_t spinlock;
 };
 
 struct dsi_status_data {
