@@ -5715,7 +5715,7 @@ static int __qce_get_device_tree_data(struct platform_device *pdev,
 				"qcom,ce-opp-freq",
 				&pce_dev->ce_opp_freq_hz)) {
 		pr_info("CE operating frequency is not defined, setting to default 100MHZ\n");
-		pce_dev->ce_opp_freq_hz = CE_CLK_1000MHZ;
+		pce_dev->ce_opp_freq_hz = CE_CLK_900MHZ;
 	}
 	pce_dev->ce_bam_info.dest_pipe_index	=
 			2 * pce_dev->ce_bam_info.pipe_pair_index;
