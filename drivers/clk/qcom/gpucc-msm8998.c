@@ -202,14 +202,14 @@ static struct clk_init_data gfx3d_clk_data = {
 	.num_parents = ARRAY_SIZE(gpucc_parent_names_0),
 	.ops = &clk_gfx3d_src_ops,
 	.flags = CLK_SET_RATE_PARENT,
-	VDD_GFX_FMAX_MAP8(MIN_SVS,  180000000,
-			  LOW_SVS,  257000000,
-			  SVS_MINUS,342000000,
-			  SVS,      414000000,
-			  SVS_PLUS, 515000000,
-			  NOMINAL,  696000000,
-			  TURBO,    770000000,
-			  TURBO_L1, 850000000),
+	VDD_GFX_FMAX_MAP8(MIN_SVS,  200000000,
+			  LOW_SVS,  277000000,
+			  SVS_MINUS,362000000,
+			  SVS,      434000000,
+			  SVS_PLUS, 535000000,
+			  NOMINAL,  616000000,
+			  TURBO,    690000000,
+			  TURBO_L1, 770000000),
 };
 
 static struct clk_rcg2 gfx3d_clk_src = {
@@ -258,8 +258,8 @@ static struct clk_rcg2 gfx3d_isense_clk_src = {
 		.parent_names = gpucc_parent_names_1,
 		.num_parents = ARRAY_SIZE(gpucc_parent_names_1),
 		.ops = &clk_rcg2_ops,
-		VDD_DIG_FMAX_MAP4(MIN, 19200000, LOWER, 40000000,
-				LOW, 200000000, HIGH, 300000000),
+		VDD_DIG_FMAX_MAP4(MIN, 29200000, LOWER, 50000000,
+				LOW, 300000000, HIGH, 500000000),
 	},
 };
 
@@ -279,7 +279,7 @@ static struct clk_rcg2 rbcpr_clk_src = {
 		.parent_names = gpucc_parent_names_1,
 		.num_parents = ARRAY_SIZE(gpucc_parent_names_1),
 		.ops = &clk_rcg2_ops,
-		VDD_DIG_FMAX_MAP2(MIN, 19200000, NOMINAL, 50000000),
+		VDD_DIG_FMAX_MAP2(MIN, 29200000, NOMINAL, 70000000),
 	},
 };
 
@@ -296,9 +296,9 @@ static struct clk_branch gpucc_gfx3d_clk = {
 			.num_parents = 1,
 			.flags = CLK_SET_RATE_PARENT,
 			.ops = &clk_branch2_ops,
-			VDD_GPU_MX_FMAX_MAP3(LOW, 414000000,
-					     NOMINAL, 770000000,
-					     HIGH, 850000000),
+			VDD_GPU_MX_FMAX_MAP3(LOW, 514000000,
+					     NOMINAL, 870000000,
+					     HIGH, 950000000),
 		},
 	}
 };

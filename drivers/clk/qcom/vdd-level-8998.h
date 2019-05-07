@@ -90,12 +90,14 @@
 	},					\
 	.num_rate_max = VDD_DIG_NUM
 
-#define VDD_GPU_PLL_FMAX_MAP3(l1, f1, l2, f2, l3, f3)  \
+#define VDD_GPU_PLL_FMAX_MAP3(l1, f1, l2, f2, l3, f3, l4, f4, l5, f5)  \
 	.vdd_class = &vdd_gpucc_mx,			\
 	.rate_max = (unsigned long[VDD_DIG_NUM]) {		\
 		[VDD_DIG_##l1] = (f1),			\
 		[VDD_DIG_##l2] = (f2),			\
-		[VDD_DIG_##l3] = (f3),			\
+		[VDD_DIG_##l3] = (f3),                  \
+                [VDD_DIG_##l4] = (f4),			\
+                [VDD_DIG_##l5] = (f5),                  \
 	},						\
 	.num_rate_max = VDD_DIG_NUM
 
@@ -106,7 +108,9 @@ enum vdd_dig_levels {
 	VDD_DIG_LOW,		/* SVS */
 	VDD_DIG_LOW_L1,		/* SVSL1 */
 	VDD_DIG_NOMINAL,	/* NOM */
-	VDD_DIG_HIGH,		/* TURBO */
+	VDD_DIG_HIGH,		/* TURBO1 */
+        VDD_GX_HIGH_1,		/* TURBO1 */
+        VDD_GX_HIGH_2,		/* TURBO1 */
 	VDD_DIG_NUM
 };
 
