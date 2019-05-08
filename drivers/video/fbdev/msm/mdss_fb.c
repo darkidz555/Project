@@ -58,7 +58,6 @@
 #include "mdss_smmu.h"
 #include "mdss_mdp.h"
 
-<<<<<<< HEAD
 #ifdef CONFIG_MACH_LGE
 #include <soc/qcom/lge/board_lge.h>
 #include <linux/timer.h>
