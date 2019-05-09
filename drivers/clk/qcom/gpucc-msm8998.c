@@ -59,9 +59,9 @@ static int vdd_gpucc_corner[] = {
 	VDD_GFX_SVS_MINUS,	/* LOW:  SVS-		*/
 	VDD_GFX_SVS,		/* LOW:  SVS		*/
 	VDD_GFX_SVS_PLUS,	/* LOW:  SVS+		*/
-	VDD_GFX_NOMINAL,	/*       SUPER_TURBO	*/
-	VDD_GFX_TURBO,		/* HIGH: SUPER_TURBO		*/
-	VDD_GFX_TURBO_L1,	/* HIGH: SUPER_TURBO	*/
+	VDD_GFX_NOMINAL,	/*       NOM	   	*/
+	VDD_GFX_TURBO,		/* HIGH: TURBO		*/
+	VDD_GFX_TURBO_L1,	/* HIGH: TURBO_L1	*/
 	VDD_GFX_SUPER_TURBO,	/* HIGH: SUPER_TURBO	*/
 };
 
@@ -188,9 +188,10 @@ static struct freq_tbl ftbl_gfx3d_clk_src[] = {
 	F_GFX( 434000000, 0, 1, 0, 0,  828000000),
 	F_GFX( 535000000, 0, 1, 0, 0, 1030000000),
 	F_GFX( 616000000, 0, 1, 0, 0, 1192000000),
-	F_GFX( 670000000, 0, 1, 0, 0, 1340000000),
+	F_GFX( 690000000, 0, 1, 0, 0, 1340000000),
 	F_GFX( 770000000, 0, 1, 0, 0, 1420000000),
 	F_GFX( 850000000, 0, 1, 0, 0, 1500000000),
+/*      F_GFX( 930000000, 0, 1, 0, 0, 1600000000),*/
 
 	{ }
 };
@@ -201,14 +202,15 @@ static struct clk_init_data gfx3d_clk_data = {
 	.num_parents = ARRAY_SIZE(gpucc_parent_names_0),
 	.ops = &clk_gfx3d_src_ops,
 	.flags = CLK_SET_RATE_PARENT,
-	VDD_GFX_FMAX_MAP8(MIN_SVS,  200000000,
-			  LOW_SVS,  277000000,
+	VDD_GFX_FMAX_MAP8(LOW_SVS,  277000000,
 			  SVS_MINUS,362000000,
 			  SVS,      434000000,
 			  SVS_PLUS, 535000000,
 			  NOMINAL,  616000000,
 			  TURBO,    690000000,
-			  TURBO_L1, 770000000),
+			  TURBO_L1, 770000000,
+			  SUPER_TURBO, 850000000),
+                          SUPER_TURBO, 930000000),
 };
 
 static struct clk_rcg2 gfx3d_clk_src = {
