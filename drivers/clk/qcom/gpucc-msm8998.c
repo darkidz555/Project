@@ -183,8 +183,8 @@ static struct clk_alpha_pll_postdiv gpu_pll0_out_odd = {
 };
 
 static struct freq_tbl ftbl_gfx3d_clk_src[] = {
-	F_GFX( 257000000, 0, 1, 0, 0,  514000000),
-	F_GFX( 342000000, 0, 1, 0, 0,  684000000),
+	F_GFX( 277000000, 0, 1, 0, 0,  514000000),
+	F_GFX( 362000000, 0, 1, 0, 0,  684000000),
 	F_GFX( 434000000, 0, 1, 0, 0,  828000000),
 	F_GFX( 535000000, 0, 1, 0, 0, 1030000000),
 	F_GFX( 616000000, 0, 1, 0, 0, 1192000000),
@@ -257,8 +257,8 @@ static struct clk_rcg2 gfx3d_isense_clk_src = {
 		.parent_names = gpucc_parent_names_1,
 		.num_parents = ARRAY_SIZE(gpucc_parent_names_1),
 		.ops = &clk_rcg2_ops,
-		VDD_DIG_FMAX_MAP4(MIN, 29200000, LOWER, 50000000,
-				LOW, 300000000, HIGH, 500000000),
+		VDD_DIG_FMAX_MAP4(MIN, 19200000, LOWER, 40000000,
+				LOW, 200000000, HIGH, 300000000),
 	},
 };
 
@@ -295,9 +295,9 @@ static struct clk_branch gpucc_gfx3d_clk = {
 			.num_parents = 1,
 			.flags = CLK_SET_RATE_PARENT,
 			.ops = &clk_branch2_ops,
-			VDD_GPU_MX_FMAX_MAP3(LOW, 514000000,
-					     NOMINAL, 870000000,
-					     HIGH, 950000000),
+			VDD_GPU_MX_FMAX_MAP3(LOW, 414000000,
+					     NOMINAL, 770000000,
+					     HIGH, 850000000),
 		},
 	}
 };
