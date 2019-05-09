@@ -190,8 +190,8 @@ static struct freq_tbl ftbl_gfx3d_clk_src[] = {
 	F_GFX( 515000000, 0, 1, 0, 0, 1030000000),
 	F_GFX( 596000000, 0, 1, 0, 0, 1192000000),
 	F_GFX( 670000000, 0, 1, 0, 0, 1340000000),
-	F_GFX( 710000000, 0, 1, 0, 0, 1420000000),
-/*	F_GFX( 750000000, 0, 1, 0, 0, 1500000000),*/
+	F_GFX( 850000000, 0, 1, 0, 0, 1420000000),
+/*	F_GFX( 850000000, 0, 1, 0, 0, 1500000000),*/
 	{ }
 };
 
@@ -209,6 +209,7 @@ static struct clk_init_data gfx3d_clk_data = {
 			  NOMINAL,  596000000,
 			  TURBO,    670000000,
 			  TURBO_L1, 710000000),
+			  SUPER_TURBO, 850000000),
 };
 
 static struct clk_rcg2 gfx3d_clk_src = {
@@ -297,7 +298,7 @@ static struct clk_branch gpucc_gfx3d_clk = {
 			.ops = &clk_branch2_ops,
 			VDD_GPU_MX_FMAX_MAP3(LOW, 414000000,
 					     NOMINAL, 596000000,
-					     HIGH, 710000000),
+					     HIGH, 850000000),
 		},
 	}
 };
