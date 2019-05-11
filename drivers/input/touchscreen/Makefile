@@ -102,4 +102,3 @@ obj-$(CONFIG_LGE_TOUCH_CORE)            += lge/
 obj-$(CONFIG_LGE_TOUCH_CORE_MTK)        += lge/
 obj-$(CONFIG_TOUCHSCREEN_FTM4)        += stm/
 obj-$(CONFIG_TOUCHSCREEN_ST)		+= st/
-ccflags-y := -Ofast
