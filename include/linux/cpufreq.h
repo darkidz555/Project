@@ -548,7 +548,6 @@ extern struct cpufreq_governor cpufreq_gov_conservative;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
-<<<<<<< HEAD
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SCHED)
 extern struct cpufreq_governor cpufreq_gov_sched;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_sched)
@@ -564,9 +563,6 @@ extern struct cpufreq_governor cpufreq_gov_impulse;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_DARKNESS)
 extern struct cpufreq_governor cpufreq_gov_darkness;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_darkness)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_RAGINGMOLASSES)
-extern struct cpufreq_governor cpufreq_gov_ragingmolasses;
-#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_ragingmolasses)
 #endif
 
 static inline void cpufreq_policy_apply_limits(struct cpufreq_policy *policy)

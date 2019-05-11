@@ -32,9 +32,6 @@ obj-$(CONFIG_LGE_PM_TRITON)        += triton.o
 # Custom CPUfreq Govenors
 obj-$(CONFIG_CPU_FREQ_GOV_BIOSHOCK)	   += cpufreq_bioshock.o
 # Custom CPUfreq Govenors -End
-obj-$(CONFIG_CPU_FREQ_GOV_WHEATLEY)	+= cpufreq_wheatley.o
-obj-$(CONFIG_CPU_FREQ_GOV_OPTIMAX)	+= cpufreq_optimax.o
-obj-$(CONFIG_CPU_FREQ_GOV_RAGINGMOLASSES) += cpufreq_ragingmolasses.o
 
 obj-$(CONFIG_GENERIC_CPUFREQ_CPU0)	+= cpufreq-cpu0.o
 
