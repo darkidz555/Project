@@ -384,4 +384,3 @@ config KLAPSE
     help
         A simple rgb dynamic lapsing module similar to LineageOS' livedisplay
 
-endif
