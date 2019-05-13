@@ -417,20 +417,15 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fipa-vrp \
 		   -fsplit-loops \
 		   -fshrink-wrap -fshrink-wrap-separate \
-		   -floop-interchange -floop-unroll-and-jam \
+		   -freorder-blocks -freorder-blocks-algorithm=stc -freorder-functions -freorder-blocks-and-partition \
+		   -floop-interchange \
+		   -floop-unroll-and-jam \
 		   -ftree-loop-distribution \
+		   -ftree-loop-distribute-patterns \
 		   -fsplit-paths \
-		   -flive-range-shrinkage \
 		   -march=armv8-a+crypto+crc \
 		   -mcpu=cortex-a73+crypto+crc \
 		   -std=gnu89 $(call cc-option,-fno-PIE)
-
-#		   -freorder-blocks -freorder-blocks-algorithm=stc -freorder-functions -freorder-blocks-and-partition \
-#		   -ftree-loop-distribute-patterns \
-
-ifeq ($(TARGET_BOARD_TYPE),auto)
-KBUILD_CFLAGS    += -DCONFIG_PLATFORM_AUTO
-endif
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
