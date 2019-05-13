@@ -401,9 +401,32 @@ KBUILD_CFLAGS   := -mcpu=cortex-a73 -mtune=cortex-a73 \
 		   -Wno-maybe-uninitialized -Wno-misleading-indentation \
 		   -Wno-array-bounds -Wno-shift-overflow \
 		   -Wno-format-security \
-		   -std=gnu89 $(call cc-option,-fno-PIE) \
-		   -fmodulo-sched -fmodulo-sched-allow-regmoves
-
+		   -fdiagnostics-color=always \
+		   -Wno-unused-value -Wno-unused-parameter \
+		   -Wno-missing-field-initializers \
+		   -Wno-strict-prototypes \
+		   -Wno-misleading-indentation \
+		   -Wno-uninitialized \
+		   -fno-delete-null-pointer-checks \
+		   -fivopts \
+		   -fvariable-expansion-in-unroller \
+		   -fipa-cp-clone \
+		   -fipa-icf -fipa-ra \
+		   -flra-remat \
+		   -fcode-hoisting -fhoist-adjacent-loads \
+		   -fipa-cp -fipa-bit-cp \
+		   -fipa-vrp \
+		   -fsplit-loops \
+		   -fshrink-wrap -fshrink-wrap-separate \
+		   -freorder-blocks -freorder-blocks-algorithm=stc -freorder-functions -freorder-blocks-and-partition \
+		   -floop-interchange \
+		   -floop-unroll-and-jam \
+		   -ftree-loop-distribution \
+		   -ftree-loop-distribute-patterns \
+		   -fsplit-paths \
+		   -march=armv8-a+crypto+crc \
+		   -mcpu=cortex-a73+crypto+crc \
+		   -std=gnu89 $(call cc-option,-fno-PIE)
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
