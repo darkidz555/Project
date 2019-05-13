@@ -409,16 +409,28 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fdiagnostics-color=always \
 		   -Wno-unused-value -Wno-unused-parameter \
 		   -Wno-missing-field-initializers \
-		   -fdelete-null-pointer-checks -fisolate-erroneous-paths-dereference \
+		   -Wno-strict-prototypes \
+		   -Wno-misleading-indentation \
+		   -Wno-uninitialized \
+		   -fno-delete-null-pointer-checks \
 		   -fivopts \
-		   -fgcse -fgcse-lm -fgcse-sm -fgcse-las -fgcse-after-reload \
-		   -fsplit-paths \
-		   -flive-range-shrinkage -ftree-vrp \
-		   -fipa-cp -fipa-cp-clone -fipa-bit-cp -fipa-vrp -fipa-icf \
-		   -floop-unroll-and-jam -floop-interchange -ftree-loop-distribution \
+		   -fvariable-expansion-in-unroller \
+		   -fipa-cp-clone \
+		   -fipa-icf -fipa-ra \
+		   -flra-remat \
+		   -fcode-hoisting -fhoist-adjacent-loads \
+		   -fipa-cp -fipa-bit-cp \
+		   -fipa-vrp \
+		   -fsplit-loops \
+		   -fshrink-wrap -fshrink-wrap-separate \
+		   -freorder-blocks -freorder-blocks-algorithm=stc -freorder-functions -freorder-blocks-and-partition \
+		   -floop-interchange \
+		   -floop-unroll-and-jam \
+		   -ftree-loop-distribution \
 		   -ftree-loop-distribute-patterns \
-		   -freorder-blocks -freorder-blocks-and-partition \
-		   -march=armv8-a+crc+crypto -mtune=cortex-a73 \
+		   -fsplit-paths \
+		   -march=armv8-a+crypto+crc \
+		   -mcpu=cortex-a73+crypto+crc \
 		   -std=gnu89 $(call cc-option,-fno-PIE)
 
 #		   -fno-delete-null-pointer-checks \
