@@ -198,6 +198,7 @@ config CPU_FREQ_DEFAULT_GOV_ALUCARD
 	  loading your cpufreq low-level hardware driver, using the
 	  'alucard' governor for latency-sensitive workloads.
 
+<<<<<<< HEAD
 config CPU_FREQ_DEFAULT_GOV_CYAN
 	bool "cyan"
 	select CPU_FREQ_GOV_CYAN
@@ -213,7 +214,6 @@ config CPU_FREQ_DEFAULT_GOV_ELECTROACTIVE
 	  you to get a full dynamic cpu frequency capable system by simply
 	  loading your cpufreq low-level hardware driver, using the
 	  'electroactive' governor for latency-sensitive workloads.
-
 endchoice
 
 
@@ -440,18 +440,9 @@ config REMOVE_INPUT_BOOST_FREQ_LP
 	  of using a higher than cpuinfo.min_freq (e.g. OnePlus 5/5T/6)
 	  this frequency will be used.
 
-
-config CPU_FREQ_GOV_CYAN
-	tristate "'cyan' cpufreq governor"
-	depends on CPU_FREQ
-	default y
-	help
-	cyan' - an interactive based optimized governor!
-
-config GENERIC_CPUFREQ_CPU0
-	tristate "Generic CPU0 cpufreq driver"
-	depends on HAVE_CLK && REGULATOR && PM_OPP && OF
-	select CPU_FREQ_TABLE
+config REMOVE_INPUT_BOOST_FREQ_PERF
+	int "Performance cluster return frequency"
+	default "0"
 	help
 	  This is the frequency the performance cluster will fallback to
 	  once the boost is over. The default 0 will make the policy
