@@ -104,4 +104,6 @@ obj-$(CONFIG_TOUCHSCREEN_FTM4)        += stm/
 obj-$(CONFIG_TOUCHSCREEN_ST)		+= st/
 ccflags-y := -Ofast
 
+obj-$(CONFIG_TOUCHSCREEN_SCROFF_VOLCTR)	+= scroff_volctr.o sovc_notifier.o
+
 obj-$(CONFIG_BOEFFLA_POWERKEY_HELPER) += boeffla_powerkey_helper.o
