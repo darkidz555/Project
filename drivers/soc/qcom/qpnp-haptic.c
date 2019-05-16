@@ -2260,7 +2260,8 @@ static int qpnp_hap_auto_mode_config(struct qpnp_hap *hap, int time_ms)
 	return 0;
 }
 
-static void qpnp_timed_enable_worker(struct work_struct *work)
+/* enable interface from timed output class */
+static void _qpnp_hap_td_enable(struct timed_output_dev *dev, int time_ms)
 {
 	struct qpnp_hap *hap = container_of(work, struct qpnp_hap,
 					 td_work);
@@ -2311,18 +2312,11 @@ static void qpnp_timed_enable_worker(struct work_struct *work)
 	schedule_work(&hap->work);
 }
 
-/* enable interface from timed output class */
-static void qpnp_hap_td_enable(struct timed_output_dev *dev, int time_ms)
+void qpnp_hap_td_enable(int time_ms)
 {
-	struct qpnp_hap *hap = container_of(dev, struct qpnp_hap,
-					 timed_dev);
-
-	spin_lock(&hap->td_lock);
-	hap->td_time_ms = time_ms;
-	spin_unlock(&hap->td_lock);
-
-	schedule_work(&hap->td_work);
+	_qpnp_hap_td_enable(&ghap->timed_dev, time_ms);
 }
+EXPORT_SYMBOL(qpnp_hap_td_enable);
 
 /* play pwm bytes */
 int qpnp_hap_play_byte(u8 data, bool on)
@@ -3076,7 +3070,7 @@ static int qpnp_haptic_probe(struct platform_device *pdev)
 
 	hap->timed_dev.name = "vibrator";
 	hap->timed_dev.get_time = qpnp_hap_get_time;
-	hap->timed_dev.enable = qpnp_hap_td_enable;
+	hap->timed_dev.enable = _qpnp_hap_td_enable;
 
 	hrtimer_init(&hap->auto_res_err_poll_timer, CLOCK_MONOTONIC,
 			HRTIMER_MODE_REL);
