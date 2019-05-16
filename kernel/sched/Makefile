@@ -36,3 +36,5 @@ obj-$(CONFIG_CPU_FREQ_GOV_PWRUTIL_LC) += cpufreq_pwrutil_lc.o
 obj-$(CONFIG_CPU_FREQ_GOV_PWRUTIL_BC) += cpufreq_pwrutil_bc.o
 obj-$(CONFIG_CPU_FREQ_GOV_PWRUTILX) += cpufreq_pwrutilx.o
 obj-$(CONFIG_CPU_FREQ_GOV_ELECTROUTIL) += cpufreq_electroutil.o
+obj-$(CONFIG_CPU_FREQ_GOV_BLU_SCHEDUTIL) += cpufreq_blu_schedutil.o
+obj-$(CONFIG_FREQVAR_SCHEDTUNE) += freqvar_tune.o
