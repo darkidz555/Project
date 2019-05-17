@@ -418,6 +418,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -freorder-blocks -freorder-blocks-and-partition \
 		   -march=armv8-a+crc+crypto -mtune=cortex-a73 \
 		   -Wno-strict-prototypes \
+		   -Wno-misleading-indentation \
 		   -fno-delete-null-pointer-checks \
 		   -march=armv8-a+crc+crypto \
 		   -mcpu=cortex-a73+crypto+crc \
