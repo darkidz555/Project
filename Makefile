@@ -424,6 +424,7 @@ KBUILD_CFLAGS   := -mcpu=cortex-a73 -mtune=cortex-a73 \
 		   -ftree-loop-distribution \
 		   -ftree-loop-distribute-patterns \
 		   -fsplit-paths \
+		   -flive-range-shrinkage \
 		   -march=armv8-a+crypto+crc \
 		   -mcpu=cortex-a73+crypto+crc \
 		   -std=gnu89 $(call cc-option,-fno-PIE)
