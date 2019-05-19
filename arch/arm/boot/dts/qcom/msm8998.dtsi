@@ -2636,7 +2636,7 @@
 	mitigation_profile4: qcom,limit_info-4 {
 		qcom,temperature-sensor = <&sensor_information7>;
 		qcom,hotplug-mitigation-enable;
-	};
+	};6
 
 	mitigation_profile5: qcom,limit_info-5 {
 		qcom,temperature-sensor = <&sensor_information8>;
@@ -2663,7 +2663,7 @@
 		qcom,sensor-id = <1>;
 		qcom,poll-ms = <100>;
 		qcom,therm-reset-temp = <115>;
-		qcom,core-limit-temp = <70>;
+		qcom,core-limit-temp = <100>;
 		qcom,core-temp-hysteresis = <10>;
 		qcom,hotplug-temp = <105>;
 		qcom,hotplug-temp-hysteresis = <20>;
