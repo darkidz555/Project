@@ -514,7 +514,6 @@ static int msm_isp_v4l2_fops_mmap(struct file *filep,
 	return ret;
 }
 
->>>>>>> c1fb6137fef4... msm: camera: isp: Handle frame drop due to delay   
 static struct v4l2_file_operations msm_isp_v4l2_fops = {
 #ifdef CONFIG_COMPAT
 	.compat_ioctl32 = msm_isp_v4l2_fops_ioctl,
