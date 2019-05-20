@@ -405,7 +405,7 @@ void kgsl_pwrctrl_pwrlevel_change(struct kgsl_device *device,
 
 #ifdef CONFIG_CPU_INPUT_BOOST
 	if (CONFIG_INPUT_BOOST_FREQ_LP != 0 &&
-	    pwr->pwrlevels[pwr->active_pwrlevel].gpu_freq >= CONFIG_INPUT_BOOST_GPU_FREQ) {
+	    pwr->pwrlevels[pwr->active_pwrlevel].gpu_freq >= CONFIG_INPUT_BOOST_FREQ_LP) {
 		cpu_input_boost_kick_max();
 #ifdef CONFIG_DEVFREQ_BOOST
 		devfreq_boost_kick_gpu(DEVFREQ_MSM_CPUBW);
