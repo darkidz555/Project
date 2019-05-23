@@ -30,7 +30,6 @@ obj-$(CONFIG_CPU_FREQ) += cpufreq.o
 obj-$(CONFIG_CPU_FREQ_GOV_SCHED) += cpufreq_sched.o
 obj-$(CONFIG_CPU_FREQ_GOV_HELIX) += cpufreq_helix_schedutil.o
 obj-$(CONFIG_CPU_FREQ_GOV_PWRUTILX) += cpufreq_pwrutilx.o
-obj-$(CONFIG_CPU_FREQ_GOV_PIXEL_SCHEDUTIL) += cpufreq_pixel_schedutil.o
 obj-$(CONFIG_CPU_FREQ_GOV_SCHEDUTIL) += cpufreq_schedutil.o
 
 CFLAGS_core.o := $(call cc-disable-warning, constant-logical-operand)
