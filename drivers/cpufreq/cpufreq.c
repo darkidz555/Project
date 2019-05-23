@@ -1,4 +1,4 @@
-/*
+	/*
  *  linux/drivers/cpufreq/cpufreq.c
  *
  *  Copyright (C) 2001 Russell King
@@ -2234,7 +2234,6 @@ EXPORT_SYMBOL(cpufreq_get_policy);
 static bool disable_underclock;
 module_param_named(disable_underclock,
 	disable_underclock, bool, S_IRUGO | S_IWUSR | S_IWGRP);
-#endif
 
 /*
  * policy : current policy.
@@ -2252,7 +2251,6 @@ static int cpufreq_set_policy(struct cpufreq_policy *policy,
 				new_policy->max = UNDERCLK_MAX_PERFCL;
 		}
 	}
-#endif
 
 	pr_debug("setting new policy for CPU %u: %u - %u kHz\n",
 		 new_policy->cpu, new_policy->min, new_policy->max);
