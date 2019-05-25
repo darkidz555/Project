@@ -15,6 +15,15 @@ enum {
 	INPUT_BOOST,
 	MAX_BOOST
 };
+#include <linux/moduleparam.h>
+
+static unsigned short input_boost_duration = CONFIG_DEVFREQ_INPUT_BOOST_DURATION_MS;
+static unsigned short wake_boost_duration = CONFIG_DEVFREQ_WAKE_BOOST_DURATION_MS;
+static unsigned int msm_cpubw_boost_freq = CONFIG_DEVFREQ_MSM_CPUBW_BOOST_FREQ;
+
+module_param(input_boost_duration, short, 0644);
+module_param(wake_boost_duration, short, 0644);
+module_param(msm_cpubw_boost_freq, uint, 0644);
 
 struct boost_dev {
 	struct devfreq *df;
@@ -125,8 +134,13 @@ static void devfreq_max_unboost(struct work_struct *work)
 	struct boost_dev *b = container_of(to_delayed_work(work),
 					   typeof(*b), max_unboost);
 
+<<<<<<< HEAD
 	clear_bit(MAX_BOOST, &b->state);
 	wake_up(&b->boost_waitq);
+=======
+	queue_delayed_work(b->wq, &b->input_unboost,
+		msecs_to_jiffies(input_boost_duration));
+>>>>>>> 4a82130dd3ac... Expose Devfreq boost tuneables
 }
 
 static void devfreq_update_boosts(struct boost_dev *b, unsigned long state)
@@ -189,6 +203,7 @@ static int fb_notifier_cb(struct notifier_block *nb, unsigned long action,
 	for (i = 0; i < DEVFREQ_MAX; i++) {
 		struct boost_dev *b = d->devices + i;
 
+<<<<<<< HEAD
 		if (*blank == FB_BLANK_UNBLANK) {
 			clear_bit(SCREEN_OFF, &b->state);
 			__devfreq_boost_kick_max(b,
@@ -197,6 +212,13 @@ static int fb_notifier_cb(struct notifier_block *nb, unsigned long action,
 			set_bit(SCREEN_OFF, &b->state);
 			wake_up(&b->boost_waitq);
 		}
+=======
+		for (i = 0; i < DEVFREQ_MAX; i++)
+			__devfreq_boost_kick_max(d->devices + i,
+				wake_boost_duration);
+	} else {
+		devfreq_unboost_all(d);
+>>>>>>> 4a82130dd3ac... Expose Devfreq boost tuneables
 	}
 
 	return NOTIFY_OK;
@@ -304,6 +326,12 @@ static int __init devfreq_boost_init(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	d->devices[DEVFREQ_MSM_CPUBW].boost_freq =
+		msm_cpubw_boost_freq;
+
+>>>>>>> 4a82130dd3ac... Expose Devfreq boost tuneables
 	devfreq_boost_input_handler.private = d;
 	ret = input_register_handler(&devfreq_boost_input_handler);
 	if (ret) {
