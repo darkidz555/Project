@@ -102,13 +102,13 @@ int touch_get_platform_data(struct touch_core_data *ts)
 	/* Caps */
 	ts->caps.max_x = 720;
 	ts->caps.max_y = 1280;
-	ts->caps.max_pressure = 255;
+	ts->caps.max_pressure = 1;
 	ts->caps.max_width = 15;
 	ts->caps.max_orientation = 1;
 	ts->caps.max_id = 10;
 
-	ts->caps.hw_reset_delay = 80;
-	ts->caps.sw_reset_delay = 100;
+	ts->caps.hw_reset_delay = 10;
+	ts->caps.sw_reset_delay = 50;
 
 	/* Role */
 	ts->role.use_lpwg = 1;
