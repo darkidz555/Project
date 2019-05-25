@@ -1,7 +1,7 @@
 VERSION = 4
 PATCHLEVEL = 4
 SUBLEVEL = 176
-EXTRAVERSION = _Tachyon_Enhance
+EXTRAVERSION = _Tachyon_Enhance_
 NAME = Blurry Fish Butt
 
 # *DOCUMENTATION*
