@@ -5648,7 +5648,7 @@ CONFIG_CPU_FREQ_GOV_ONDEMAND=y
 # CONFIG_CPU_FREQ_GOV_INTERACTIVE is not set # eval, deselect ? pointless to keep, comp fails
 CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y
 
-# CONFIG_CPU_BOOST is not set
+CONFIG_CPU_BOOST=y
 CONFIG_DYNAMIC_STUNE_BOOST=y
 
 CONFIG_APSS_CORE_EA=y # needed for thermal (!?)
@@ -6208,9 +6208,9 @@ CONFIG_XZ_DEC_BCJ=y # branch/call/jump filters
 # CONFIG_HZ_100 is not set
 # CONFIG_HZ_250 is not set
 # CONFIG_HZ_300 is not set
-CONFIG_HZ_500=y
-# CONFIG_HZ_1000 is not set
-CONFIG_HZ=500
+# CONFIG_HZ_500 is not set
+CONFIG_HZ_1000=y
+CONFIG_HZ=1000
 
 # dynticks
 #
