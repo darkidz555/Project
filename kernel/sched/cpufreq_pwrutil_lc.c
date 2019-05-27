@@ -425,7 +425,7 @@ static void lcgov_update_shared(struct update_util_data *hook, u64 time,
 	raw_spin_lock(&sg_policy->update_lock);
 
 	/* CPU is entering IDLE, reset flags without triggering an update */
-	if (flags & SCHED_CPUFREQ_IDLE) {
+	if (flags & SCHED_CPUFREQ_DL) {
 		sg_cpu->flags = 0;
 		goto done;
 	}
