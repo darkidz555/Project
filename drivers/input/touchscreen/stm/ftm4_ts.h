@@ -397,6 +397,11 @@ struct fts_ts_info {
 
 	unsigned int checksum_error;
 
+	struct delayed_work psy_work;
+
+	struct pm_qos_request pm_i2c_req;
+	struct pm_qos_request pm_touch_req;
+
 	int (*stop_device)(struct fts_ts_info *info);
 	int (*start_device)(struct fts_ts_info *info);
 
