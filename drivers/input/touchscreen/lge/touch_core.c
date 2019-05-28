@@ -504,7 +504,7 @@ static int touch_fb_notifier_callback(struct notifier_block *self,
 
 		if (*blank == FB_BLANK_UNBLANK)
 			touch_resume(ts->dev);
-		else if (*blank == FB_BLANK_POWERDOWN)
+		else
 			touch_suspend(ts->dev);
 	}
 
@@ -815,7 +815,6 @@ static int touch_core_probe_normal(struct platform_device *pdev)
 	return 0;
 
 error_request_irq:
-	free_irq(ts->irq, ts);
 error_init_input:
 	if (ts->input) {
 		input_mt_destroy_slots(ts->input);
