@@ -990,7 +990,7 @@
 
 &pm8005_s1 {
 	regulator-min-microvolt = <516000>;
-	regulator-max-microvolt = <888000>;
+	regulator-max-microvolt = <1088000>;
 };
 
 &gfx_cpr {
