@@ -49,6 +49,8 @@
 #include <linux/firmware.h>
 #include <linux/regulator/consumer.h>
 #include <linux/of_gpio.h>
+#include <linux/of_irq.h>
+#include <linux/i2c/i2c-msm-v2.h>
 
 #ifdef CONFIG_TRUSTONIC_TRUSTED_UI
 #include <linux/trustedui.h>
@@ -1083,6 +1085,9 @@ static irqreturn_t fts_interrupt_handler(int irq, void *handle)
 	unsigned char regAdd[4] = {0xB6, 0x00, 0x23, READ_ALL_EVENT};
 	unsigned short evtcount = 0;
 
+	/* prevent CPU from entering deep sleep */
+	pm_qos_update_request(&info->pm_touch_req, 100);
+	pm_qos_update_request(&info->pm_i2c_req, 100);
 	evtcount = 0;
 
 	fts_read_reg(info, &regAdd[0], 3, (unsigned char *)&evtcount, 2);
@@ -1098,6 +1103,9 @@ static irqreturn_t fts_interrupt_handler(int irq, void *handle)
 				  FTS_EVENT_SIZE * evtcount);
 		fts_event_handler_type_b(info, info->data, evtcount);
 	}
+	pm_qos_update_request(&info->pm_i2c_req, PM_QOS_DEFAULT_VALUE);
+	pm_qos_update_request(&info->pm_touch_req, PM_QOS_DEFAULT_VALUE);
+
 	return IRQ_HANDLED;
 }
 
@@ -1507,6 +1515,8 @@ static int fts_probe(struct i2c_client *client, const struct i2c_device_id *idp)
 	int retval = 0;
 	struct fts_ts_info *info = NULL;
 	static char fts_ts_phys[64] = { 0 };
+	struct power_supply_config psy_cfg = {};
+	struct i2c_msm_ctrl *ctrl;
 	int i = 0;
 
 /*
@@ -1615,7 +1625,34 @@ static int fts_probe(struct i2c_client *client, const struct i2c_device_id *idp)
 
 	info->enabled = true;
 
-	retval = fts_irq_enable(info, true);
+	tsp_debug_info(&info->client->dev,
+			"installing direct irq on GPIO %d\n",
+			info->board->gpio);
+	retval = msm_gpio_install_direct_irq(info->board->gpio, 0, 0);
+	if (retval) {
+		tsp_debug_info(&info->client->dev,
+				"%s: Failed to install direct irq, ret = %d\n",
+				__func__, retval);
+		goto err_enable_irq;
+	}
+
+	ctrl = client->dev.parent->driver_data;
+	irq_set_perf_affinity(ctrl->rsrcs.irq);
+
+	info->pm_i2c_req.type = PM_QOS_REQ_AFFINE_IRQ;
+	info->pm_i2c_req.irq = ctrl->rsrcs.irq;
+	pm_qos_add_request(&info->pm_i2c_req, PM_QOS_CPU_DMA_LATENCY,
+			   PM_QOS_DEFAULT_VALUE);
+
+	info->pm_touch_req.type = PM_QOS_REQ_AFFINE_IRQ;
+	info->pm_touch_req.irq = info->irq;
+	pm_qos_add_request(&info->pm_touch_req, PM_QOS_CPU_DMA_LATENCY,
+			   PM_QOS_DEFAULT_VALUE);
+
+	info->board->irq_type |= IRQF_PERF_CRITICAL;
+	retval = request_threaded_irq(info->irq, NULL,
+			fts_interrupt_handler, info->board->irq_type,
+			FTS_TS_DRV_NAME, info);
 	if (retval < 0) {
 		tsp_debug_info(&info->client->dev,
 						"%s: Failed to enable attention interrupt\n",
@@ -1756,7 +1793,7 @@ static void fts_input_close(struct input_dev *dev)
 {
 	struct fts_ts_info *info = input_get_drvdata(dev);
 
-	tsp_debug_dbg(&info->client->dev, "%s\n", __func__);
+	tsp_debug_info(&info->client->dev, "%s\n", __func__);
 
 #ifdef USE_OPEN_DWORK
 	cancel_delayed_work(&info->open_work);
