@@ -34,7 +34,6 @@
 #include "mdss_debug.h"
 #include "mdss_dsi_phy.h"
 #include "mdss_dba_utils.h"
-#include "mdss_livedisplay.h"
 
 #ifdef CONFIG_STATE_NOTIFIER
 #include <linux/state_notifier.h>
@@ -3457,7 +3456,6 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 	case MDSS_EVENT_AVR_MODE:
 		mdss_dsi_avr_config(ctrl_pdata, (int)(unsigned long) arg);
 		break;
-
 #if defined(CONFIG_LGE_DISPLAY_AMBIENT_SUPPORTED)
 	case MDSS_EVENT_PANEL_ULP_TO_LP_MODE:
 		rc = lge_mdss_ambient_change_lp_mode(pdata, (int)(unsigned long)arg);
@@ -3486,9 +3484,6 @@ static int mdss_dsi_event_handler(struct mdss_panel_data *pdata,
 		rc = lge_mdss_dsi_panel_reg_backup(ctrl_pdata);
 		break;
 #endif
-	case MDSS_EVENT_UPDATE_LIVEDISPLAY:
-		rc = mdss_livedisplay_update(ctrl_pdata, (int)(unsigned long) arg);
-		break;
 	default:
 		pr_debug("%s: unhandled event=%d\n", __func__, event);
 		break;
