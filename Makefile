@@ -414,6 +414,7 @@ KBUILD_CFLAGS   := -mcpu=cortex-a73 -mtune=cortex-a73 \
 		   -fipa-icf -fipa-ra \
 		   -flra-remat \
 		   -fcode-hoisting -fhoist-adjacent-loads \
+		   -fira-hoist-pressure \
 		   -fipa-cp -fipa-bit-cp \
 		   -fipa-vrp \
 		   -fsplit-loops \
