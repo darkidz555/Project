@@ -265,13 +265,6 @@ static void mdss_dsi_panel_bklt_dcs(struct mdss_dsi_ctrl_pdata *ctrl, int level)
 		/* Scale the brightness to our max */
 		level = (level * ctrl->bklt_max) / 255;
 
-		if (ctrl->bl_high2bit) {
-			ldata = level;
-			hdata = (level >> 8) & 0x3;
-		} else {
-			ldata = level & 0x3;
-			hdata = level >> 2;
-		}
 
 		led_pwm2[1] = hdata;
 		led_pwm2[2] = ldata;
