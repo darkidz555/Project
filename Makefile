@@ -426,6 +426,7 @@ KBUILD_CFLAGS   := -mcpu=cortex-a73 -mtune=cortex-a73 \
 		   -fsplit-paths \
 		   -flive-range-shrinkage \
 		   -foptimize-strlen \
+		   -fschedule-insns -fschedule-insns2 -fsched-pressure -fsched-spec-load \
 		   -march=armv8-a+crypto+crc \
 		   -mcpu=cortex-a73+crypto+crc \
 		   -std=gnu89 $(call cc-option,-fno-PIE)
