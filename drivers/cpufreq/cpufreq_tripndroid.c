@@ -425,13 +425,13 @@ static void cpufreq_tripndroid_freq_down(struct work_struct *work)
 }
 
 static ssize_t show_down_sample_time(struct kobject *kobj,
-				struct attribute *attr, char *buf)
+				struct kobj_attribute *attr, char *buf)
 {
 	return sprintf(buf, "%lu\n", down_sample_time);
 }
 
 static ssize_t store_down_sample_time(struct kobject *kobj,
-			struct attribute *attr, const char *buf, size_t count)
+			struct kobj_attribute *attr, const char *buf, size_t count)
 {
 	int ret;
 	unsigned long val;
@@ -443,17 +443,17 @@ static ssize_t store_down_sample_time(struct kobject *kobj,
 	return count;
 }
 
-static struct global_attr down_sample_time_attr = __ATTR(down_sample_time, 0644,
+static struct kobj_attribute down_sample_time_attr = __ATTR(down_sample_time, 0644,
 		show_down_sample_time, store_down_sample_time);
 
 static ssize_t show_up_sample_time(struct kobject *kobj,
-				struct attribute *attr, char *buf)
+				struct kobj_attribute *attr, char *buf)
 {
 	return sprintf(buf, "%lu\n", up_sample_time);
 }
 
 static ssize_t store_up_sample_time(struct kobject *kobj,
-			struct attribute *attr, const char *buf, size_t count)
+			struct kobj_attribute *attr, const char *buf, size_t count)
 {
 	int ret;
 	unsigned long val;
@@ -465,7 +465,7 @@ static ssize_t store_up_sample_time(struct kobject *kobj,
 	return count;
 }
 
-static struct global_attr up_sample_time_attr = __ATTR(up_sample_time, 0644,
+static struct kobj_attribute up_sample_time_attr = __ATTR(up_sample_time, 0644,
 		show_up_sample_time, store_up_sample_time);
 
 static struct attribute *tripndroid_attributes[] = {
