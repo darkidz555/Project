@@ -23,6 +23,7 @@
 #include <linux/irqdomain.h>
 #include <linux/mdss_io_util.h>
 #include <linux/mdss_smmu_ext.h>
+#include <linux/pm_qos.h>
 
 #include <linux/msm-bus.h>
 #include <linux/file.h>
@@ -555,6 +556,7 @@ struct mdss_data_type {
 	wait_queue_head_t secure_waitq;
 	struct cx_ipeak_client *mdss_cx_ipeak;
 	struct mult_factor bus_throughput_factor;
+
 #ifdef CONFIG_LGE_VSYNC_SKIP
 	char enable_skip_vsync;
 	ulong skip_value;
@@ -565,6 +567,10 @@ struct mdss_data_type {
 	bool skip_first;
 	unsigned int interval_min_fps;
 #endif
+
+	struct pm_qos_request pm_irq_req;
+	struct work_struct pm_unset_work;
+	bool pm_irq_set;
 };
 
 extern struct mdss_data_type *mdss_res;
