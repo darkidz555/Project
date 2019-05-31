@@ -36,8 +36,8 @@
 			    "mnoc_clk", "iface_clk", "bus_clk",
 				"core_clk_src", "core_clk", "vsync_clk",
 				"lut_clk";
-		clock-rate = <0 0 0 0 0 0 0 330000000 0 0 0 0>;
-		clock-max-rate = <0 0 0 0 0 0 412500000 412500000 0 0 0 0>;
+		clock-rate = <0 0 0 0 0 4125000000 412500000 0 0 0 0 25920000>;
+		clock-max-rate = <0 0 0 0 0 550000000 550000000 0 0 0 0 25920000>;
 		qcom,sde-max-bw-low-kbps = <6700000>;
 		qcom,sde-max-bw-high-kbps = <6700000>;
 
@@ -67,6 +67,7 @@
 		qcom,sde-pp-off = <0x71000 0x71800
 					  0x72000 0x72800>;
 		qcom,sde-te2-off = <0x2000 0x2000 0x0 0x0>;
+	        qcom,sde-te-source = <15 15 15 15 15>;
 		qcom,sde-cdm-off = <0x7a200>;
 		qcom,sde-dsc-off = <0x10000 0x10000 0x0 0x0>;
 		qcom,sde-intf-max-prefetch-lines = <0x15 0x15 0x15 0x15>;
