@@ -2730,7 +2730,7 @@ static void adreno_suspend_device(struct kgsl_device *device,
 	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
 	int pm_event = pm_state.event;
 
-	adreno_dispatcher_halt(device);
+	adreno_dispatcher_idle(device);
 
 	if ((pm_event == PM_EVENT_FREEZE) ||
 		(pm_event == PM_EVENT_QUIESCE) ||
@@ -2741,7 +2741,7 @@ static void adreno_suspend_device(struct kgsl_device *device,
 
 static void adreno_resume_device(struct kgsl_device *device)
 {
-	adreno_dispatcher_unhalt(device);
+	adreno_dispatcher_init(device);
 }
 
 static const struct kgsl_functable adreno_functable = {
