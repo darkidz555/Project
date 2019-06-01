@@ -28,6 +28,7 @@
 #include "kgsl_device.h"
 #include "kgsl_log.h"
 #include "kgsl_mmu.h"
+#include "kgsl_pool.h"
 
 /*
  * The user can set this from debugfs to force failed memory allocations to
@@ -127,10 +128,12 @@ static ssize_t mem_entry_sysfs_show(struct kobject *kobj,
 	ssize_t ret;
 
 	/*
-	 * kgsl_process_init_sysfs takes a refcount to the process_private,
-	 * which is put when the kobj is released. This implies that priv will
-	 * not be freed until this function completes, and no further locking
-	 * is needed.
+	 * 1. sysfs_remove_file waits for reads to complete before the node
+	 *    is deleted.
+	 * 2. kgsl_process_init_sysfs takes a refcount to the process_private,
+	 *    which is put at the end of kgsl_process_uninit_sysfs.
+	 * These two conditions imply that priv will not be freed until this
+	 * function completes, and no further locking is needed.
 	 */
 	priv = kobj ? container_of(kobj, struct kgsl_process_private, kobj) :
 			NULL;
@@ -143,22 +146,12 @@ static ssize_t mem_entry_sysfs_show(struct kobject *kobj,
 	return ret;
 }
 
-static void mem_entry_release(struct kobject *kobj)
-{
-	struct kgsl_process_private *priv;
-
-	priv = container_of(kobj, struct kgsl_process_private, kobj);
-	/* Put the refcount we got in kgsl_process_init_sysfs */
-	kgsl_process_private_put(priv);
-}
-
 static const struct sysfs_ops mem_entry_sysfs_ops = {
 	.show = mem_entry_sysfs_show,
 };
 
 static struct kobj_type ktype_mem_entry = {
 	.sysfs_ops = &mem_entry_sysfs_ops,
-	.release = &mem_entry_release,
 };
 
 static struct mem_entry_stats mem_stats[] = {
@@ -181,6 +174,8 @@ kgsl_process_uninit_sysfs(struct kgsl_process_private *private)
 	}
 
 	kobject_put(&private->kobj);
+	/* Put the refcount we got in kgsl_process_init_sysfs */
+	kgsl_process_private_put(private);
 }
 
 /**
@@ -629,9 +624,6 @@ int kgsl_cache_range_op(struct kgsl_memdesc *memdesc, uint64_t offset,
 		uint64_t size, unsigned int op)
 {
 	void *addr = NULL;
-	struct sg_table *sgt = NULL;
-	struct scatterlist *sg;
-	unsigned int i, pos = 0;
 	int ret = 0;
 
 	if (size == 0 || size > UINT_MAX)
@@ -659,38 +651,40 @@ int kgsl_cache_range_op(struct kgsl_memdesc *memdesc, uint64_t offset,
 	 * If the buffer is not to mapped to kernel, perform cache
 	 * operations after mapping to kernel.
 	 */
-	if (memdesc->sgt != NULL)
-		sgt = memdesc->sgt;
-	else {
-		if (memdesc->pages == NULL)
-			return ret;
+	if (memdesc->sgt != NULL) {
+		struct scatterlist *sg;
+		unsigned int i, pos = 0;
 
-		sgt = kgsl_alloc_sgt_from_pages(memdesc);
-		if (IS_ERR(sgt))
-			return PTR_ERR(sgt);
-	}
+		for_each_sg(memdesc->sgt->sgl, sg, memdesc->sgt->nents, i) {
+			uint64_t sg_offset, sg_left;
 
-	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
-		uint64_t sg_offset, sg_left;
-
-		if (offset >= (pos + sg->length)) {
+			if (offset >= (pos + sg->length)) {
+				pos += sg->length;
+				continue;
+			}
+			sg_offset = offset > pos ? offset - pos : 0;
+			sg_left = (sg->length - sg_offset > size) ? size :
+						sg->length - sg_offset;
+			ret = kgsl_do_cache_op(sg_page(sg), NULL, sg_offset,
+								sg_left, op);
+			size -= sg_left;
+			if (size == 0)
+				break;
 			pos += sg->length;
-			continue;
 		}
-		sg_offset = offset > pos ? offset - pos : 0;
-		sg_left = (sg->length - sg_offset > size) ? size :
-					sg->length - sg_offset;
-		ret = kgsl_do_cache_op(sg_page(sg), NULL, sg_offset,
-							sg_left, op);
-		size -= sg_left;
-		if (size == 0)
-			break;
-		pos += sg->length;
+	} else if (memdesc->pages != NULL) {
+		addr = vmap(memdesc->pages, memdesc->page_count,
+				VM_IOREMAP, pgprot_writecombine(PAGE_KERNEL));
+		if (addr == NULL)
+			return -ENOMEM;
+
+		/* Make sure the offset + size do not overflow the address */
+		if (addr + ((size_t) offset + (size_t) size) < addr)
+			return -ERANGE;
+
+		ret = kgsl_do_cache_op(NULL, addr, offset, size, op);
+		vunmap(addr);
 	}
-
-	if (memdesc->sgt == NULL)
-		kgsl_free_sgt(sgt);
-
 	return ret;
 }
 EXPORT_SYMBOL(kgsl_cache_range_op);
@@ -1044,7 +1038,7 @@ void kgsl_get_memory_usage(char *name, size_t name_size, uint64_t memflags)
 	else if (type < ARRAY_SIZE(memtype_str) && memtype_str[type] != NULL)
 		strlcpy(name, memtype_str[type], name_size);
 	else
-		snprintf(name, name_size, "VK/others(%3d)", type);
+		snprintf(name, name_size, "unknown(%3d)", type);
 }
 EXPORT_SYMBOL(kgsl_get_memory_usage);
 
