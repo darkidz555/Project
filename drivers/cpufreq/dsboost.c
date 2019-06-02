@@ -51,6 +51,10 @@ static void do_input_boost_rem(struct work_struct *work)
 	if (input_stune_boost_active)
 		input_stune_boost_active = reset_stune_boost("top-app",
 				input_stune_slot);
+
+		do_prefer_idle("top-app", 0);
+		do_prefer_idle("foreground", 0);
+	}
 }
 
 static void do_input_boost(struct work_struct *work)
@@ -59,6 +63,10 @@ static void do_input_boost(struct work_struct *work)
 		if (!input_stune_boost_active)
 			input_stune_boost_active = !do_stune_boost("top-app",
 					input_stune_boost, &input_stune_slot);
+
+			do_prefer_idle("top-app", 1);
+			do_prefer_idle("foreground", 1);
+		}
 	}
 
 	queue_delayed_work(dsboost_wq, &input_boost_rem,
