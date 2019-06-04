@@ -51,9 +51,9 @@
 /* The number of memstore arrays limits the number of contexts allowed.
  * If more contexts are needed, update multiple for MEMSTORE_SIZE
  */
-#define KGSL_MEMSTORE_SIZE	((int)(PAGE_SIZE * 2))
+#define KGSL_MEMSTORE_SIZE	((int)(PAGE_SIZE * 10))
 #define KGSL_MEMSTORE_GLOBAL	(0)
-#define KGSL_PRIORITY_MAX_RB_LEVELS 4
+#define KGSL_PRIORITY_MAX_RB_LEVELS 10
 #define KGSL_MEMSTORE_MAX	(KGSL_MEMSTORE_SIZE / \
 	sizeof(struct kgsl_devmemstore) - 1 - KGSL_PRIORITY_MAX_RB_LEVELS)
 
