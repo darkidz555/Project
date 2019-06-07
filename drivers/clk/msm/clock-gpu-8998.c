@@ -604,13 +604,13 @@ static struct clk_lookup msm_clocks_gfxcc_8998[] = {
 
 static void msm_gfxcc_hamster_fixup(void)
 {
-	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 990000500;
+	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 790000500;
 	gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_vq;
 }
 
 static void msm_gfxcc_8998_v2_fixup(void)
 {
-	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 990000500;
+	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 790000500;
 	gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_v2;
 }
 
