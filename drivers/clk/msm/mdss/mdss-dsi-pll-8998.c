@@ -28,12 +28,12 @@
 
 #define VCO_DELAY_USEC 1
 
-#define MHZ_250		250000000UL
-#define MHZ_500		500000000UL
-#define MHZ_1000	1000000000UL
-#define MHZ_1100	1100000000UL
-#define MHZ_1900	1900000000UL
-#define MHZ_3000	3000000000UL
+#define MHZ_450		450000000UL
+#define MHZ_800		800000000UL
+#define MHZ_1200	1200000000UL
+#define MHZ_1400	1400000000UL
+#define MHZ_2100	2100000000UL
+#define MHZ_4000	4000000000UL
 
 /* Register Offsets from PLL base address */
 #define PLL_ANALOG_CONTROLS_ONE			0x000
@@ -209,7 +209,7 @@ static void dsi_pll_setup_config(struct dsi_pll_8998 *pll,
 {
 	struct dsi_pll_config *config = &pll->pll_configuration;
 
-	config->ref_freq = 19200000;
+	config->ref_freq = 27920000;
 	config->dec_bits = 8;
 	config->frac_bits = 18;
 	config->lock_timer = 64;
@@ -259,14 +259,14 @@ static void dsi_pll_calc_dec_frac(struct dsi_pll_8998 *pll,
 
 	dec = div_u64(dec_multiple, multiplier);
 
-	if (pll_freq <= MHZ_1900)
+	if (pll_freq <= MHZ_2100)
 		regs->pll_prop_gain_rate = 8;
-	else if (pll_freq <= MHZ_3000)
+	else if (pll_freq <= MHZ_4000)
 		regs->pll_prop_gain_rate = 10;
 	else
 		regs->pll_prop_gain_rate = 12;
 
-	if (pll_freq < MHZ_1100)
+	if (pll_freq < MHZ_1400)
 		regs->pll_clock_inverters = 8;
 	else
 		regs->pll_clock_inverters = 0;
