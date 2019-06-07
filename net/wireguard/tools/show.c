@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
- * Copyright (C) 2015-2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+ * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
  */
 
 #include <arpa/inet.h>
@@ -60,11 +60,10 @@ static void sort_peers(struct wgdevice *device)
 		peers[i++] = peer;
 	qsort(peers, peer_count, sizeof(*peers), peer_cmp);
 	device->first_peer = peers[0];
-	peers[0]->next_peer = NULL;
 	for (i = 1; i < peer_count; ++i) {
 		peers[i - 1]->next_peer = peers[i];
-		peers[i]->next_peer = NULL;
 	}
+	peers[peer_count - 1]->next_peer = NULL;
 	free(peers);
 }
 
@@ -155,7 +154,7 @@ static size_t pretty_time(char *buf, const size_t len, unsigned long long left)
 	return offset;
 }
 
-static char *ago(const struct timespec *t)
+static char *ago(const struct timespec64 *t)
 {
 	static char buf[1024];
 	size_t offset;

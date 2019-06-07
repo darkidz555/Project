@@ -518,18 +518,18 @@ ChaCha20_neon:
 	eor	w12,w12,w16
 	sli	v17.4s,v22.4s,#7
 	ror	w9,w9,#25
-	ext	v2.16b,v2.16b,v2.16b,#8
+	ext	v0.16b,v0.16b,v0.16b,#12
 	ror	w10,w10,#25
-	ext	v6.16b,v6.16b,v6.16b,#8
+	ext	v4.16b,v4.16b,v4.16b,#12
 	ror	w11,w11,#25
-	ext	v18.16b,v18.16b,v18.16b,#8
+	ext	v16.16b,v16.16b,v16.16b,#12
 	ror	w12,w12,#25
-	ext	v3.16b,v3.16b,v3.16b,#12
-	ext	v7.16b,v7.16b,v7.16b,#12
-	ext	v19.16b,v19.16b,v19.16b,#12
-	ext	v1.16b,v1.16b,v1.16b,#4
-	ext	v5.16b,v5.16b,v5.16b,#4
-	ext	v17.16b,v17.16b,v17.16b,#4
+	ext	v3.16b,v3.16b,v3.16b,#8
+	ext	v7.16b,v7.16b,v7.16b,#8
+	ext	v19.16b,v19.16b,v19.16b,#8
+	ext	v2.16b,v2.16b,v2.16b,#4
+	ext	v6.16b,v6.16b,v6.16b,#4
+	ext	v18.16b,v18.16b,v18.16b,#4
 	add	v0.4s,v0.4s,v1.4s
 	add	w5,w5,w10
 	add	v4.4s,v4.4s,v5.4s
@@ -620,18 +620,18 @@ ChaCha20_neon:
 	eor	w9,w9,w14
 	sli	v17.4s,v22.4s,#7
 	ror	w10,w10,#25
-	ext	v2.16b,v2.16b,v2.16b,#8
+	ext	v0.16b,v0.16b,v0.16b,#4
 	ror	w11,w11,#25
-	ext	v6.16b,v6.16b,v6.16b,#8
+	ext	v4.16b,v4.16b,v4.16b,#4
 	ror	w12,w12,#25
-	ext	v18.16b,v18.16b,v18.16b,#8
+	ext	v16.16b,v16.16b,v16.16b,#4
 	ror	w9,w9,#25
-	ext	v3.16b,v3.16b,v3.16b,#4
-	ext	v7.16b,v7.16b,v7.16b,#4
-	ext	v19.16b,v19.16b,v19.16b,#4
-	ext	v1.16b,v1.16b,v1.16b,#12
-	ext	v5.16b,v5.16b,v5.16b,#12
-	ext	v17.16b,v17.16b,v17.16b,#12
+	ext	v3.16b,v3.16b,v3.16b,#8
+	ext	v7.16b,v7.16b,v7.16b,#8
+	ext	v19.16b,v19.16b,v19.16b,#8
+	ext	v2.16b,v2.16b,v2.16b,#12
+	ext	v6.16b,v6.16b,v6.16b,#12
+	ext	v18.16b,v18.16b,v18.16b,#12
 	cbnz	x4,.Loop_neon
 
 	add	w5,w5,w22		// accumulate key block
@@ -1126,30 +1126,30 @@ ChaCha20_512_neon:
 	eor	w10,w10,w15
 	sli	v21.4s,v29.4s,#7
 	eor	w11,w11,w16
-	ext	v2.16b,v2.16b,v2.16b,#8
+	ext	v0.16b,v0.16b,v0.16b,#12
 	eor	w12,w12,w13
-	ext	v6.16b,v6.16b,v6.16b,#8
+	ext	v4.16b,v4.16b,v4.16b,#12
 	eor	w9,w9,w14
-	ext	v10.16b,v10.16b,v10.16b,#8
+	ext	v8.16b,v8.16b,v8.16b,#12
 	ror	w10,w10,#25
-	ext	v14.16b,v14.16b,v14.16b,#8
+	ext	v12.16b,v12.16b,v12.16b,#12
 	ror	w11,w11,#25
-	ext	v18.16b,v18.16b,v18.16b,#8
+	ext	v16.16b,v16.16b,v16.16b,#12
 	ror	w12,w12,#25
-	ext	v22.16b,v22.16b,v22.16b,#8
+	ext	v20.16b,v20.16b,v20.16b,#12
 	ror	w9,w9,#25
-	ext	v3.16b,v3.16b,v3.16b,#12
-	ext	v7.16b,v7.16b,v7.16b,#12
-	ext	v11.16b,v11.16b,v11.16b,#12
-	ext	v15.16b,v15.16b,v15.16b,#12
-	ext	v19.16b,v19.16b,v19.16b,#12
-	ext	v23.16b,v23.16b,v23.16b,#12
-	ext	v1.16b,v1.16b,v1.16b,#4
-	ext	v5.16b,v5.16b,v5.16b,#4
-	ext	v9.16b,v9.16b,v9.16b,#4
-	ext	v13.16b,v13.16b,v13.16b,#4
-	ext	v17.16b,v17.16b,v17.16b,#4
-	ext	v21.16b,v21.16b,v21.16b,#4
+	ext	v3.16b,v3.16b,v3.16b,#8
+	ext	v7.16b,v7.16b,v7.16b,#8
+	ext	v11.16b,v11.16b,v11.16b,#8
+	ext	v15.16b,v15.16b,v15.16b,#8
+	ext	v19.16b,v19.16b,v19.16b,#8
+	ext	v23.16b,v23.16b,v23.16b,#8
+	ext	v2.16b,v2.16b,v2.16b,#4
+	ext	v6.16b,v6.16b,v6.16b,#4
+	ext	v10.16b,v10.16b,v10.16b,#4
+	ext	v14.16b,v14.16b,v14.16b,#4
+	ext	v18.16b,v18.16b,v18.16b,#4
+	ext	v22.16b,v22.16b,v22.16b,#4
 	add	v0.4s,v0.4s,v1.4s
 	add	w5,w5,w9
 	add	v4.4s,v4.4s,v5.4s
@@ -1330,30 +1330,30 @@ ChaCha20_512_neon:
 	eor	w10,w10,w15
 	sli	v21.4s,v29.4s,#7
 	eor	w11,w11,w16
-	ext	v2.16b,v2.16b,v2.16b,#8
+	ext	v0.16b,v0.16b,v0.16b,#4
 	eor	w12,w12,w13
-	ext	v6.16b,v6.16b,v6.16b,#8
+	ext	v4.16b,v4.16b,v4.16b,#4
 	eor	w9,w9,w14
-	ext	v10.16b,v10.16b,v10.16b,#8
+	ext	v8.16b,v8.16b,v8.16b,#4
 	ror	w10,w10,#25
-	ext	v14.16b,v14.16b,v14.16b,#8
+	ext	v12.16b,v12.16b,v12.16b,#4
 	ror	w11,w11,#25
-	ext	v18.16b,v18.16b,v18.16b,#8
+	ext	v16.16b,v16.16b,v16.16b,#4
 	ror	w12,w12,#25
-	ext	v22.16b,v22.16b,v22.16b,#8
+	ext	v20.16b,v20.16b,v20.16b,#4
 	ror	w9,w9,#25
-	ext	v3.16b,v3.16b,v3.16b,#4
-	ext	v7.16b,v7.16b,v7.16b,#4
-	ext	v11.16b,v11.16b,v11.16b,#4
-	ext	v15.16b,v15.16b,v15.16b,#4
-	ext	v19.16b,v19.16b,v19.16b,#4
-	ext	v23.16b,v23.16b,v23.16b,#4
-	ext	v1.16b,v1.16b,v1.16b,#12
-	ext	v5.16b,v5.16b,v5.16b,#12
-	ext	v9.16b,v9.16b,v9.16b,#12
-	ext	v13.16b,v13.16b,v13.16b,#12
-	ext	v17.16b,v17.16b,v17.16b,#12
-	ext	v21.16b,v21.16b,v21.16b,#12
+	ext	v3.16b,v3.16b,v3.16b,#8
+	ext	v7.16b,v7.16b,v7.16b,#8
+	ext	v11.16b,v11.16b,v11.16b,#8
+	ext	v15.16b,v15.16b,v15.16b,#8
+	ext	v19.16b,v19.16b,v19.16b,#8
+	ext	v23.16b,v23.16b,v23.16b,#8
+	ext	v2.16b,v2.16b,v2.16b,#12
+	ext	v6.16b,v6.16b,v6.16b,#12
+	ext	v10.16b,v10.16b,v10.16b,#12
+	ext	v14.16b,v14.16b,v14.16b,#12
+	ext	v18.16b,v18.16b,v18.16b,#12
+	ext	v22.16b,v22.16b,v22.16b,#12
 	cbnz	x4,.Loop_upper_neon
 
 	add	w5,w5,w22		// accumulate key block
@@ -1611,30 +1611,30 @@ ChaCha20_512_neon:
 	eor	w10,w10,w15
 	sli	v21.4s,v29.4s,#7
 	eor	w11,w11,w16
-	ext	v2.16b,v2.16b,v2.16b,#8
+	ext	v0.16b,v0.16b,v0.16b,#12
 	eor	w12,w12,w13
-	ext	v6.16b,v6.16b,v6.16b,#8
+	ext	v4.16b,v4.16b,v4.16b,#12
 	eor	w9,w9,w14
-	ext	v10.16b,v10.16b,v10.16b,#8
+	ext	v8.16b,v8.16b,v8.16b,#12
 	ror	w10,w10,#25
-	ext	v14.16b,v14.16b,v14.16b,#8
+	ext	v12.16b,v12.16b,v12.16b,#12
 	ror	w11,w11,#25
-	ext	v18.16b,v18.16b,v18.16b,#8
+	ext	v16.16b,v16.16b,v16.16b,#12
 	ror	w12,w12,#25
-	ext	v22.16b,v22.16b,v22.16b,#8
+	ext	v20.16b,v20.16b,v20.16b,#12
 	ror	w9,w9,#25
-	ext	v3.16b,v3.16b,v3.16b,#12
-	ext	v7.16b,v7.16b,v7.16b,#12
-	ext	v11.16b,v11.16b,v11.16b,#12
-	ext	v15.16b,v15.16b,v15.16b,#12
-	ext	v19.16b,v19.16b,v19.16b,#12
-	ext	v23.16b,v23.16b,v23.16b,#12
-	ext	v1.16b,v1.16b,v1.16b,#4
-	ext	v5.16b,v5.16b,v5.16b,#4
-	ext	v9.16b,v9.16b,v9.16b,#4
-	ext	v13.16b,v13.16b,v13.16b,#4
-	ext	v17.16b,v17.16b,v17.16b,#4
-	ext	v21.16b,v21.16b,v21.16b,#4
+	ext	v3.16b,v3.16b,v3.16b,#8
+	ext	v7.16b,v7.16b,v7.16b,#8
+	ext	v11.16b,v11.16b,v11.16b,#8
+	ext	v15.16b,v15.16b,v15.16b,#8
+	ext	v19.16b,v19.16b,v19.16b,#8
+	ext	v23.16b,v23.16b,v23.16b,#8
+	ext	v2.16b,v2.16b,v2.16b,#4
+	ext	v6.16b,v6.16b,v6.16b,#4
+	ext	v10.16b,v10.16b,v10.16b,#4
+	ext	v14.16b,v14.16b,v14.16b,#4
+	ext	v18.16b,v18.16b,v18.16b,#4
+	ext	v22.16b,v22.16b,v22.16b,#4
 	add	v0.4s,v0.4s,v1.4s
 	add	w5,w5,w9
 	add	v4.4s,v4.4s,v5.4s
@@ -1815,30 +1815,30 @@ ChaCha20_512_neon:
 	eor	w10,w10,w15
 	sli	v21.4s,v29.4s,#7
 	eor	w11,w11,w16
-	ext	v2.16b,v2.16b,v2.16b,#8
+	ext	v0.16b,v0.16b,v0.16b,#4
 	eor	w12,w12,w13
-	ext	v6.16b,v6.16b,v6.16b,#8
+	ext	v4.16b,v4.16b,v4.16b,#4
 	eor	w9,w9,w14
-	ext	v10.16b,v10.16b,v10.16b,#8
+	ext	v8.16b,v8.16b,v8.16b,#4
 	ror	w10,w10,#25
-	ext	v14.16b,v14.16b,v14.16b,#8
+	ext	v12.16b,v12.16b,v12.16b,#4
 	ror	w11,w11,#25
-	ext	v18.16b,v18.16b,v18.16b,#8
+	ext	v16.16b,v16.16b,v16.16b,#4
 	ror	w12,w12,#25
-	ext	v22.16b,v22.16b,v22.16b,#8
+	ext	v20.16b,v20.16b,v20.16b,#4
 	ror	w9,w9,#25
-	ext	v3.16b,v3.16b,v3.16b,#4
-	ext	v7.16b,v7.16b,v7.16b,#4
-	ext	v11.16b,v11.16b,v11.16b,#4
-	ext	v15.16b,v15.16b,v15.16b,#4
-	ext	v19.16b,v19.16b,v19.16b,#4
-	ext	v23.16b,v23.16b,v23.16b,#4
-	ext	v1.16b,v1.16b,v1.16b,#12
-	ext	v5.16b,v5.16b,v5.16b,#12
-	ext	v9.16b,v9.16b,v9.16b,#12
-	ext	v13.16b,v13.16b,v13.16b,#12
-	ext	v17.16b,v17.16b,v17.16b,#12
-	ext	v21.16b,v21.16b,v21.16b,#12
+	ext	v3.16b,v3.16b,v3.16b,#8
+	ext	v7.16b,v7.16b,v7.16b,#8
+	ext	v11.16b,v11.16b,v11.16b,#8
+	ext	v15.16b,v15.16b,v15.16b,#8
+	ext	v19.16b,v19.16b,v19.16b,#8
+	ext	v23.16b,v23.16b,v23.16b,#8
+	ext	v2.16b,v2.16b,v2.16b,#12
+	ext	v6.16b,v6.16b,v6.16b,#12
+	ext	v10.16b,v10.16b,v10.16b,#12
+	ext	v14.16b,v14.16b,v14.16b,#12
+	ext	v18.16b,v18.16b,v18.16b,#12
+	ext	v22.16b,v22.16b,v22.16b,#12
 	cbnz	x4,.Loop_lower_neon
 
 	add	w5,w5,w22		// accumulate key block

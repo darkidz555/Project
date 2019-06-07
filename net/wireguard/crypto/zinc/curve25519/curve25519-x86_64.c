@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 /*
  * Copyright (c) 2017 Armando Faz <armfazh@ic.unicamp.br>. All Rights Reserved.
- * Copyright (C) 2018 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+ * Copyright (C) 2018-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
  * Copyright (C) 2018 Samuel Neves <sneves@dei.uc.pt>. All Rights Reserved.
  */
 
@@ -1935,13 +1935,6 @@ static __always_inline void cselect(u8 bit, u64 *const px, const u64 *const py)
 	);
 }
 
-static __always_inline void clamp_secret(u8 secret[CURVE25519_KEY_SIZE])
-{
-	secret[0] &= 248;
-	secret[31] &= 127;
-	secret[31] |= 64;
-}
-
 static void curve25519_adx(u8 shared[CURVE25519_KEY_SIZE],
 			   const u8 private_key[CURVE25519_KEY_SIZE],
 			   const u8 session_key[CURVE25519_KEY_SIZE])
@@ -1982,7 +1975,7 @@ static void curve25519_adx(u8 shared[CURVE25519_KEY_SIZE],
 	memcpy(m.private, private_key, sizeof(m.private));
 	memcpy(m.session, session_key, sizeof(m.session));
 
-	clamp_secret(m.private);
+	curve25519_clamp_secret(m.private);
 
 	/* As in the draft:
 	 * When receiving such an array, implementations of curve25519
@@ -2079,7 +2072,7 @@ static void curve25519_adx_base(u8 session_key[CURVE25519_KEY_SIZE],
 
 	memcpy(m.private, private_key, sizeof(m.private));
 
-	clamp_secret(m.private);
+	curve25519_clamp_secret(m.private);
 
 	setzero_eltfp25519_1w(Ur1);
 	setzero_eltfp25519_1w(Zr1);
@@ -2177,7 +2170,7 @@ static void curve25519_bmi2(u8 shared[CURVE25519_KEY_SIZE],
 	memcpy(m.private, private_key, sizeof(m.private));
 	memcpy(m.session, session_key, sizeof(m.session));
 
-	clamp_secret(m.private);
+	curve25519_clamp_secret(m.private);
 
 	/* As in the draft:
 	 * When receiving such an array, implementations of curve25519
@@ -2274,7 +2267,7 @@ static void curve25519_bmi2_base(u8 session_key[CURVE25519_KEY_SIZE],
 
 	memcpy(m.private, private_key, sizeof(m.private));
 
-	clamp_secret(m.private);
+	curve25519_clamp_secret(m.private);
 
 	setzero_eltfp25519_1w(Ur1);
 	setzero_eltfp25519_1w(Zr1);
