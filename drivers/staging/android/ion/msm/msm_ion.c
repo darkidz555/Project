@@ -348,6 +348,10 @@ int ion_do_cache_op(struct ion_client *client, struct ion_handle *handle,
 	ret = ion_handle_get_flags(client, handle, &flags);
 	if (ret)
 		return -EINVAL;
+	}
+
+	buffer = get_buffer(handle);
+	flags = buffer->flags;
 
 	if (!ION_IS_CACHED(flags))
 		return 0;
@@ -738,9 +742,8 @@ long msm_ion_custom_ioctl(struct ion_client *client,
 		struct mm_struct *mm = current->active_mm;
 
 		if (data.flush_data.handle > 0) {
-			mutex_lock(&client->lock);
-			handle = ion_handle_get_by_id_nolock(client,
-						(int)data.flush_data.handle);
+			handle = ion_handle_get_by_id(
+					client, (int)data.flush_data.handle);
 			if (IS_ERR(handle)) {
 				mutex_unlock(&client->lock);
 				pr_info("%s: Could not find handle: %d\n",
