@@ -70,11 +70,8 @@ ifeq ($(CONFIG_ARM64_ERRATUM_843419),y)
 KBUILD_CFLAGS	+= $(call cc-option, -mpc-relative-literal-loads)
 endif
 KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
-<<<<<<< HEAD
-=======
 KBUILD_AFLAGS	+= $(lseinstr) $(vdso32)
 
->>>>>>> cde21a7bbf1d... FROMLIST: BACKPORT: [PATCH 6/6] arm64: Wire up and expose the new compat vDSO
 KBUILD_CFLAGS	+= $(call cc-ifversion, -ge, 0500, -DCONFIG_ARCH_SUPPORTS_INT128)
 KBUILD_AFLAGS	+= $(lseinstr)
 
