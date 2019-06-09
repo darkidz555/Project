@@ -136,7 +136,7 @@ static struct clk_alpha_pll gpu_pll0_pll = {
 			.parent_names = (const char *[]){ "gpucc_xo" },
 			.num_parents = 1,
 			.ops = &clk_alpha_pll_fabia_ops,
-			VDD_GPU_MX_FMAX_MAP1(MIN, 1420000500),
+			VDD_GPU_MX_FMAX_MAP1(MIN, 2420000500),
 	},
 };
 
@@ -183,12 +183,12 @@ static struct clk_alpha_pll_postdiv gpu_pll0_out_odd = {
 };
 
 static struct freq_tbl ftbl_gfx3d_clk_src[] = {
-	F_GFX( 257000000, 0, 1, 0, 0,  514000000),
-	F_GFX( 342000000, 0, 1, 0, 0,  684000000),
-	F_GFX( 414000000, 0, 1, 0, 0,  828000000),
-	F_GFX( 515000000, 0, 1, 0, 0, 1030000000),
-	F_GFX( 596000000, 0, 1, 0, 0, 1192000000),
-	F_GFX( 670000000, 0, 1, 0, 0, 1340000000),
+	F_GFX( 265000000, 0, 1, 0, 0,  514000000),
+	F_GFX( 358000000, 0, 1, 0, 0,  684000000),
+	F_GFX( 434000000, 0, 1, 0, 0,  828000000),
+	F_GFX( 545000000, 0, 1, 0, 0, 1030000000),
+	F_GFX( 630000000, 0, 1, 0, 0, 1192000000),
+	F_GFX( 700000000, 0, 1, 0, 0, 1340000000),
 	F_GFX( 750000000, 0, 1, 0, 0, 1500000000),
 	{ }
 };
@@ -199,13 +199,13 @@ static struct clk_init_data gfx3d_clk_data = {
 	.num_parents = ARRAY_SIZE(gpucc_parent_names_0),
 	.ops = &clk_gfx3d_src_ops,
 	.flags = CLK_SET_RATE_PARENT,
-	VDD_GFX_FMAX_MAP8(LOW_SVS,  257000000,
-			  SVS_MINUS,342000000,
-			  SVS,      414000000,
-			  SVS_PLUS, 515000000,
-			  NOMINAL,  596000000,
-			  TURBO,    670000000,
-			  TURBO_L1, 750000000),
+	VDD_GFX_FMAX_MAP8(LOW_SVS,  265000000,
+			  SVS_MINUS,352000000,
+			  SVS,      434000000,
+			  SVS_PLUS, 542000000,
+			  NOMINAL,  630000000,
+			  TURBO,    700000000,
+			  SUPER_TURBO_L1, 750000000),
 };
 
 static struct clk_rcg2 gfx3d_clk_src = {
@@ -232,7 +232,7 @@ static struct clk_rcg2 rbbmtimer_clk_src = {
 		.parent_names = gpucc_parent_names_1,
 		.num_parents = ARRAY_SIZE(gpucc_parent_names_1),
 		.ops = &clk_rcg2_ops,
-		VDD_DIG_FMAX_MAP1(MIN, 19200000),
+		VDD_DIG_FMAX_MAP1(MIN, 24200000),
 	},
 };
 
@@ -294,7 +294,7 @@ static struct clk_branch gpucc_gfx3d_clk = {
 			.ops = &clk_branch2_ops,
 			VDD_GPU_MX_FMAX_MAP3(LOW, 414000000,
 					     NOMINAL, 596000000,
-					     HIGH, 750000000),
+					     HIGH, 850000000),
 		},
 	}
 };
