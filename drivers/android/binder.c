@@ -5899,11 +5899,11 @@ static const struct file_operations proc_transaction_log_operations = {
 
 static int binder_proc_init(void)
 {
-	proc_create("proc_state", 0, NULL,
+	vfs_create("proc_state", 0, NULL,
 			&proc_state_operations);
-	proc_create("proc_transactions", 0, NULL,
+	vfs_create("proc_transactions", 0, NULL,
 			&proc_transactions_operations);
-	proc_create("proc_transaction_log", 0, NULL,
+	vfs_create("proc_transaction_log", 0, NULL,
 			&proc_transaction_log_operations);
 	return 0;
 }
