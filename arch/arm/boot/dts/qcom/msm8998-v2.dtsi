@@ -1140,8 +1140,8 @@
 				0x7c 0x18c /* pll_clock_inverter */
 				0x80 0x2c /* pll_cmode */
 				0x0a 0x184 /* pll_lock_delay */
-				0xa5 0x23c /* tune1 */
-				0x09 0x240 /* tune2 */
+				0xf5 0x23c /* tune1 */
+				0x0b 0x240 /* tune2 */
 				0x19 0xb4>; /* digital_timers_two */
 };
 
@@ -1208,7 +1208,7 @@
 &msm_gpu {
 	/* Updated chip ID */
 	qcom,chipid = <0x05040001>;
-	qcom,initial-pwrlevel = <0>;
+	qcom,initial-pwrlevel = <7>;
 
 	qcom,gpu-pwrlevels {
 		#address-cells = <1>;
