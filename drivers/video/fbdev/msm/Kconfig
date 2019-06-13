@@ -370,3 +370,4 @@ config LGE_DISPLAY_DISPLAYPORT_EXTERNAL_BLOCK
 	bool "Use LGE_DISPLAY_DISPLAYPORT_EXTERNAL_BLOCK"
 	---help---
 	This feature support external display block.
+endif
