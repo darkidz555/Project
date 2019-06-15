@@ -58,7 +58,7 @@ static DEFINE_SPINLOCK(suspend_lock);
 #define TZ_V2_UPDATE_WITH_CA_ID_64 0xD
 
 #define TAG "msm_adreno_tz: "
-static unsigned int adrenoboost = 90000;
+static unsigned int adrenoboost = 10000;
 static u64 suspend_time;
 static u64 suspend_start;
 static unsigned long acc_total, acc_relative_busy;
@@ -112,7 +112,7 @@ static ssize_t adrenoboost_show(struct device *dev,
 {
 	int input;
 	sscanf(buf, "%d ", &input);
-	if (input < 0 || input > 90000) {
+	if (input < 0 || input > 50000) {
 		adrenoboost = 0;
 	} else {
 		adrenoboost = input;
