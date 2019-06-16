@@ -382,16 +382,22 @@ static int tz_init(struct devfreq_msm_adreno_tz_data *priv,
 static int conservation_map_up[] = {15,15,10,4,5,6,12     ,5,5,5};
 static int conservation_map_down[] = {0,1,6,6,5,0,0     ,5,5,5};
 
+// make boost multiplication/division depending on current lvl, dampen the high freq up scaling! (lower is higher freq level)
+static int lvl_multiplicator_map_1[] = {5,5,6,8,9,1,1    ,1,1};
+static int lvl_divider_map_1[] = {10,10,10,10,10,1,1    ,1,1};
+
+// for boost == 2 -- boost divide on the low spectrum, dampen the lower freq values, unneeded to boost the low freq spectrum so much at start
+static int lvl_multiplicator_map_2[] = {6,7,8,1,1,1,1    ,1,1};
+static int lvl_divider_map_2[] = {10,10,10,1,1,1,1    ,1,1};
+
+// for boost == 3 -- boost divide on the low spectrum, dampen the lower freq values, unneeded to boost the low freq spectrum so much at start
+static int lvl_multiplicator_map_3[] = {9,1,1,1,1,10,8    ,1,1};
+static int lvl_divider_map_3[] = {10,1,1,1,1,14,12    ,1,1};
+#endif
+
 #ifdef CONFIG_ADRENO_IDLER
 extern int adreno_idler(struct devfreq_dev_status stats, struct devfreq *devfreq,
 		 unsigned long *freq);
-#endif
-
-
-#ifdef CONFIG_SIMPLE_GPU_ALGORITHM
-extern int simple_gpu_active;
-extern int simple_gpu_algorithm(int level, int *val,
-				struct devfreq_msm_adreno_tz_data *priv);
 #endif
 
 static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
@@ -485,19 +491,6 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 			priv->bin.busy_time > CEILING) {
 		val = -1 * level;
 	} else {
-
-#ifdef CONFIG_SIMPLE_GPU_ALGORITHM
-		if (simple_gpu_active) {
-			simple_gpu_algorithm(level, &val, priv);
-		} else {
-			scm_data[0] = level;
-			scm_data[1] = priv->bin.total_time;
-			scm_data[2] = priv->bin.busy_time;
-			scm_data[3] = context_count;
-			__secure_tz_update_entry3(scm_data, sizeof(scm_data),
-						&val, sizeof(val), priv);
-		}
-#else
 
 		scm_data[0] = level;
 		scm_data[1] = priv->bin.total_time;
