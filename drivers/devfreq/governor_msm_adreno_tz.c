@@ -174,6 +174,15 @@ module_param(boost_freq, ulong, 0644);
 static unsigned long boost_duration;
 module_param(boost_duration, ulong, 0644);
 
+static unsigned int input_boost_enabled;
+module_param(input_boost_enabled, uint, 0644);
+
+static unsigned int load_boost_enabled;
+module_param(load_boost_enabled, uint, 0644);
+
+static unsigned int load_threshold;
+module_param(load_threshold, uint, 0644);
+
 static void gpu_update_devfreq(struct devfreq *devfreq)
 {
 	mutex_lock(&devfreq->lock);
@@ -205,8 +214,7 @@ static void gpu_unboost_worker(struct work_struct *work)
 	gpu_boost_running = false;
 }
 
-static void gpu_ib_input_event(struct input_handle *handle,
-		unsigned int type, unsigned int code, int value)
+static void do_gpu_boost(void)
 {
 	bool suspended;
 
@@ -233,6 +241,19 @@ static void gpu_ib_input_event(struct input_handle *handle,
 
 	gpu_boost_running = true;
 	queue_work(system_highpri_wq, &boost_work);
+}
+
+static void gpu_load_boost_event(void)
+{
+	if (load_boost_enabled == 1 && load_threshold != 0)
+		do_gpu_boost();
+}
+
+static void gpu_ib_input_event(struct input_handle *handle,
+                unsigned int type, unsigned int code, int value)
+{
+	if (input_boost_enabled == 1)
+		do_gpu_boost();
 }
 
 static int gpu_ib_input_connect(struct input_handler *handler,
@@ -307,7 +328,7 @@ static struct input_handler gpu_ib_input_handler = {
 	.id_table	= gpu_ib_ids,
 };
 
-static void gpu_ib_init(void)
+static void gpu_boost_init(void)
 {
 	int ret;
 
@@ -568,6 +589,47 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		level = min_t(int, level, devfreq->profile->max_state - 1);
 	}
 
+	if (priv->bus.total_time < LONG_FLOOR)
+		goto end;
+	norm_cycles = (unsigned int)priv->bus.ram_time /
+			(unsigned int) priv->bus.total_time;
+	gpu_percent = (100 * (unsigned int)priv->bus.gpu_time) /
+			(unsigned int) priv->bus.total_time;
+
+        if (gpu_percent >= load_threshold)
+                gpu_load_boost_event();
+
+	/*
+	 * If there's a new high watermark, update the cutoffs and send the
+	 * FAST hint.  Otherwise check the current value against the current
+	 * cutoffs.
+	 */
+	if (norm_cycles > priv->bus.max) {
+		_update_cutoff(priv, norm_cycles);
+		*flag = DEVFREQ_FLAG_FAST_HINT;
+	} else {
+		/*
+		 * Normalize by gpu_time unless it is a small fraction of
+		 * the total time interval.
+		 */
+		norm_cycles = (100 * norm_cycles) / TARGET;
+		act_level = priv->bus.index[level] + b.mod;
+		act_level = (act_level < 0) ? 0 : act_level;
+		act_level = (act_level >= priv->bus.num) ?
+			(priv->bus.num - 1) : act_level;
+		if (norm_cycles > priv->bus.up[act_level] &&
+			gpu_percent > CAP)
+			*flag = DEVFREQ_FLAG_FAST_HINT;
+		else if (norm_cycles < priv->bus.down[act_level] && level)
+			*flag = DEVFREQ_FLAG_SLOW_HINT;
+	}
+
+clear:
+	priv->bus.total_time = 0;
+	priv->bus.gpu_time = 0;
+	priv->bus.ram_time = 0;
+
+end:
 	*freq = devfreq->profile->freq_table[level];
 	return 0;
 }
@@ -789,7 +851,7 @@ static struct devfreq_governor msm_adreno_tz = {
 
 static int __init msm_adreno_tz_init(void)
 {
-	gpu_ib_init();
+	gpu_boost_init();
 
 	return devfreq_add_governor(&msm_adreno_tz);
 }
