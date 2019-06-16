@@ -66,11 +66,21 @@ static u64 suspend_time;
 static u64 suspend_start;
 static unsigned long acc_total, acc_relative_busy;
 
-static struct msm_adreno_extended_profile *partner_gpu_profile;
-static void do_partner_start_event(struct work_struct *work);
-static void do_partner_stop_event(struct work_struct *work);
-static void do_partner_suspend_event(struct work_struct *work);
-static void do_partner_resume_event(struct work_struct *work);
+static unsigned int input_boost_enabled;
+module_param(input_boost_enabled, uint, 0644);
+
+static unsigned int load_boost_enabled;
+module_param(load_boost_enabled, uint, 0644);
+
+static unsigned int load_threshold;
+module_param(load_threshold, uint, 0644);
+
+static void gpu_update_devfreq(struct devfreq *devfreq)
+{
+	mutex_lock(&devfreq->lock);
+	update_devfreq(devfreq);
+	mutex_unlock(&devfreq->lock);
+}
 
 static struct workqueue_struct *workqueue;
 
@@ -102,8 +112,7 @@ static ssize_t adrenoboost_show(struct device *dev,
 	return count;
 }
 
-static ssize_t adrenoboost_save(struct device *dev,
-		struct device_attribute *attr, const char *buf, size_t count)
+static void do_gpu_boost(void)
 {
 	int input;
 	sscanf(buf, "%d ", &input);
@@ -117,9 +126,21 @@ static ssize_t adrenoboost_save(struct device *dev,
 }
 #endif
 
-static ssize_t gpu_load_show(struct device *dev,
-		struct device_attribute *attr,
-		char *buf)
+static void gpu_load_boost_event(void)
+{
+	if (load_boost_enabled == 1 && load_threshold != 0)
+		do_gpu_boost();
+}
+
+static void gpu_ib_input_event(struct input_handle *handle,
+                unsigned int type, unsigned int code, int value)
+{
+	if (input_boost_enabled == 1)
+		do_gpu_boost();
+}
+
+static int gpu_ib_input_connect(struct input_handler *handler,
+		struct input_dev *dev, const struct input_device_id *id)
 {
 	unsigned long sysfs_busy_perc = 0;
 	/*
@@ -199,9 +220,7 @@ void compute_work_load(struct devfreq_dev_status *stats,
 	spin_unlock(&sample_lock);
 }
 
-/* Trap into the TrustZone, and call funcs there. */
-static int __secure_tz_reset_entry2(unsigned int *scm_data, u32 size_scm_data,
-					bool is_64)
+static void gpu_boost_init(void)
 {
 	int ret;
 	/* sync memory before sending the commands to tz */
@@ -513,8 +532,27 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		level += val;
 		level = max(level, 0);
 		level = min_t(int, level, devfreq->profile->max_state - 1);
-		printk("%s ADRENO jumping level = %d last_level = %d total=%d busy=%d original busy_time=%d \n", __func__, level, priv->bin.last_level, (int)priv->bin.total_time, (int)priv->bin.busy_time, (int)stats.busy_time);
-		priv->bin.last_level = level;
+		goto clear;
+	}
+
+	if (priv->bus.total_time < LONG_FLOOR)
+		goto end;
+	norm_cycles = (unsigned int)priv->bus.ram_time /
+			(unsigned int) priv->bus.total_time;
+	gpu_percent = (100 * (unsigned int)priv->bus.gpu_time) /
+			(unsigned int) priv->bus.total_time;
+
+        if (gpu_percent >= load_threshold)
+                gpu_load_boost_event();
+
+	/*
+	 * If there's a new high watermark, update the cutoffs and send the
+	 * FAST hint.  Otherwise check the current value against the current
+	 * cutoffs.
+	 */
+	if (norm_cycles > priv->bus.max) {
+		_update_cutoff(priv, norm_cycles);
+		*flag = DEVFREQ_FLAG_FAST_HINT;
 	} else {
 		if (val) {
 			priv->bin.cycles_keeping_level += 1 + abs(val/2); // higher value change quantity means more addition to cycles_keeping_level for easier switching
@@ -778,9 +816,7 @@ static struct devfreq_governor msm_adreno_tz = {
 
 static int __init msm_adreno_tz_init(void)
 {
-	workqueue = create_freezable_workqueue("governor_msm_adreno_tz_wq");
-	if (workqueue == NULL)
-		return -ENOMEM;
+	gpu_boost_init();
 
 	return devfreq_add_governor(&msm_adreno_tz);
 }
