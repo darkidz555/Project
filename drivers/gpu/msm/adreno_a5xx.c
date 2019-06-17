@@ -179,7 +179,7 @@ static const struct {
 } a5xx_efuse_funcs[] = {
 	{ adreno_is_a530, a530_efuse_leakage },
 	{ adreno_is_a530, a530_efuse_speed_bin },
-	{ adreno_is_a504, a5xx_efuse_speed_bin },
+	{ adreno_is_a540, a5xx_efuse_speed_bin },
 	{ adreno_is_a505, a5xx_efuse_speed_bin },
 	{ adreno_is_a512, a530_efuse_speed_bin },
 	{ adreno_is_a508, a530_efuse_speed_bin },
