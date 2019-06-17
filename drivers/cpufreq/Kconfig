@@ -127,9 +127,124 @@ config CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
 	select CPU_FREQ_GOV_SCHEDUTIL
 	select CPU_FREQ_GOV_PERFORMANCE
 	help
-	  Use the 'schedutil' CPUFreq governor by default. If unsure,
-	  have a look at the help section of that governor. The fallback
-	  governor will be 'performance'.
+	  Use the CPUFreq governor 'badass' as default. This allows
+	  you to get a full dynamic frequency capable system by simply
+	  loading your cpufreq low-level hardware driver.
+	  Be aware that not all cpufreq drivers support the badass
+	  governor. If unsure have a look at the help section of the
+	  driver. Fallback governor will be the performance governor.
+
+config CPU_FREQ_DEFAULT_GOV_BARRY_ALLEN
+	bool "barry_allen"
+	select CPU_FREQ_GOV_BARRY_ALLEN
+	help
+	  Use the CPUFreq governor 'barry_allen' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'barry_allen' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_BIOSHOCK
+	bool "BioShock"
+	select CPU_FREQ_GOV_BIOSHOCK
+	help
+	  Default governor of BioShock kernel
+
+config CPU_FREQ_DEFAULT_GOV_BLU_ACTIVE
+	bool "blu_active"
+	select CPU_FREQ_GOV_BLU_ACTIVE
+	help
+	  Use the CPUFreq governor 'blu_active' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'interactive' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_BOOSTACTIVE
+	bool "boostactive"
+	select CPU_FREQ_GOV_BOOSTACTIVE
+	help
+	  Use the CPUFreq governor 'boostactive' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'interactive' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_CAFACTIVE
+	bool "cafactive"
+	select CPU_FREQ_GOV_CAFACTIVE
+	help
+	  Use the CPUFreq governor 'cafactive' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'cafactive' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_CHILL
+	bool "chill"
+	select CPU_FREQ_GOV_CHILL
+	select CPU_FREQ_GOV_INTERACTIVE
+	help
+	  Use the CPUFreq governor 'chill' as default. This allows
+	  you to get a full dynamic frequency capable system by simply
+	  loading your cpufreq low-level hardware driver.
+	  Be aware that not all cpufreq drivers support the conservative
+	  governor. If unsure have a look at the help section of the
+	  driver. Fallback governor will be the interactive governor.
+
+config CPU_FREQ_DEFAULT_GOV_CLARITY
+	bool "clarity"
+	select CPU_FREQ_GOV_CLARITY
+	help
+	  Use the CPUFreq governor 'clarity' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'clarity' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_CONSERVATIVEX
+	bool "conservativex"
+	select CPU_FREQ_GOV_CONSERVATIVEX
+	help
+	  Use the CPUFreq governor 'conservativex' as default.
+
+config CPU_FREQ_DEFAULT_GOV_CULTIVATION
+	bool "cultivation"
+	select CPU_FREQ_GOV_CULTIVATION
+	help
+	  Use the CPUFreq governor 'cultivation' as default.
+
+config CPU_FREQ_DEFAULT_GOV_CYAN
+	bool "cyan"
+	select CPU_FREQ_GOV_CYAN
+	help
+	  'cyan' - an interactive based optimized governor!
+
+config CPU_FREQ_DEFAULT_GOV_DANCEDANCE
+        bool "dancedance"
+        select CPU_FREQ_GOV_DANCEDANCE
+        help
+          Use the CPUFreq governor 'dancedance' as default.
+	      
+config CPU_FREQ_DEFAULT_GOV_DARKNESS
+	bool "darkness"
+	select CPU_FREQ_GOV_DARKNESS
+	help
+	  Use the CPUFreq governor 'Darkness' as default.
+
+config CPU_FREQ_DEFAULT_GOV_DARKNESSV5
+        bool "darknessv5"
+        select CPU_FREQ_GOV_DARKNESSV5
+	help
+
+config CPU_FREQ_DEFAULT_GOV_DESPAIR
+	bool "despair"
+	select CPU_FREQ_GOV_DESPAIR
+	help
+	  Use the CPUFreq governor 'despair' as default.
+
+config CPU_FREQ_DEFAULT_GOV_DYNAMIC_INTERACTIVE
+        bool "dynamic_interactive"
+        select CPU_FREQ_GOV_DYNAMIC_INTERACTIVE
+        help
+          Use the CPUFreq governor 'dynamic_interactive' as default
+
+>>>>>>> 230bfb9be357... cpufreq: Dynamic Interactive Governor
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -252,6 +367,12 @@ config CPU_FREQ_GOV_SCHEDUTIL
 	  both cases.
 
 	  If in doubt, say N.
+
+config CPU_FREQ_GOV_DYNAMIC_INTERACTIVE
+	tristate "'dynamic_interactive' cpufreq governor"
+	depends on CPU_FREQ
+
+comment "CPU frequency scaling drivers"
 
 config CPU_INPUT_BOOST
 	bool "CPU Input Boost"
