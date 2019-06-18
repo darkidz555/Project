@@ -279,11 +279,13 @@
 		<  2265600 >,
 		<  2304000 >,
 		<  2323200 >,
-		<  2419200 >, 
-		<  2457600 >, 
-		<  2476800 >, 
+		<  2342400 >,
+		<  2361600 >,
+		<  2419200 >,
+		<  2457600 >,
+		<  2476800 >,
 		<  2496000 >,
-		<  2892000 >;
+		<  2592000 >;
 };
 
 &bwmon {
@@ -355,6 +357,16 @@
 		< 680000000 RPM_SMD_REGULATOR_LEVEL_NOM >,
 		< 750000000 RPM_SMD_REGULATOR_LEVEL_TURBO >,
 		< 830000000 RPM_SMD_REGULATOR_LEVEL_TURBO >;
+	qcom,gfxfreq-mx-speedbin0 =
+		<         0                           0 >,
+		<  180000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
+		<  445000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
+		<  538000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
+		<  614000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
+		<  722000000 RPM_SMD_REGULATOR_LEVEL_NOM >,
+		<  810000000 RPM_SMD_REGULATOR_LEVEL_NOM >,
+		<  930000000 RPM_SMD_REGULATOR_LEVEL_TURBO >,
+		< 1049000000 RPM_SMD_REGULATOR_LEVEL_TURBO >;
 };
 
 &mdss_mdp {
@@ -1035,6 +1047,9 @@
 	qcom,cpr-voltage-floor =
 		<416000 416000 432000 484000 532000 572000 612000 656000>;
 
+	qcom,cpr-voltage-floor =
+		<558000 558000 574000 626000 674000 714000 754000 898000>;
+
 	qcom,mem-acc-voltage = <1 1 1 2 2 2 2 2>;
 
 	qcom,corner-frequencies =
@@ -1261,7 +1276,7 @@
 
 		qcom,gpu-pwrlevel@6 {
 			reg = <6>;
-			qcom,gpu-freq = <360000000>;
+			qcom,gpu-freq = <445000000>;
 			qcom,bus-freq = <4>;
 			qcom,bus-min = <3>;
 			qcom,bus-max = <5>;
