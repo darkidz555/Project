@@ -166,13 +166,13 @@ static struct clk_freq_tbl ftbl_gfx3d_clk_src[] = {
 };
 
 static struct clk_freq_tbl ftbl_gfx3d_clk_src_v2[] = {
-	F_SLEW( 300000000,  600000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 390000000,  780000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 470000000,  940000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 550000000, 1100000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 650000000, 1300000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 730000000, 1560000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 810000000, 1620000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 300000000,  700000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 390000000,  860000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 470000000, 1020000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 550000000, 1180000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 650000000, 1380000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 730000000, 1640000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 810000000, 1720000000, gpu_pll0_pll_out_even,    1, 0, 0),
 	F_END
 };
 
