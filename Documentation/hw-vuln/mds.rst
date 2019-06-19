@@ -94,19 +94,22 @@ mitigations are active. The relevant sysfs file is:
 
 The possible values in this file are:
 
-  .. list-table::
+  =========================================   =================================
+  'Not affected'				The processor is not vulnerable
 
-     * - 'Not affected'
-       - The processor is not vulnerable
-     * - 'Vulnerable'
-       - The processor is vulnerable, but no mitigation enabled
-     * - 'Vulnerable: Clear CPU buffers attempted, no microcode'
-       - The processor is vulnerable but microcode is not updated.
+  'Vulnerable'					The processor is vulnerable,
+						but no mitigation enabled
 
-         The mitigation is enabled on a best effort basis. See :ref:`vmwerv`
-     * - 'Mitigation: Clear CPU buffers'
-       - The processor is vulnerable and the CPU buffer clearing mitigation is
-         enabled.
+  'Vulnerable: Clear CPU buffers attempted'	The processor is vulnerable but
+						microcode is not updated.
+						The mitigation is enabled on a
+						best effort basis.
+						See :ref:`vmwerv`
+
+  'Mitigation: CPU buffer clear'		The processor is vulnerable and the
+						CPU buffer clearing mitigation is
+						enabled.
+  =========================================   =================================
 
 If the processor is vulnerable then the following information is appended
 to the above information:
