@@ -72,7 +72,8 @@
 		<  1747200000 0x0404005b 0x08490049 0x2 20 >,
 		<  1824000000 0x0404005f 0x084c004c 0x3 21 >,
 		<  1900800000 0x04040063 0x094f004f 0x3 22 >,
-		<  2035200000 0x0404006a 0x09550055 0x3 22 >;
+		<  2035200000 0x0404006a 0x09550055 0x3 22 >,
+		<  2265600000 0x04010076 0x0a5e005e 0x3 22 >;
 
 	qcom,perfcl-speedbin0-v0 =
 		<   300000000 0x0004000f 0x01200020 0x1 1 >,
@@ -225,22 +226,23 @@
 
 &msm_cpufreq {
 	qcom,cpufreq-table-0 =
-		<   960000 >,
-		<  1036800 >,
-		<  1094400 >,
-		<  1171200 >,
-		<  1248000 >,
-		<  1324800 >,
-		<  1401600 >,
-		<  1478400 >,
-		<  1555200 >,
-		<  1670400 >,
-		<  1747200 >,
-		<  1824000 >,
-		<  1900800 >,
-		<  2035200 >;
+		< 300000 >, < 364800 >, < 441600 >, < 518400 >, < 
+		595200 >, < 672000 >, < 748800 >, < 825600 >, < 
+		883200 >, < 960000 >, < 1036800 >, < 1094400 >, < 
+		1171200 >, < 1248000 >, < 1324800 >, < 1401600 >, < 
+		1478400 >, < 1555200 >, < 1670400 >, < 1747200 >, < 
+		1824000 >, < 1900800 >, < 2035200 >, < 2265600 >;
 
 	qcom,cpufreq-table-4 =
+		<   300000 >,
+		<   345600 >,
+		<   422400 >,
+		<   499200 >,
+		<   576000 >,
+		<   652800 >,
+		<   729600 >,
+		<   806400 >,
+		<   902400 >,
 		<   979200 >,
 		<  1056000 >,
 		<  1132800 >,
@@ -327,8 +329,8 @@
 		< 484000000 4 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 585000000 5 RPM_SMD_REGULATOR_LEVEL_NOM >,
 		< 666000000 6 RPM_SMD_REGULATOR_LEVEL_NOM >,
-		< 780000000 7 RPM_SMD_REGULATOR_LEVEL_TURBO >,
-		< 850000000 8 RPM_SMD_REGULATOR_LEVEL_TURBO >;
+		< 730000000 7 RPM_SMD_REGULATOR_LEVEL_TURBO >,
+		< 800000000 8 RPM_SMD_REGULATOR_LEVEL_TURBO >;
 	qcom,gfxfreq-mx-speedbin0 =
 		<         0                           0 >,
 		< 180000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
@@ -337,8 +339,8 @@
 		< 484000000 RPM_SMD_REGULATOR_LEVEL_SVS >,
 		< 585000000 RPM_SMD_REGULATOR_LEVEL_NOM >,
 		< 666000000 RPM_SMD_REGULATOR_LEVEL_NOM >,
-		< 780000000 RPM_SMD_REGULATOR_LEVEL_TURBO >,
-		< 850000000 RPM_SMD_REGULATOR_LEVEL_TURBO >;
+		< 730000000 RPM_SMD_REGULATOR_LEVEL_TURBO >,
+		< 800000000 RPM_SMD_REGULATOR_LEVEL_TURBO >;
 };
 
 &mdss_mdp {
@@ -1023,7 +1025,7 @@
 
 	qcom,corner-frequencies =
 		<180000000 337000000 422000000 484000000
-		 585000000 666000000 780000000 850000000>;
+		 585000000 666000000 730000000 800000000>;
 
 	qcom,cpr-target-quotients =
 		<   0    0    0    0  331  357    0    0
@@ -1197,7 +1199,7 @@
 
 		qcom,gpu-pwrlevel@0 {
 			reg = <0>;
-			qcom,gpu-freq = <850000000>;
+			qcom,gpu-freq = <800000000>;
 			qcom,bus-freq = <12>;
 			qcom,bus-min = <12>;
 			qcom,bus-max = <12>;
@@ -1205,7 +1207,7 @@
 
 		qcom,gpu-pwrlevel@1 {
 			reg = <1>;
-			qcom,gpu-freq = <780000000>;
+			qcom,gpu-freq = <730000000>;
 			qcom,bus-freq = <12>;
 			qcom,bus-min = <11>;
 			qcom,bus-max = <12>;

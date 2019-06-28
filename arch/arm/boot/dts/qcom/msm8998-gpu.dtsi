@@ -62,11 +62,11 @@
 		qcom,chipid = <0x05040000>;
 		qcom,gpu-efuse-leakage = <0x00070130 24>;
 		qcom,base-leakage-coefficient = <34>;
-		qcom,lm-limit = <6000>;
+		qcom,lm-limit = <8000>;
 
-		qcom,initial-pwrlevel = <4>;
+		qcom,initial-pwrlevel = <0>;
 
-		qcom,idle-timeout = <64>;
+		qcom,idle-timeout = <200>;
 		qcom,deep-nap-timeout = <100>; //msecs
 
 		qcom,highest-bank-bit = <15>;
