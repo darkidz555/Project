@@ -47,11 +47,8 @@
 #include <asm/kexec.h>
 #include <asm/apic.h>
 #include <asm/irq_remapping.h>
-<<<<<<< HEAD
-=======
 #include <asm/microcode.h>
 #include <asm/spec-ctrl.h>
->>>>>>> bda2cddea5aa... KVM/x86: Remove indirect MSR op calls from SPEC_CTRL
 
 #include "trace.h"
 #include "pmu.h"
