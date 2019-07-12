@@ -710,7 +710,7 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
 #endif /* CONFIG_ARM64_PAN */
 	{
 		.desc = "Virtualization Host Extensions",
-		.capability = ARM64_HAS_VIRT_HOST_EXTN,
+		.capability = ARM64_HAS_LSE_ATOMICS,
 		.matches = runs_at_el2,
 	},
 	{},
