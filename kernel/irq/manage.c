@@ -1138,7 +1138,7 @@ setup_irq_thread(struct irqaction *new, unsigned int irq, bool secondary)
 
 static void add_desc_to_perf_list(struct irq_desc *desc)
 {
-	struct irq_desc_list *item; j=======
+	struct irq_desc_list *item;
 
 	item = kmalloc(sizeof(*item), GFP_ATOMIC | __GFP_NOFAIL);
 	item->desc = desc;
