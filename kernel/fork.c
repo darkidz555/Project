@@ -77,8 +77,7 @@
 #include <linux/aio.h>
 #include <linux/compiler.h>
 #include <linux/sysctl.h>
-//#include <linux/kcov.h>
-//#include <linux/cpufreq.h>
+#include <linux/cpu_boost.h>
 #include <linux/cpu_input_boost.h>
 #include <linux/devfreq_boost.h>
 
@@ -1835,10 +1834,17 @@ long _do_fork(unsigned long clone_flags,
 	int trace = 0;
 	long nr;
 
-	/* Boost CPU to the max for 50 ms when userspace launches an app */
-	if (task_is_zygote(current)) {
-		cpu_input_boost_kick_max(50);
-		devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 50);
+	/* Boost CPU to the max for 1250 ms when userspace launches an app */
+	if (is_zygote_pid(current->pid)) {
+
+#ifdef CONFIG_CPU_BOOST
+		do_input_boost_max();
+#elif defined(CONFIG_CPU_INPUT_BOOST)
+		cpu_input_boost_kick_max(1250);
+#endif
+#ifdef CONFIG_DEVFREQ_BOOST
+		devfreq_boost_kick_max(DEVFREQ_MSM_CPUBW, 1250);
+#endif
 	}
 
 	/*
