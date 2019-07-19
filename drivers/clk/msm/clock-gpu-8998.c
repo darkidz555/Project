@@ -172,7 +172,7 @@ static struct clk_freq_tbl ftbl_gfx3d_clk_src_v2[] = {
 	F_SLEW( 615000000, 1230000000, gpu_pll0_pll_out_even,    1, 0, 0),
 	F_SLEW( 680000000, 1362000000, gpu_pll0_pll_out_even,    1, 0, 0),
 	F_SLEW( 770000000, 1540000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 850000000, 1700000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 850000000, 1670000000, gpu_pll0_pll_out_even,    1, 0, 0),
 	F_END
 };
 
