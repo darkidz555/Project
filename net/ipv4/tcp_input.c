@@ -4514,15 +4514,7 @@ static void tcp_ofo_queue(struct sock *sk)
 		p = rb_next(p);
 		rb_erase(&skb->rbnode, &tp->out_of_order_queue);
 
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-		/* In case of MPTCP, the segment may be empty if it's a
-		 * non-data DATA_FIN. (see beginning of tcp_data_queue)
-		 */
-		if (unlikely(!after(TCP_SKB_CB(skb)->end_seq, tp->rcv_nxt) &&
-		    !(mptcp(tp) && TCP_SKB_CB(skb)->end_seq == TCP_SKB_CB(skb)->seq))) {
-#else
 		if (unlikely(!after(TCP_SKB_CB(skb)->end_seq, tp->rcv_nxt))) {
-#endif
 			SOCK_DEBUG(sk, "ofo packet was already received\n");
 			tcp_drop(sk, skb);
 			continue;
@@ -4644,13 +4636,7 @@ coalesce_done:
 		}
 
 		if (before(seq, TCP_SKB_CB(skb1)->end_seq)) {
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-			/* MPTCP allows non-data data-fin to be in the ofo-queue */
-			if (!after(end_seq, TCP_SKB_CB(skb1)->end_seq) &&
-			    !(mptcp(tp) && end_seq == seq)) {
-#else
 			if (!after(end_seq, TCP_SKB_CB(skb1)->end_seq)) {
-#endif
 				/* All the bits are present. Drop. */
 				NET_INC_STATS(sock_net(sk),
 					      LINUX_MIB_TCPOFOMERGE);
@@ -4698,13 +4684,6 @@ merge_right:
 					 end_seq);
 			break;
 		}
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-		/* MPTCP allows non-data data-fin to be in the ofo-queue */
-		if (mptcp(tp) && TCP_SKB_CB(skb1)->seq == TCP_SKB_CB(skb1)->end_seq) {
-			skb = skb1;
-			continue;
-		}
-#endif
 		rb_erase(&skb1->rbnode, &tp->out_of_order_queue);
 		tcp_dsack_extend(sk, TCP_SKB_CB(skb1)->seq,
 				 TCP_SKB_CB(skb1)->end_seq);
@@ -4807,14 +4786,7 @@ static void tcp_data_queue(struct sock *sk, struct sk_buff *skb)
 	bool fragstolen = false;
 	int eaten = -1;
 
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-	/* If no data is present, but a data_fin is in the options, we still
-	 * have to call mptcp_queue_skb later on. */
-	if (TCP_SKB_CB(skb)->seq == TCP_SKB_CB(skb)->end_seq &&
-	    !(mptcp(tp) && mptcp_is_data_fin(skb))) {
-#else
 	if (TCP_SKB_CB(skb)->seq == TCP_SKB_CB(skb)->end_seq) {
-#endif
 		__kfree_skb(skb);
 		return;
 	}
@@ -5320,11 +5292,6 @@ static void tcp_check_space(struct sock *sk)
 		sock_reset_flag(sk, SOCK_QUEUE_SHRUNK);
 		/* pairs with tcp_poll() */
 		smp_mb();
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-		if (mptcp(tcp_sk(sk)) ||
-		    (sk->sk_socket &&
-		    test_bit(SOCK_NOSPACE, &sk->sk_socket->flags)))		    
-#else
 		if (sk->sk_socket &&
 		    test_bit(SOCK_NOSPACE, &sk->sk_socket->flags))
 #endif
@@ -5605,10 +5572,6 @@ syn_challenge:
 	return true;
 
 discard:
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-	if (mptcp(tp))
-		mptcp_reset_mopt(tp);
-#endif
 	tcp_drop(sk, skb);
 	return false;
 }
@@ -5951,9 +5914,6 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
 	struct tcp_fastopen_cookie foc = { .len = -1 };
 	int saved_clamp = tp->rx_opt.mss_clamp;
 	bool fastopen_fail;
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-	struct mptcp_options_received mopt;
-	mptcp_init_mp_opt(&mopt);
 
 	tcp_parse_options(skb, &tp->rx_opt,
 			  mptcp(tp) ? &tp->mptcp->rx_opt : &mopt, 0, &foc, tp);
@@ -6100,15 +6060,6 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
 		}
 		if (fastopen_fail)
 			return -1;
-
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-		/* With MPTCP we cannot send data on the third ack due to the
-		 * lack of option-space to combine with an MP_CAPABLE.
-		 */
-		if (!mptcp(tp) && (sk->sk_write_pending ||
-		    icsk->icsk_accept_queue.rskq_defer_accept ||
-		    icsk->icsk_ack.pingpong)) {
-#else
 		if (sk->sk_write_pending ||
 		    icsk->icsk_accept_queue.rskq_defer_accept ||
 		    icsk->icsk_ack.pingpong) {

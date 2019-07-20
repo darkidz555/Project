@@ -1025,7 +1025,7 @@ static int arp_process(struct net *net, struct sock *sk, struct sk_buff *skb)
 	struct arphdr *arp;
 	unsigned char *arp_ptr;
 	struct rtable *rt;
-	unsigned char *sha; // Sender Hardware Address
+	unsigned char *sha;
 	unsigned char *tha = NULL;
 	__be32 sip, tip;
 	u16 dev_type = dev->type;
@@ -1108,7 +1108,7 @@ static int arp_process(struct net *net, struct sock *sk, struct sk_buff *skb)
 	case ARPHRD_IEEE1394:
 		break;
 #endif
-	default: // Ethernet is here
+	default:
 		tha = arp_ptr;
 		arp_ptr += dev->addr_len;
 	}
@@ -1321,17 +1321,6 @@ static inline struct neighbour *neigh_create(struct neigh_table *tbl,
 		   It is possible, that this option should be enabled for some
 		   devices (strip is candidate)
 		 */
-		/*
-		arp_project
-
-		GARP (Gratuitous ARP) - Send ARP request with sip == tip
-
-		 When ARP request sended with same source IP and target IP,
-		received hosts will update there ARP tables with new hardware address.
-
-		 Also GARP used to find duplicated IP address.
-		 It will receive ARP reply when there is conflicted IP address.
-		*/
 		is_garp = tip == sip && addr_type == RTN_UNICAST;
 
 		/* Unsolicited ARP _replies_ also require target hwaddr to be

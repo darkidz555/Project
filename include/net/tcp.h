@@ -509,12 +509,6 @@ ssize_t tcp_splice_read(struct socket *sk, loff_t *ppos,
 			struct pipe_inode_info *pipe, size_t len,
 			unsigned int flags);
 
-/* sysctl master controller */
-extern int tcp_use_userconfig_sysctl_handler(struct ctl_table *, int,
-				void __user *, size_t *, loff_t *);
-extern int tcp_proc_delayed_ack_control(struct ctl_table *, int,
-				void __user *, size_t *, loff_t *);
-
 void tcp_enter_quickack_mode(struct sock *sk, unsigned int max_quickacks);
 static inline void tcp_dec_quickack_mode(struct sock *sk,
 					 const unsigned int pkts)
@@ -1408,18 +1402,6 @@ static inline int tcp_win_from_space(int space)
 	return tcp_adv_win_scale <= 0 ?
 		(space>>(-tcp_adv_win_scale)) :
 		space - (space>>tcp_adv_win_scale);
-}
-#ifdef CONFIG_LGP_DATA_TCPIP_MPTCP
-#ifdef CONFIG_MPTCP
-extern struct static_key mptcp_static_key;
-static inline bool mptcp(const struct tcp_sock *tp)
-{
-	return static_key_false(&mptcp_static_key) && tp->mpc;
-}
-#else
-static inline bool mptcp(const struct tcp_sock *tp)
-{
-	return 0;
 }
 #endif
 #endif

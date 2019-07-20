@@ -504,10 +504,7 @@ static bool dl_entity_overflow(struct sched_dl_entity *dl_se,
  * re-initializing task's runtime and deadline, the revised wakeup
  * rule adjusts the task's runtime to avoid the task to overrun its
  * density.
- *
- * Reasoning: a task may overrun the density if:
- *    runtime / (deadline - t) > dl_runtime / dl_deadline
- *
+ (deadline - t) > dl_runtime / dl_deadline *
  * Therefore, runtime can be adjusted to:
  *     runtime = (dl_runtime / dl_deadline) * (deadline - t)
  *

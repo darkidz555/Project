@@ -348,34 +348,12 @@ static void msm_atomic_helper_commit_modeset_enables(struct drm_device *dev,
 				    connector->state->crtc->state))
 			continue;
 
-		encoder = connector->state->best_encoder;
-		funcs = encoder->helper_private;
+		if (drm_crtc_vblank_get(crtc))
+			continue;
 
-		DRM_DEBUG_ATOMIC("enabling [ENCODER:%d:%s]\n",
-				 encoder->base.id, encoder->name);
+		kms->funcs->wait_for_crtc_commit_done(kms, crtc);
 
-		/*
-		 * Each encoder has at most one connector (since we always steal
-		 * it away), so we won't call enable hooks twice.
-		 */
-		drm_bridge_pre_enable(encoder->bridge);
-		++bridge_enable_count;
-
-		if (funcs->enable)
-			funcs->enable(encoder);
-		else
-			funcs->commit(encoder);
-	}
-
-	if (kms->funcs->commit) {
-		DRM_DEBUG_ATOMIC("triggering commit\n");
-		kms->funcs->commit(kms, old_state);
-	}
-
-	/* If no bridges were pre_enabled, skip iterating over them again */
-	if (bridge_enable_count == 0) {
-		SDE_ATRACE_END("msm_enable");
-		return;
+		drm_crtc_vblank_put(crtc);
 	}
 
 	for_each_connector_in_state(old_state, connector, old_conn_state, i) {

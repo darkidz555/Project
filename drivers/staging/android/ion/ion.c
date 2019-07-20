@@ -17,6 +17,7 @@
  */
 
 #include <linux/atomic.h>
+#include <linux/device.h>
 #include <linux/err.h>
 #include <linux/file.h>
 #include <linux/freezer.h>
@@ -410,7 +411,8 @@ static void ion_handle_get(struct ion_handle *handle)
 }
 
 /* Must hold the client lock */
-static struct ion_handle* ion_handle_get_check_overflow(struct ion_handle *handle)
+static struct ion_handle *ion_handle_get_check_overflow(
+					struct ion_handle *handle)
 {
 	if (atomic_read(&handle->ref.refcount) + 1 == 0)
 		return ERR_PTR(-EOVERFLOW);
@@ -511,16 +513,6 @@ static struct ion_handle *ion_handle_get_by_id_nolock(struct ion_client *client,
 		return ion_handle_get_check_overflow(handle);
 
 	return ERR_PTR(-EINVAL);
-}
-
-struct ion_handle *ion_handle_get_by_id(struct ion_client *client,
-						int id)
-{
-	struct ion_handle *handle;
-	mutex_lock(&client->lock);
-	handle = ion_handle_get_by_id_nolock(client, id);
-	mutex_unlock(&client->lock);
-	return handle;
 }
 
 static bool ion_handle_validate(struct ion_client *client,
@@ -1503,28 +1495,6 @@ static int ion_share_dma_buf_fd_nolock(struct ion_client *client,
 {
 	return __ion_share_dma_buf_fd(client, handle, false);
 }
-
-bool ion_dma_buf_is_secure(struct dma_buf *dmabuf)
-{
-	struct ion_buffer *buffer;
-	enum ion_heap_type type;
-
-	/* Return false if we didn't create the buffer */
-	if (!dmabuf || dmabuf->ops != &dma_buf_ops)
-		return false;
-
-	buffer = dmabuf->priv;
-
-	if (!buffer || !buffer->heap)
-		return false;
-
-	type = buffer->heap->type;
-
-	return (type == (enum ion_heap_type)ION_HEAP_TYPE_SECURE_DMA ||
-		type == (enum ion_heap_type)ION_HEAP_TYPE_SYSTEM_SECURE) ?
-		true : false;
-}
-EXPORT_SYMBOL(ion_dma_buf_is_secure);
 
 struct ion_handle *ion_import_dma_buf(struct ion_client *client, int fd)
 {

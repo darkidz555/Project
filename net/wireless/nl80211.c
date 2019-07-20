@@ -506,15 +506,6 @@ nl80211_plan_policy[NL80211_SCHED_SCAN_PLAN_MAX + 1] = {
 	[NL80211_SCHED_SCAN_PLAN_ITERATIONS] = { .type = NLA_U32 },
 };
 
-static const struct nla_policy
-nl80211_bss_select_policy[NL80211_BSS_SELECT_ATTR_MAX + 1] = {
-	[NL80211_BSS_SELECT_ATTR_RSSI] = { .type = NLA_FLAG },
-	[NL80211_BSS_SELECT_ATTR_BAND_PREF] = { .type = NLA_U32 },
-	[NL80211_BSS_SELECT_ATTR_RSSI_ADJUST] = {
-		.len = sizeof(struct nl80211_bss_select_rssi_adjust)
-	},
-};
-
 /* policy for packet pattern attributes */
 static const struct nla_policy
 nl80211_packet_pattern_policy[MAX_NL80211_PKTPAT + 1] = {

@@ -1775,8 +1775,6 @@ static int erase_aeb(struct ubi_device *ubi, struct ubi_ainf_peb *aeb, bool sync
 
 	e->pnum = aeb->pnum;
 	e->ec = aeb->ec;
-	e->tagged_scrub_all = 0;
-	e->sqnum = aeb->sqnum;
 	ubi->lookuptbl[e->pnum] = e;
 
 	if (sync) {

@@ -603,9 +603,6 @@ static void hidg_disable(struct usb_function *f)
 		kfree(list);
 	}
 	spin_unlock_irqrestore(&hidg->spinlock, flags);
-#ifdef CONFIG_LGE_USB_GADGET
-	}
-#endif
 }
 
 static int hidg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)

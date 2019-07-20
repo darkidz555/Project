@@ -651,10 +651,6 @@ static struct drm_mm_node *drm_mm_search_free_in_range_generic(const struct drm_
 			entry = get_next_hole(entry, flags)) {
 		u64 hole_size;
 
-		adj_start = drm_mm_hole_node_start(entry);
-		adj_end = drm_mm_hole_node_end(entry);
-		hole_size = adj_end - adj_start;
-
 		if (mm->color_adjust) {
 			mm->color_adjust(entry, color, &adj_start, &adj_end);
 			if (adj_end <= adj_start)

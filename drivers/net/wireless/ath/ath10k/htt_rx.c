@@ -945,7 +945,7 @@ static void ath10k_process_rx(struct ath10k *ar,
 	*status = *rx_status;
 	fill_datapath_stats(ar, status);
 	ath10k_dbg(ar, ATH10K_DBG_DATA,
-		   "rx skb %pK len %u peer %pM %s %s sn %u %s%s%s%s%s %srate_idx %u vht_nss %u freq %u band %u flag 0x%llx fcs-err %i mic-err %i amsdu-more %i\n",
+		   "rx skb %p len %u peer %pM %s %s sn %u %s%s%s%s%s %srate_idx %u vht_nss %u freq %u band %u flag 0x%llx fcs-err %i mic-err %i amsdu-more %i\n",
 		   skb,
 		   skb->len,
 		   ieee80211_get_SA(hdr),
@@ -1088,7 +1088,6 @@ static void ath10k_htt_rx_h_undecap_nwifi(struct ath10k *ar,
 	size_t hdr_len;
 	u8 da[ETH_ALEN];
 	u8 sa[ETH_ALEN];
-	int l3_pad_bytes;
 	int bytes_aligned = ar->hw_params.decap_align_bytes;
 
 	/* Delivered decapped frame:
@@ -1184,8 +1183,6 @@ static void ath10k_htt_rx_h_undecap_eth(struct ath10k *ar,
 	void *rfc1042;
 	u8 da[ETH_ALEN];
 	u8 sa[ETH_ALEN];
-	int l3_pad_bytes;
-	struct htt_rx_desc *rxd;
 	int bytes_aligned = ar->hw_params.decap_align_bytes;
 
 	/* Delivered decapped frame:
@@ -1241,8 +1238,6 @@ static void ath10k_htt_rx_h_undecap_snap(struct ath10k *ar,
 {
 	struct ieee80211_hdr *hdr;
 	size_t hdr_len;
-	int l3_pad_bytes;
-	struct htt_rx_desc *rxd;
 	int bytes_aligned = ar->hw_params.decap_align_bytes;
 
 	/* Delivered decapped frame:
@@ -1432,19 +1427,9 @@ static void ath10k_htt_rx_h_mpdu(struct ath10k *ar,
 	if (has_tkip_err)
 		status->flag |= RX_FLAG_MMIC_ERROR;
 
-	/* Firmware reports all necessary management frames via WMI already.
-	 * They are not reported to monitor interfaces at all so pass the ones
-	 * coming via HTT to monitor interfaces instead. This simplifies
-	 * matters a lot.
-	 */
-	if (is_mgmt)
-		status->flag |= RX_FLAG_ONLY_MONITOR;
-
 	if (is_decrypted) {
-		status->flag |= RX_FLAG_DECRYPTED;
-
-		if (likely(!is_mgmt))
-			status->flag |= RX_FLAG_MMIC_STRIPPED;
+		status->flag |= RX_FLAG_DECRYPTED |
+				RX_FLAG_MMIC_STRIPPED;
 
 		if (fill_crypt_header)
 			status->flag |= RX_FLAG_MIC_STRIPPED |
@@ -1465,6 +1450,9 @@ static void ath10k_htt_rx_h_mpdu(struct ath10k *ar,
 		if (!is_decrypted)
 			continue;
 		if (is_mgmt)
+			continue;
+
+		if (fill_crypt_header)
 			continue;
 
 		if (fill_crypt_header)
@@ -1666,10 +1654,80 @@ static void ath10k_htt_rx_proc_rx_ind(struct ath10k_htt *htt,
 	for (i = 0; i < num_mpdu_ranges; i++)
 		mpdu_count += mpdu_ranges[i].mpdu_count;
 
-	atomic_add(mpdu_count, &htt->num_mpdus_ready);
+	while (mpdu_count--) {
+		__skb_queue_head_init(&amsdu);
+		ret = ath10k_htt_rx_amsdu_pop(htt, &fw_desc,
+					      &fw_desc_len, &amsdu);
+		if (ret < 0) {
+			ath10k_warn(ar, "rx ring became corrupted: %d\n", ret);
+			__skb_queue_purge(&amsdu);
+			/* FIXME: It's probably a good idea to reboot the
+			 * device instead of leaving it inoperable.
+			 */
+			htt->rx_confused = true;
+			break;
+		}
+
+		ath10k_htt_rx_h_ppdu(ar, &amsdu, rx_status, 0xffff);
+		ath10k_htt_rx_h_unchain(ar, &amsdu, ret > 0);
+		ath10k_htt_rx_h_filter(ar, &amsdu, rx_status);
+		ath10k_htt_rx_h_mpdu(ar, &amsdu, rx_status, true);
+		ath10k_htt_rx_h_deliver(ar, &amsdu, rx_status);
+	}
+
+	tasklet_schedule(&htt->rx_replenish_task);
 }
 
-static void ath10k_htt_rx_tx_compl_ind(struct ath10k *ar,
+static void ath10k_htt_rx_frag_handler(struct ath10k_htt *htt,
+				       struct htt_rx_fragment_indication *frag)
+{
+	struct ath10k *ar = htt->ar;
+	struct ieee80211_rx_status *rx_status = &htt->rx_status;
+	struct sk_buff_head amsdu;
+	int ret;
+	u8 *fw_desc;
+	int fw_desc_len;
+
+	fw_desc_len = __le16_to_cpu(frag->fw_rx_desc_bytes);
+	fw_desc = (u8 *)frag->fw_msdu_rx_desc;
+
+	__skb_queue_head_init(&amsdu);
+
+	spin_lock_bh(&htt->rx_ring.lock);
+	ret = ath10k_htt_rx_amsdu_pop(htt, &fw_desc, &fw_desc_len,
+				      &amsdu);
+	spin_unlock_bh(&htt->rx_ring.lock);
+
+	tasklet_schedule(&htt->rx_replenish_task);
+
+	ath10k_dbg(ar, ATH10K_DBG_HTT_DUMP, "htt rx frag ahead\n");
+
+	if (ret) {
+		ath10k_warn(ar, "failed to pop amsdu from httr rx ring for fragmented rx %d\n",
+			    ret);
+		__skb_queue_purge(&amsdu);
+		return;
+	}
+
+	if (skb_queue_len(&amsdu) != 1) {
+		ath10k_warn(ar, "failed to pop frag amsdu: too many msdus\n");
+		__skb_queue_purge(&amsdu);
+		return;
+	}
+
+	ath10k_htt_rx_h_ppdu(ar, &amsdu, rx_status, 0xffff);
+	ath10k_htt_rx_h_filter(ar, &amsdu, rx_status);
+	ath10k_htt_rx_h_mpdu(ar, &amsdu, rx_status, true);
+	ath10k_htt_rx_h_deliver(ar, &amsdu, rx_status);
+
+	if (fw_desc_len > 0) {
+		ath10k_dbg(ar, ATH10K_DBG_HTT,
+			   "expecting more fragmented rx in one indication %d\n",
+			   fw_desc_len);
+	}
+}
+
+static void ath10k_htt_rx_frm_tx_compl(struct ath10k *ar,
 				       struct sk_buff *skb)
 {
 	struct ath10k_htt *htt = &ar->htt;
