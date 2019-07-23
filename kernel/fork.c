@@ -78,16 +78,10 @@
 #include <linux/compiler.h>
 #include <linux/sysctl.h>
 //#include <linux/kcov.h>
-<<<<<<< HEAD
-//#include <linux/cpufreq.h>
-#include <linux/cpu_input_boost.h>
-#include <linux/devfreq_boost.h>
-=======
 #include <linux/cpufreq_times.h>
 //#include <linux/cpu_input_boost.h>
 //#include <linux/devfreq_boost.h>
 #include <linux/simple_lmk.h>
->>>>>>> c026318fc182... ANDROID: Fix massive cpufreq_times memory leaks
 
 #include <asm/pgtable.h>
 #include <asm/pgalloc.h>
@@ -1422,21 +1416,7 @@ static struct task_struct *copy_process(unsigned long clone_flags,
 	if (!p)
 		goto fork_out;
 
-<<<<<<< HEAD
-	/*
-	 * This _must_ happen before we call free_task(), i.e. before we jump
-	 * to any of the bad_fork_* labels. This is to avoid freeing
-	 * p->set_child_tid which is (ab)used as a kthread's data pointer for
-	 * kernel threads (PF_KTHREAD).
-	 */
-	p->set_child_tid = (clone_flags & CLONE_CHILD_SETTID) ? child_tidptr : NULL;
-	/*
-	 * Clear TID on mm_release()?
-	 */
-	p->clear_child_tid = (clone_flags & CLONE_CHILD_CLEARTID) ? child_tidptr : NULL;
-=======
 	cpufreq_task_times_init(p);
->>>>>>> c026318fc182... ANDROID: Fix massive cpufreq_times memory leaks
 
 	ftrace_graph_init_task(p);
 
