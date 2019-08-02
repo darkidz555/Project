@@ -397,6 +397,24 @@ void kgsl_pwrctrl_pwrlevel_change(struct kgsl_device *device,
 	gpu_max_power_level = pwr->pwrlevels[pwr->thermal_pwrlevel].gpu_freq;;
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_INPUT_BOOST
+	if (CONFIG_INPUT_BOOST_GPU_FREQ != 0 &&
+	    pwr->pwrlevels[pwr->active_pwrlevel].gpu_freq >= CONFIG_INPUT_BOOST_GPU_FREQ) {
+		cpu_input_boost_kick_gpu();
+#ifdef CONFIG_DEVFREQ_BOOST
+		devfreq_boost_kick(DEVFREQ_MSM_CPUBW);
+#endif
+	} else {
+		unboost_kick_gpu();
+#ifdef CONFIG_DEVFREQ_BOOST
+		devfreq_boost_kick(DEVFREQ_MSM_CPUBW);
+#endif
+	}
+#endif
+
+>>>>>>> 831f6c9fe7ca... rebase rework repick reOC
 	/*
 	 * If the bus is running faster than its default level and the GPU
 	 * frequency is moving down keep the DDR at a relatively high level.
