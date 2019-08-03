@@ -2596,7 +2596,7 @@ CONFIG_THERMAL_GOV_STEP_WISE=y
 # CONFIG_THERMAL_GOV_BANG_BANG is not set
 # CONFIG_THERMAL_GOV_USER_SPACE is not set
 # CONFIG_THERMAL_GOV_POWER_ALLOCATOR is not set
-CONFIG_CPU_THERMAL=y
+# CONFIG_CPU_THERMAL is not set
 # CONFIG_DEVFREQ_THERMAL is not set
 # CONFIG_THERMAL_EMULATION is not set
 CONFIG_LIMITS_MONITOR=y
@@ -5878,7 +5878,7 @@ CONFIG_WIL6210_PLATFORM_MSM=y
 # CONFIG_MSM_11AD is not set # dep
 
 # PowerEfficient Workqueues
-CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y
+# CONFIG_WQ_POWER_EFFICIENT_DEFAULT is not set
 
 # wakelocks, etc.
 # CONFIG_FW_CACHE is not set
@@ -5887,7 +5887,7 @@ CONFIG_WQ_POWER_EFFICIENT_DEFAULT=y
 CONFIG_SIMPLE_GPU_ALGORITHM=y # not used right now, NA source
 
 # AdrenoIdler for msm_adreno_tz, needs STATE_NOTIFIER (in some implementations)
-CONFIG_ADRENO_IDLER=y
+# CONFIG_ADRENO_IDLER is not set
 
 # state notifier, needed for cpufreq governors, adreno-idler, etc.
 CONFIG_STATE_NOTIFIER=y
