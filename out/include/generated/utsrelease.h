@@ -1,0 +1,1 @@
+#define UTS_RELEASE "4.4.153-LA.UM.7.4.r1-05400-8x98.0+"
