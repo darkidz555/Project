@@ -1218,7 +1218,7 @@ static const struct cpumask *adjust_cpumask(struct task_struct *p,
 {
 	/* Force all performance-critical kthreads onto the big cluster */
 	if (p->flags & PF_PERF_CRITICAL)
-		return cpu_perf_mask;
+		return cpu_cpu_mask;
 
 	return req_mask;
 }

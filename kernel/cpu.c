@@ -456,8 +456,8 @@ int cpu_down(unsigned int cpu)
 	cpumask_andnot(&newmask, cpu_online_mask, cpumask_of(cpu));
 
 	/* One big cluster CPU and one little cluster CPU must remain online */
-	if (!cpumask_intersects(&newmask, cpu_perf_mask) ||
-	    !cpumask_intersects(&newmask, cpu_lp_mask))
+	if (!cpumask_intersects(&newmask, cpu_cpu_mask) ||
+	    !cpumask_intersects(&newmask, cpu_cpu_mask))
 		return -EINVAL;
 
 	cpu_maps_update_begin();
