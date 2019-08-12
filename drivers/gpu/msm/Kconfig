@@ -1,6 +1,6 @@
 config QCOM_KGSL
 	tristate "Qualcomm 3D Graphics driver"
-	default n
+	default y
 	depends on ARCH_QCOM
 	select GENERIC_ALLOCATOR
 	select FW_LOADER
