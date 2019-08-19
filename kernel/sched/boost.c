@@ -203,17 +203,6 @@ int sched_boost_handler(struct ctl_table *table, int write,
 	if (ret || !write)
 		goto done;
 
-	if (verify_boost_params(old_val, *data)) {
-		_sched_set_boost(old_val, *data);
-		if (*data > 0)
-			do_stune_sched_boost("top-app", &boost_slot);
-		else
-			reset_stune_boost("top-app", boost_slot);
-	} else {
-		*data = old_val;
-		ret = -EINVAL;
-	}
-
 done:
 	mutex_unlock(&boost_mutex);
 	return ret;
