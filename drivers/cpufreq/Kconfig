@@ -374,7 +374,6 @@ config CPU_FREQ_DEFAULT_GOV_NEBULA
 	  loading your cpufreq low-level hardware driver, using the
 	  'nebula' governor for latency-sensitive workloads.
 
->>>>>>> a40a2e3217c3... cpufreq: Nebula Governor
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
