@@ -36,10 +36,6 @@
 #include "mdss_dsi_phy.h"
 #include "mdss_dba_utils.h"
 
-#ifdef CONFIG_STATE_NOTIFIER
-#include <linux/state_notifier.h>
-#endif
-
 #define CMDLINE_DSI_CTL_NUM_STRING_LEN 2
 
 #if defined(CONFIG_LGE_DISPLAY_COMMON)
@@ -570,8 +566,6 @@ static int mdss_dsi_panel_power_ctrl(struct mdss_panel_data *pdata,
 			ret = mdss_dsi_panel_power_off(pdata);
 #ifdef CONFIG_LGE_LCD_POWER_CTRL
 		}
-#ifdef CONFIG_STATE_NOTIFIER
-		state_suspend();
 #endif
 		break;
 	case MDSS_PANEL_POWER_ON:
@@ -587,10 +581,6 @@ static int mdss_dsi_panel_power_ctrl(struct mdss_panel_data *pdata,
 			else
 #endif
 				ret = mdss_dsi_panel_power_on(pdata);
-			ret = mdss_dsi_panel_power_on(pdata);
-#ifdef CONFIG_STATE_NOTIFIER
-		state_resume();
-#endif
 		break;
 	case MDSS_PANEL_POWER_LP1:
 	case MDSS_PANEL_POWER_LP2:
