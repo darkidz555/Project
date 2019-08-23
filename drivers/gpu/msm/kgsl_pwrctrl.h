@@ -26,7 +26,7 @@
 
 #define KGSL_PWR_ON	0xFFFF
 
-#define KGSL_MAX_CLKS 15
+#define KGSL_MAX_CLKS 14
 #define KGSL_MAX_REGULATORS 2
 
 #define KGSL_MAX_PWRLEVELS 10
@@ -34,9 +34,9 @@
 /* Only two supported levels, min & max */
 #define KGSL_CONSTRAINT_PWR_MAXLEVELS 2
 
-#define KGSL_XO_CLK_FREQ	40200000
+#define KGSL_XO_CLK_FREQ	19200000
 #define KGSL_RBBMTIMER_CLK_FREQ	KGSL_XO_CLK_FREQ
-#define KGSL_ISENSE_CLK_FREQ	500000000
+#define KGSL_ISENSE_CLK_FREQ	200000000
 
 /* Symbolic table for the constraint type */
 #define KGSL_CONSTRAINT_TYPES \
@@ -75,8 +75,8 @@ enum kgsl_pwrctrl_timer_type {
  * cycle frequency.  _ACTIVE means that the frequency is actively being
  * cycled.
  */
-#define CYCLE_DISABLE	1
-#define CYCLE_ENABLE	0
+#define CYCLE_DISABLE	0
+#define CYCLE_ENABLE	1
 #define CYCLE_ACTIVE	2
 
 struct platform_device;
