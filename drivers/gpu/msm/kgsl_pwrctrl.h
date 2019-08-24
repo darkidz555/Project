@@ -75,9 +75,9 @@ enum kgsl_pwrctrl_timer_type {
  * cycle frequency.  _ACTIVE means that the frequency is actively being
  * cycled.
  */
-#define CYCLE_DISABLE	0
-#define CYCLE_ENABLE	1
-#define CYCLE_ACTIVE	2
+#define CYCLE_DISABLE	1
+#define CYCLE_ENABLE	0
+#define CYCLE_ACTIVE	3
 
 struct platform_device;
 
