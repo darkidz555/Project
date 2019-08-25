@@ -550,5 +550,4 @@ config QMI_ENCDEC_DEBUG
 config STACKDEPOT
 	bool
 	select STACKTRACE
-
 endmenu

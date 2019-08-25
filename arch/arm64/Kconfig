@@ -1128,6 +1128,8 @@ endmenu
 
 menu "Userspace binary formats"
 
+endmenu
+
 source "fs/Kconfig.binfmt"
 
 config COMPAT
@@ -1153,9 +1155,10 @@ config SYSVIPC_COMPAT
 	def_bool y
 	depends on COMPAT && SYSVIPC
 
-endmenu
 
 menu "Power management options"
+
+endmenu
 
 source "kernel/power/Kconfig"
 
@@ -1170,15 +1173,14 @@ config ARCH_HIBERNATION_HEADER
 config ARCH_SUSPEND_POSSIBLE
 	def_bool y
 
-endmenu
 
 menu "CPU Power Management"
+
+endmenu
 
 source "drivers/cpuidle/Kconfig"
 
 source "drivers/cpufreq/Kconfig"
-
-endmenu
 
 source "net/Kconfig"
 

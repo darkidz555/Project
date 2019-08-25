@@ -1,5 +1,7 @@
 menu "CPU Frequency scaling"
 
+endmenu
+
 config CPU_FREQ
 	bool "CPU Frequency scaling"
 	select SRCU
@@ -16,7 +18,6 @@ config CPU_FREQ
 
 	  If in doubt, say N.
 
-if CPU_FREQ
 
 config CPU_FREQ_GOV_COMMON
 	bool
@@ -461,4 +462,3 @@ config QORIQ_CPUFREQ
 	  which are capable of changing the CPU's frequency dynamically.
 
 endif
-endmenu
