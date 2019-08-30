@@ -34,6 +34,7 @@
 #include <linux/sched.h>
 #endif
 #include <trace/events/power.h>
+#include <linux/state_notifier.h>
 
 #define SCREEN_OFF_CEILING    1248000
 
@@ -1983,7 +1984,7 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 	if (cpufreq_disabled())
 		return -ENODEV;
 
-    if (cpufreq_suspended && target_freq > SCREEN_OFF_CEILING) {
+    if (state_suspended && target_freq > SCREEN_OFF_CEILING) {
 		target_freq = SCREEN_OFF_CEILING;
 	}
 	/* Make sure that target_freq is within supported range */
