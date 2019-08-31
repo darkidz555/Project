@@ -241,7 +241,6 @@ static int cpu_notifier_cb(struct notifier_block *nb,
 	 * unboosting, set policy->min to the absolute min freq for the CPU.
 	 */
 	if (state & INPUT_BOOST || state & GENERAL_BOOST || state & GPU_BOOST) {
-		boost_freq = get_boost_freq(b, policy->cpu, state);
 		policy->min = min(policy->max, boost_freq);
 	} else {
 		min_freq = get_min_freq(b, policy->cpu);

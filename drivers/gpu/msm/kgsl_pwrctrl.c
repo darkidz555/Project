@@ -398,6 +398,8 @@ void kgsl_pwrctrl_pwrlevel_change(struct kgsl_device *device,
 	gpu_power_level = pwr->pwrlevels[pwr->active_pwrlevel].gpu_freq;
 	gpu_max_power_level = pwr->pwrlevels[pwr->thermal_pwrlevel].gpu_freq;;
 
+#endif
+
 #ifdef CONFIG_CPU_INPUT_BOOST
 	if (CONFIG_INPUT_BOOST_GPU_FREQ != 0 &&
 	    pwr->pwrlevels[pwr->active_pwrlevel].gpu_freq >= CONFIG_INPUT_BOOST_GPU_FREQ) {
