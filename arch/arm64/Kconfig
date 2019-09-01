@@ -93,6 +93,7 @@ config ARM64
 	select IRQ_DOMAIN
 	select IRQ_FORCED_THREADING
 	select MODULES_USE_ELF_RELA
+	select ARCH_HAS_FAST_MULTIPLIER
 	select NO_BOOTMEM
 	select OF
 	select OF_EARLY_FLATTREE
