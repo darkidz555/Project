@@ -374,8 +374,8 @@ static unsigned long get_bw_and_set_irq(struct hwmon_node *node,
 	 * positive integer. If it is not a positive integer, the new
 	 * io percentage will be set to 1 (the lower bound).
 	 */
-	if ((int) (io_percent - node->boost_percent) > 0)
-		io_percent -= node->boost_percent;
+	if ((int) (io_percent - node->io_percent) > 0)
+		io_percent -= node->io_percent;
 	else
 		io_percent = 1;
 
@@ -500,9 +500,6 @@ static unsigned long get_bw_and_set_irq(struct hwmon_node *node,
 		*ab = roundup(new_bw, node->bw_step);
 
 	*freq = (new_bw * 100) / io_percent;
-#ifdef CONFIG_CPU_INPUT_BOOST
-	if (cpu_input_boost_within_timeout(CONFIG_CPU_INPUT_BOOST_MDSS_TIMEOUT))
-#endif
 	if (freq_scalar)
 		*freq *= 1 + (freq_scalar / 100);
 	trace_bw_hwmon_update(dev_name(node->hw->df->dev.parent),
