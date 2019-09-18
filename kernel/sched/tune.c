@@ -231,8 +231,8 @@ root_schedtune = {
 	.perf_constrain_idx = 0,
 	.prefer_idle = 0,
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	.boost_default = 0,
-	.sched_boost = 0,
+	.boost_default = 30,
+	.sched_boost = 20,
 	.boost_count = 0,
 	.active_boost_slots = {
 		.list = LIST_HEAD_INIT(root_schedtune.active_boost_slots.list),
