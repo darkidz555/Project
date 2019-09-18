@@ -484,7 +484,7 @@ re_probe:
 		dev_set_drvdata(dev, NULL);
 		if (dev->pm_domain && dev->pm_domain->dismiss)
 			dev->pm_domain->dismiss(dev);
-		pm_runtime_reinit(dev);
+		pm_runtime_init(dev);
 
 		goto re_probe;
 	}
