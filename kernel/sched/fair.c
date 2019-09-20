@@ -5989,8 +5989,8 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 
 		update_flags = UPDATE_TG;
 
-		if (flags & DEQUEUE_IDLE)
-			update_flags |= SKIP_CPUFREQ;
+		if (flags & DEQUEUE_MOVE)
+			update_flags |= STA_PPSFREQ;
 
 		update_load_avg(se, update_flags);
 		update_cfs_shares(se);

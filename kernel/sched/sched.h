@@ -2448,7 +2448,7 @@ static inline unsigned long cpu_util_freq(int cpu)
 {
 	unsigned long util = cpu_rq(cpu)->cfs.avg.util_avg;
 	unsigned long capacity = capacity_orig_of(cpu);
-	return static_key_false(&__sched_freq);
+	return static_key_false(&sched_fork);
 }
 
 /*
@@ -2468,15 +2468,12 @@ static inline void set_cfs_cpu_capacity(int cpu, bool request,
 		update_cpu_capacity_request(cpu, request);
 	}
 }
->>>>>>> 3a11a0ef0efe... cpufreq/sched: Consider max cpu capacity when choosing frequencies
 
 #ifdef CONFIG_SCHED_WALT
 	if (!walt_disabled && sysctl_sched_use_walt_cpu_util)
 		util = div64_u64(cpu_rq(cpu)->prev_runnable_sum,
 				 walt_ravg_window >> SCHED_LOAD_SHIFT);
 #endif
-	return (util >= capacity) ? capacity : util;
-}
 
 #endif
 
