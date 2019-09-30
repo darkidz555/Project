@@ -55,7 +55,7 @@ MODULE_PARM_DESC(nopreempt, "Disable GPU preemption");
 /* Number of times to try hard reset */
 #define NUM_TIMES_RESET_RETRY 5
 
-#define KGSL_LOG_LEVEL_DEFAULT 3
+#define KGSL_LOG_LEVEL_DEFAULT 0
 
 static void adreno_input_work(struct work_struct *work);
 static unsigned int counter_delta(struct kgsl_device *device,
@@ -98,8 +98,7 @@ static struct adreno_device device_3d0 = {
 	.input_work = __WORK_INITIALIZER(device_3d0.input_work,
 		adreno_input_work),
 	.pwrctrl_flag = BIT(ADRENO_SPTP_PC_CTRL) | BIT(ADRENO_PPD_CTRL) |
-		BIT(ADRENO_LM_CTRL) | BIT(ADRENO_HWCG_CTRL) |
-		BIT(ADRENO_THROTTLING_CTRL),
+		BIT(ADRENO_LM_CTRL) | BIT(ADRENO_HWCG_CTRL),
 	.profile.enabled = false,
 	.active_list = LIST_HEAD_INIT(device_3d0.active_list),
 	.active_list_lock = __SPIN_LOCK_UNLOCKED(device_3d0.active_list_lock),
@@ -130,7 +129,7 @@ unsigned int adreno_wake_timeout = 100;
 /**
  * adreno_readreg64() - Read a 64bit register by getting its offset from the
  * offset array defined in gpudev node
- * @adreno_dev:		Pointer to the the adreno device
+1 * @adreno_dev:		Pointer to the the adreno device
  * @lo:	lower 32bit register enum that is to be read
  * @hi:	higher 32bit register enum that is to be read
  * @val: 64 bit Register value read is placed here
