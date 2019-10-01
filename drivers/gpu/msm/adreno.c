@@ -63,7 +63,7 @@ static unsigned int counter_delta(struct kgsl_device *device,
 
 static struct devfreq_msm_adreno_tz_data adreno_tz_data = {
 	.bus = {
-		.max = 5000,
+		.max = 1000,
 	},
 	.device_id = KGSL_DEVICE_3D0,
 };
@@ -129,7 +129,7 @@ unsigned int adreno_wake_timeout = 100;
 /**
  * adreno_readreg64() - Read a 64bit register by getting its offset from the
  * offset array defined in gpudev node
-1 * @adreno_dev:		Pointer to the the adreno device
+ * @adreno_dev:		Pointer to the the adreno device
  * @lo:	lower 32bit register enum that is to be read
  * @hi:	higher 32bit register enum that is to be read
  * @val: 64 bit Register value read is placed here
