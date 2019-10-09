@@ -235,7 +235,7 @@ static struct pll_vote_clk gpll4 = {
 		.dbg_name = "gpll4",
 		.ops = &clk_ops_pll_vote,
 		VDD_DIG_FMAX_MAP3(LOWER, 400000000, LOW, 800000000,
-					NOMINAL, 1600000000),
+					NOMINAL, 3200000000),
 		CLK_INIT(gpll4.c),
 	},
 };
