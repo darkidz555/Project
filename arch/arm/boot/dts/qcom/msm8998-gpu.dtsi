@@ -46,7 +46,7 @@
 			<  7759 /*  1017 MHz */ >,
 			<  9887 /*  1296 MHz */ >,
 			<  11863 /*  1555 MHz */ >,
-			<  13763 /*  1804 MHz */ >;
+			<  13763 /*  2404 MHz */ >;
 	};
 
 	msm_gpu: qcom,kgsl-3d0@5000000 {
@@ -62,9 +62,9 @@
 		qcom,chipid = <0x05040000>;
 		qcom,gpu-efuse-leakage = <0x00070130 24>;
 		qcom,base-leakage-coefficient = <34>;
-		qcom,lm-limit = <6000>;
+		qcom,lm-limit = <9000>;
 
-		qcom,initial-pwrlevel = <4>;
+		qcom,initial-pwrlevel = <0>;
 
 		qcom,idle-timeout = <80>; //<HZ/12>
 		qcom,no-nap;
@@ -127,7 +127,7 @@
 				<26 512 0 8136000>,     // 9 bus=1017
 				<26 512 0 10368000>,    // 10 bus=1296
 				<26 512 0 12440000>,    // 11 bus=1555
-				<26 512 0 14432000>;    // 12 bus=1804
+				<26 512 0 14432000>;    // 12 bus=2404
 
 		/* GDSC regulator names */
 		regulator-names = "vddcx", "vdd";
