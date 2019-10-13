@@ -228,6 +228,7 @@ static struct clk_freq_tbl ftbl_gfx3d_isense_clk_src[] = {
 	F(  40000000,   gpucc_gpll0,   15,    0,     0),
 	F( 200000000,   gpucc_gpll0,    3,    0,     0),
 	F( 300000000,   gpucc_gpll0,    2,    0,     0),
+	F( 450000000,   gpucc_gpll0,   1.5,   0,     0),
 	F_END
 };
 
@@ -241,7 +242,7 @@ static struct rcg_clk gfx3d_isense_clk_src = {
 		.dbg_name = "gfx3d_isense_clk_src",
 		.ops = &clk_ops_rcg,
 		VDD_DIG_FMAX_MAP4(MIN, 19200000, LOWER, 40000000,
-				LOW, 200000000, HIGH, 300000000),
+				LOW, 200000000, HIGH, 450000000),
 		CLK_INIT(gfx3d_isense_clk_src.c),
 	},
 };
@@ -249,6 +250,7 @@ static struct rcg_clk gfx3d_isense_clk_src = {
 static struct clk_freq_tbl ftbl_rbcpr_clk_src[] = {
 	F( 19200000, gpucc_cxo_clk,    1,    0,     0),
 	F( 50000000,   gpucc_gpll0,   12,    0,     0),
+	F( 65000000,   gpucc_gpll0,   14,    0,     0),
 	F_END
 };
 
@@ -261,7 +263,7 @@ static struct rcg_clk rbcpr_clk_src = {
 	.c = {
 		.dbg_name = "rbcpr_clk_src",
 		.ops = &clk_ops_rcg,
-		VDD_DIG_FMAX_MAP2(MIN, 19200000, NOMINAL, 50000000),
+		VDD_DIG_FMAX_MAP2(MIN, 19200000, NOMINAL, 65000000),
 		CLK_INIT(rbcpr_clk_src.c),
 	},
 };
