@@ -402,7 +402,7 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
-		   -Werror-implicit-function-declaration \
+		   -Wno-implicit-function-declaration \
 		   -Wno-maybe-uninitialized -Wno-misleading-indentation \
 		   -Wno-array-bounds -Wno-shift-overflow \
 		   -Wno-format-security \
@@ -412,6 +412,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-strict-prototypes \
 		   -Wno-misleading-indentation \
 		   -Wno-uninitialized \
+		   -Wno-address-of-packed-member \
 		   -fno-delete-null-pointer-checks \
 		   -fivopts \
 		   -fvariable-expansion-in-unroller \
