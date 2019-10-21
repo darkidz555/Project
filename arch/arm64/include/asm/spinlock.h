@@ -41,7 +41,8 @@ static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
 	ARM64_LSE_ATOMIC_INSN(
 	/* LL/SC */
 "	stxr	%w1, %w0, %2\n"
-	__nops(2),
+"	nop\n"
+"	nop\n",
 	/* LSE atomics */
 "	mov	%w1, %w0\n"
 "	cas	%w0, %w0, %2\n"
@@ -71,7 +72,9 @@ static inline void arch_spin_lock(arch_spinlock_t *lock)
 	/* LSE atomics */
 "	mov	%w2, %w5\n"
 "	ldadda	%w2, %w0, %3\n"
-	__nops(3)
+"	nop\n"
+"	nop\n"
+"	nop\n"
 	)
 
 	/* Did we get the lock? */
@@ -134,8 +137,8 @@ static inline void arch_spin_unlock(arch_spinlock_t *lock)
 	"	stlrh	%w1, %0",
 	/* LSE atomics */
 	"	mov	%w1, #1\n"
-	"	staddlh	%w1, %0\n"
-	__nops(1))
+	"	nop\n"
+	"	staddlh	%w1, %0")
 	: "=Q" (lock->owner), "=&r" (tmp)
 	:
 	: "memory");
@@ -180,7 +183,7 @@ static inline void arch_write_lock(arch_rwlock_t *rw)
 	"	cbnz	%w0, 1b\n"
 	"	stxr	%w0, %w2, %1\n"
 	"	cbnz	%w0, 2b\n"
-	__nops(1),
+	"	nop",
 	/* LSE atomics */
 	"1:	mov	%w0, wzr\n"
 	"2:	casa	%w0, %w2, %1\n"
@@ -209,7 +212,8 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 	/* LSE atomics */
 	"	mov	%w0, wzr\n"
 	"	casa	%w0, %w2, %1\n"
-	__nops(2))
+	"	nop\n"
+	"	nop")
 	: "=&r" (tmp), "+Q" (rw->lock)
 	: "r" (0x80000000)
 	: "memory");
@@ -257,8 +261,8 @@ static inline void arch_read_lock(arch_rwlock_t *rw)
 	"	add	%w0, %w0, #1\n"
 	"	tbnz	%w0, #31, 1b\n"
 	"	stxr	%w1, %w0, %2\n"
-	"	cbnz	%w1, 2b\n"
-	__nops(1),
+	"	nop\n"
+	"	cbnz	%w1, 2b",
 	/* LSE atomics */
 	"1:	wfe\n"
 	"2:	ldxr	%w0, %2\n"
@@ -284,8 +288,9 @@ static inline void arch_read_unlock(arch_rwlock_t *rw)
 	"	cbnz	%w1, 1b",
 	/* LSE atomics */
 	"	movn	%w0, #0\n"
-	"	staddl	%w0, %2\n"
-	__nops(2))
+	"	nop\n"
+	"	nop\n"
+	"	staddl	%w0, %2")
 	: "=&r" (tmp), "=&r" (tmp2), "+Q" (rw->lock)
 	:
 	: "memory");
@@ -310,7 +315,7 @@ static inline int arch_read_trylock(arch_rwlock_t *rw)
 	"	tbnz	%w1, #31, 1f\n"
 	"	casa	%w0, %w1, %2\n"
 	"	sbc	%w1, %w1, %w0\n"
-	__nops(1)
+	"	nop\n"
 	"1:")
 	: "=&r" (tmp), "=&r" (tmp2), "+Q" (rw->lock)
 	:
