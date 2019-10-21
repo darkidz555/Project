@@ -16,6 +16,8 @@ config CPU_FREQ
 
 	  If in doubt, say N.
 
+endmenu
+
 if CPU_FREQ
 
 config CPU_FREQ_GOV_COMMON
@@ -62,6 +64,7 @@ choice
 	help
 	  This option sets which CPUFreq governor shall be loaded at
 	  startup. If in doubt, select 'performance'.
+endchoice
 
 config CPU_FREQ_DEFAULT_GOV_PERFORMANCE
 	bool "performance"
@@ -236,6 +239,7 @@ config CPU_FREQ_GOV_CONSERVATIVE
 	  For details, take a look at linux/Documentation/cpu-freq.
 
 	  If in doubt, say N.
+endif
 
 config CPU_BOOST
 	tristate "Event base short term CPU freq boost"
@@ -514,6 +518,3 @@ config QORIQ_CPUFREQ
 	help
 	  This adds the CPUFreq driver support for Freescale QorIQ SoCs
 	  which are capable of changing the CPU's frequency dynamically.
-
-endif
-endmenu
