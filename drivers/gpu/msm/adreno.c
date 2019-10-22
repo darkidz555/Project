@@ -129,7 +129,7 @@ unsigned int adreno_wake_timeout = 100;
 /**
  * adreno_readreg64() - Read a 64bit register by getting its offset from the
  * offset array defined in gpudev node
-1 * @adreno_dev:		Pointer to the the adreno device
+ * @adreno_dev:		Pointer to the the adreno device
  * @lo:	lower 32bit register enum that is to be read
  * @hi:	higher 32bit register enum that is to be read
  * @val: 64 bit Register value read is placed here
