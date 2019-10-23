@@ -622,20 +622,6 @@ static int fg_get_charge_raw(struct fg_chip *chip, int *val)
 #define BATT_SOC_32BIT	GENMASK(31, 0)
 static int fg_get_charge_counter_shadow(struct fg_chip *chip, int *val)
 {
-	int rc, batt_soc;
-
-	rc = fg_get_sram_prop(chip, FG_SRAM_BATT_SOC, &batt_soc);
-	if (rc < 0) {
-		pr_err("Error in getting BATT_SOC, rc=%d\n", rc);
-		return rc;
-	}
-
-	*val = div_u64((u32)batt_soc * chip->cl.learned_cc_uah, BATT_SOC_32BIT);
-	return 0;
-}
-
-static int fg_get_charge_counter(struct fg_chip *chip, int *val)
-{
 	int rc;
 	unsigned int batt_soc;
 
@@ -1386,7 +1372,7 @@ static bool is_parallel_charger_available(struct fg_chip *chip)
 	return true;
 }
 
-static int fg_prime_cc_soc_sw(struct fg_chip *chip, int cc_soc_sw)
+static int fg_prime_cc_soc_sw(struct fg_chip *chip, unsigned int cc_soc_sw)
 {
 	int rc;
 
@@ -1396,7 +1382,7 @@ static int fg_prime_cc_soc_sw(struct fg_chip *chip, int cc_soc_sw)
 	if (rc < 0)
 		pr_err("Error in writing cc_soc_sw, rc=%d\n", rc);
 	else
-		fg_dbg(chip, FG_STATUS, "cc_soc_sw: %x\n", cc_soc_sw);
+		fg_dbg(chip, FG_STATUS, "cc_soc_sw: %u\n", cc_soc_sw);
 
 	return rc;
 }
@@ -1679,7 +1665,8 @@ out:
 
 static void fg_cap_learning_update(struct fg_chip *chip)
 {
-	int rc, batt_soc, batt_soc_msb, cc_soc_sw;
+	int rc;
+	unsigned int batt_soc, batt_soc_msb, cc_soc_sw;
 	bool input_present = is_input_present(chip);
 	bool prime_cc = false;
 
@@ -1766,7 +1753,7 @@ static void fg_cap_learning_update(struct fg_chip *chip)
 		if (chip->charge_done)
 			cc_soc_sw = CC_SOC_30BIT;
 		else
-			cc_soc_sw = div_u64((u32)batt_soc *
+			cc_soc_sw = div_u64((uint64_t)batt_soc *
 					CC_SOC_30BIT, BATT_SOC_32BIT);
 
 		rc = fg_prime_cc_soc_sw(chip, cc_soc_sw);
