@@ -446,7 +446,7 @@ static int __qseecom_scm_call2_locked(uint32_t smc_id, struct scm_desc *desc)
 	int retry_count = 0;
 
 	do {
-		ret = scm_call2_noretry(smc_id, desc);
+		ret = scm_call2(smc_id, desc);
 		if (ret == -EBUSY) {
 			mutex_unlock(&app_access_lock);
 			msleep(QSEECOM_SCM_EBUSY_WAIT_MS);
