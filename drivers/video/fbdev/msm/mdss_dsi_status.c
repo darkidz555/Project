@@ -177,7 +177,7 @@ irqreturn_t hw_vsync_handler(int irq, void *data)
 
 	mod_delayed_work(system_wq, &ps_data->check_status,
 			msecs_to_jiffies(interval));
-	queue_work(system_highpri_wq, &ps_data->irq_done);
+	schedule_work(&ps_data->irq_done);
 
 	return IRQ_HANDLED;
 }
