@@ -9780,10 +9780,8 @@ static int event_idle_notif(struct notifier_block *nb, unsigned long action,
 							void *data)
 {
 	switch (action) {
-	case IDLE_START:
 		__this_cpu_write(is_idle, true);
 		break;
-	case IDLE_END:
 		__this_cpu_write(is_idle, false);
 		break;
 	}
@@ -9808,7 +9806,6 @@ void __init perf_event_init(void)
 	perf_pmu_register(&perf_task_clock, NULL, -1);
 	perf_tp_register();
 	perf_cpu_notifier(perf_cpu_notify);
-	idle_notifier_register(&perf_event_idle_nb);
 	register_reboot_notifier(&perf_reboot_notifier);
 
 	ret = init_hw_breakpoint();
