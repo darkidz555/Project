@@ -8628,13 +8628,12 @@ static int ufshcd_set_dev_pwr_mode(struct ufs_hba *hba,
 			scsi_print_sense_hdr(sdp, NULL, &sshdr);
 	}
 
-static inline int ufshcd_config_vreg_hpm(struct ufs_hba *hba,
-					 struct ufs_vreg *vreg)
-{
-	if (!vreg)
-		return 0;
-
-	return ufshcd_config_vreg_load(hba->dev, vreg, vreg->max_uA);
+	if (!ret)
+		hba->curr_dev_pwr_mode = pwr_mode;
+out:
+	scsi_device_put(sdp);
+	hba->host->eh_noresume = 0;
+	return ret;
 }
 
 static int ufshcd_link_state_transition(struct ufs_hba *hba,
