@@ -105,8 +105,8 @@ void inet_frags_fini(struct inet_frags *);
 
 static inline int inet_frags_init_net(struct netns_frags *nf)
 {
-	atomic_set(&nf->mem, 0);
-	return 0;
+	atomic_long_set(&nf->mem, 0);
+	return rhashtable_init(&nf->rhashtable, &nf->f->rhash_params);
 }
 void inet_frags_exit_net(struct netns_frags *nf, struct inet_frags *f);
 
