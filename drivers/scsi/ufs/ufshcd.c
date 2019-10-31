@@ -8635,20 +8635,28 @@ static int ufshcd_link_state_transition(struct ufs_hba *hba,
 	if (req_link_state == hba->uic_link_state)
 		return 0;
 
-	if (regulator_count_voltages(reg) > 0) {
-		if (vreg->min_uV && vreg->max_uV) {
-			min_uV = on ? vreg->min_uV : 0;
-			ret = regulator_set_voltage(reg, min_uV, vreg->max_uV);
-			if (ret) {
-				dev_err(dev,
-					"%s: %s set voltage failed, err=%d\n",
-					__func__, name, ret);
-				goto out;
-			}
-		}
-
-		uA_load = on ? vreg->max_uA : 0;
-		ret = ufshcd_config_vreg_load(dev, vreg, uA_load);
+	if (req_link_state == UIC_LINK_HIBERN8_STATE) {
+		ret = ufshcd_uic_hibern8_enter(hba);
+		if (!ret)
+			ufshcd_set_link_hibern8(hba);
+		else
+			goto out;
+	}
+	/*
+	 * If autobkops is enabled, link can't be turned off because
+	 * turning off the link would also turn off the device.
+	 */
+	else if ((req_link_state == UIC_LINK_OFF_STATE) &&
+		   (!check_for_bkops || (check_for_bkops &&
+		    !hba->auto_bkops_enabled))) {
+		/*
+		 * Let's make sure that link is in low power mode, we are doing
+		 * this currently by putting the link in Hibern8. Otherway to
+		 * put the link in low power mode is to send the DME end point
+		 * to device and then send the DME reset command to local
+		 * unipro. But putting the link in hibern8 is much faster.
+		 */
+		ret = ufshcd_uic_hibern8_enter(hba);
 		if (ret)
 			goto out;
 		/*
