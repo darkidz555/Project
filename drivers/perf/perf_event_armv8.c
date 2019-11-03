@@ -662,8 +662,6 @@ static int perf_cpu_idle_notifier(struct notifier_block *nb,
 	struct arm_pmu_and_idle_nb *pmu_nb = container_of(nb,
 				struct arm_pmu_and_idle_nb, perf_cpu_idle_nb);
 
-	if (action == IDLE_START)
-		armv8pmu_idle_update(pmu_nb->cpu_pmu);
 
 	return NOTIFY_OK;
 }
@@ -680,13 +678,11 @@ int armv8pmu_probe_num_events(struct arm_pmu *arm_pmu)
 
 	pmu_idle_nb->cpu_pmu = arm_pmu;
 	pmu_idle_nb->perf_cpu_idle_nb.notifier_call = perf_cpu_idle_notifier;
-	idle_notifier_register(&pmu_idle_nb->perf_cpu_idle_nb);
 
 	ret = smp_call_function_any(&arm_pmu->supported_cpus,
 				    armv8pmu_read_num_pmnc_events,
 				    &arm_pmu->num_events, 1);
 	if (ret)
-		idle_notifier_unregister(&pmu_idle_nb->perf_cpu_idle_nb);
 	return ret;
 
 
