@@ -30,7 +30,6 @@ $(warning LSE atomics not supported by binutils)
   endif
 endif
 
-<<<<<<< HEAD
 KBUILD_CFLAGS	+= $(call cc-option,-march=armv8-a+crypto+crc,) $(call cc-option,-mcpu=cortex-a53+crypto+crc,)
 
 ifeq ($(CONFIG_COMPAT_VDSO), y)
