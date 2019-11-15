@@ -58,6 +58,7 @@
 #include <trace/events/ufs.h>
 
 #include <linux/power_hal.h>
+#include <linux/binfmts.h>
 
 struct Scsi_Host *ph_host;
 
@@ -1767,6 +1768,9 @@ static ssize_t ufshcd_clkgate_enable_store(struct device *dev,
 	struct ufs_hba *hba = dev_get_drvdata(dev);
 	unsigned long flags;
 	u32 value;
+
+	if (task_is_booster(current))
+		return count;
 
 	if (kstrtou32(buf, 0, &value))
 		return -EINVAL;
