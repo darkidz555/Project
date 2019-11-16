@@ -618,9 +618,11 @@ static int get_pwr_cl_trigger_threshold(char *buf,
 	return snprintf(buf, PAGE_SIZE, "%u", thr.pwr_cl_trigger_threshold);
 }
 
-	cpufreq_verify_within_limits(policy, min, max);
-	if (max != 4294967295)
-		policy->max=max;
+static const struct kernel_param_ops param_ops_pwr_trig_thr = {
+	.set = set_pwr_cl_trigger_threshold,
+	.get = get_pwr_cl_trigger_threshold,
+};
+device_param_cb(pwr_cl_trig_thr, &param_ops_pwr_trig_thr, NULL, 0644);
 
 
 static int freq_greater_than_threshold(struct cluster *cl, int idx)
