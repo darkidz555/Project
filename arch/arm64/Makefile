@@ -60,7 +60,6 @@ ifeq ($(CONFIG_COMPAT_VDSO), y)
     vdso32 := -DCONFIG_VDSO32=1
   endif
 endif
->>>>>>> 8930bdcb82d9... arm64: Optimize for CPU
 
 ifeq ($(cc-name),clang)
 # This is a workaround for https://bugs.llvm.org/show_bug.cgi?id=30792.
