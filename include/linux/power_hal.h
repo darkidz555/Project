@@ -16,4 +16,31 @@ static inline void powerhal_boost_kick(void) { }
 static inline void powerhal_boost_kick_max(unsigned int duration_ms) { }
 #endif
 
+/* CPUBW management */
+#ifdef CONFIG_DEVFREQ_GOV_QCOM_BW_HWMON
+void set_hyst_trigger_count_val(int val);
+void set_hist_memory_val(int val);
+void set_hyst_length_val(int val);
+#else
+static inline void set_hyst_trigger_count_val(int val) { }
+static inline void set_hist_memory_val(int val) { }
+static inline void set_hyst_length_val(int val) { }
+#endif
+
+/* UFS Boosting */
+void set_ufshcd_clkgate_enable_status(u32 value);
+
+/* Video Playback detection */
+extern bool video_streaming;
+void video_streaming_disable_schedtune(void);
+
+/* GPU Boosting */
+enum kgsl_pwrctrl_timer_type {
+	KGSL_PWR_IDLE_TIMER,
+};
+
+void __force_on_store_ph(unsigned int val, int flag);
+void __timer_store_ph(unsigned int val,
+				enum kgsl_pwrctrl_timer_type timer);
+
 #endif /* _POWER_HAL_H */
