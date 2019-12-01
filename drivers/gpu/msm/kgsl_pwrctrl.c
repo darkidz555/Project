@@ -923,8 +923,6 @@ static ssize_t kgsl_pwrctrl_idle_timer_store(struct device *dev,
 					struct device_attribute *attr,
 					const char *buf, size_t count)
 {
-	if (task_is_booster(current))
-		return count;
 
 	return __timer_store(dev, attr, buf, count, KGSL_PWR_IDLE_TIMER);
 }
@@ -1133,8 +1131,6 @@ static ssize_t kgsl_pwrctrl_force_clk_on_store(struct device *dev,
 					struct device_attribute *attr,
 					const char *buf, size_t count)
 {
-	if (task_is_booster(current))
-		return count;
 
 	return __force_on_store(dev, attr, buf, count, KGSL_PWRFLAGS_CLK_ON);
 }
@@ -1164,8 +1160,6 @@ static ssize_t kgsl_pwrctrl_force_rail_on_store(struct device *dev,
 					struct device_attribute *attr,
 					const char *buf, size_t count)
 {
-	if (task_is_booster(current))
-		return count;
 
 	return __force_on_store(dev, attr, buf, count, KGSL_PWRFLAGS_POWER_ON);
 }

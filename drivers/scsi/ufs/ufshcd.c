@@ -1769,8 +1769,6 @@ static ssize_t ufshcd_clkgate_enable_store(struct device *dev,
 	unsigned long flags;
 	u32 value;
 
-	if (task_is_booster(current))
-		return count;
 
 	if (kstrtou32(buf, 0, &value))
 		return -EINVAL;

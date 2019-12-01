@@ -371,10 +371,7 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 	/* Unboost when the screen is off */
 	if (test_bit(SCREEN_OFF, &b->state)) {
 		policy->min = get_min_freq(policy);
-		disable_schedtune_boost(1);
-		/* Enable EAS behaviour */
-		energy_aware_enable = true;
-		/* UFS unboost */
+ 		/* UFS unboost */
 		set_ufshcd_clkgate_enable_status(1);
 		/* CPUBW unboost */
 		set_hyst_trigger_count_val(3);
@@ -389,9 +386,6 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 
 	/* Do powerhal boost for powerhal_max_boost */
 	if (test_bit(POWERHAL_MAX_BOOST, &b->state)) {
-		/* Disable EAS behaviour */
-		energy_aware_enable = false;
-
 		/* UFS boost */
 		set_ufshcd_clkgate_enable_status(0);
 
@@ -407,9 +401,6 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 		__force_on_store_ph(1, 1);
 		__timer_store_ph(10000, KGSL_PWR_IDLE_TIMER);
 	} else {
-		/* Enable EAS behaviour */
-		energy_aware_enable = true;
-
 		/* GPU unboost */
 		/* Disable KGSL_PWRFLAGS_POWER_ON */
 		__force_on_store_ph(0, 0);
@@ -420,9 +411,6 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 
 	/* Put VIDEO_STREAMING_INPUT_EVENT check here to cover max_boost cases */
 	if (test_bit(VIDEO_STREAMING_INPUT_EVENT, &b->state))
-		disable_schedtune_boost(0);
-	else if (video_streaming)
-		disable_schedtune_boost(1);
 
 	/* return early if being max bosted */
 	if (test_bit(MAX_BOOST, &b->state) ||
