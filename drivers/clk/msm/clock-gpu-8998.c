@@ -166,14 +166,14 @@ static struct clk_freq_tbl ftbl_gfx3d_clk_src[] = {
 };
 
 static struct clk_freq_tbl ftbl_gfx3d_clk_src_v2[] = {
-	F_SLEW( 357000000,  714000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 442000000,  884000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 514000000, 1028000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 615000000, 1230000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 696000000, 1392000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 760000000, 1520000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 830000000, 1660000000, gpu_pll0_pll_out_even,    1, 0, 0),
-	F_SLEW( 910000000, 1820000000, gpu_pll0_pll_out_even,	 1, 0, 0),
+	F_SLEW( 327000000,  654000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 380000000,  760000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 450000000,  900000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 550000000, 1100000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 620000000, 1240000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 680000000, 1360000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 750000000, 1500000000, gpu_pll0_pll_out_even,    1, 0, 0),
+	F_SLEW( 820000000, 1640000000, gpu_pll0_pll_out_even,	 1, 0, 0),
 	F_END
 };
 
@@ -606,13 +606,13 @@ static struct clk_lookup msm_clocks_gfxcc_8998[] = {
 
 static void msm_gfxcc_hamster_fixup(void)
 {
-	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1820000500;
+	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1640000500;
 	gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_vq;
 }
 
 static void msm_gfxcc_8998_v2_fixup(void)
 {
-	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1820000500;
+	gpu_pll0_pll.c.fmax[VDD_DIG_MIN] = 1640000500;
 	gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_v2;
 }
 
