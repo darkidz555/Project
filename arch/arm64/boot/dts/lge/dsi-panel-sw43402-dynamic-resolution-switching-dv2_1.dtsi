@@ -32,10 +32,12 @@
 					qcom,mdss-dsi-h-right-border = <0>;
 					qcom,mdss-dsi-v-top-border = <0>;
 					qcom,mdss-dsi-v-bottom-border = <0>;
-					qcom,mdss-dsi-panel-timings = [00 14 05 05 08 0E 04 05 04 03 04 00];
+					qcom,mdss-dsi-panel-timings = [00 1B 06 06 0B 11 05 07 05 03 04 00];
 					qcom,mdss-dsi-t-clk-post = <0x06>;
 					qcom,mdss-dsi-t-clk-pre = <0x20>;
 					qcom,panel-roi-alignment = <1440 0 1440 16 1440 16>;
+					qcom,mdss-dsi-max-refresh-rate = <70>;
+					qcom,mdss-tear-check-frame-rate = <7000>;
 
 					qcom,mdss-dsi-on-command = [
 						39 01 00 00 00 00 03 B0 20 43
@@ -72,6 +74,7 @@
 					qcom,config-select = <&dsi_sw43402_dsc_cmd_config3>;
 					qcom,mdss-dsc-version = <0x11>;
 					qcom,mdss-dsc-scr-version = <0x1>;
+					qcom,mdss-dsi-panel-clockrate = <899000000>;
 				};
 				fhd {
 					qcom,mdss-dsi-panel-framerate = <70>;
