@@ -53,7 +53,7 @@
 		qcom,mdss-dsi-lane-3-state;
 		qcom,mdss-dsi-reset-sequence = <1 10>, <0 2>, <1 10>;
 		qcom,mdss-dsi-bl-max-level = <511>;
-		qcom,mdss-brightness-max-level = <511>;
+		qcom,mdss-brightness-max-level = <255>;
 		qcom,default-brightness = <158>;
 		qcom,mdss-dsi-dma-trigger = "trigger_sw";
 		qcom,mdss-dsi-mdp-trigger = "none";
@@ -65,7 +65,7 @@
 		qcom,mdss-dsi-te-using-te-pin;
 		qcom,mdss-dsi-lp11-init;
 		qcom,mdss-dsi-tx-eot-append;
-		qcom,mdss-mdp-transfer-time-us = <15000>;
+		qcom,mdss-mdp-transfer-time-us = <8000>;
 		qcom,ulps-enabled;
 		qcom,mdss-dsi-force-clock-lane-hs;
 
@@ -99,7 +99,7 @@
 			39 01 00 00 00 00 0F E2 20 0D 08 A8 0A AA 04 A4 80 80 80 5C 5C 5C
 			39 01 00 00 46 00 13 CE 81 1F 0F 01 24 68 22 20 04 01 00 80 FF 88 08 02 00 00
 			];
-		qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
+		qcom,mdss-dsi-on-command-state = "dsi_hs_mode";
 
 		qcom,mdss-dsi-post-panel-on-command = [
 			39 01 00 00 3C 00 03 B0 A5 00
@@ -114,7 +114,7 @@
 			05 01 00 00 00 00 01 28
 			05 01 00 00 96 00 01 10
 			];
-		qcom,mdss-dsi-off-command-state = "dsi_lp_mode";
+		qcom,mdss-dsi-off-command-state = "dsi_hs_mode";
 
 		lge,mdss-dsi-color-manager-mode-table = <0 0>, <0 1>, <2 1>, <1 1>;
 		lge,mdss-dsi-disp-ctrl-command-1 = [

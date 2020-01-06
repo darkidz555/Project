@@ -38,6 +38,7 @@
 					qcom,panel-roi-alignment = <1440 0 1440 16 1440 16>;
 					qcom,mdss-dsi-max-refresh-rate = <70>;
 					qcom,mdss-tear-check-frame-rate = <7000>;
+					qcom,mdss-mdp-transfer-time-us = <8000>;
 
 					qcom,mdss-dsi-on-command = [
 						39 01 00 00 00 00 03 B0 20 43
@@ -58,7 +59,7 @@
 						39 01 00 00 00 00 0F E2 20 0D 08 A8 0A AA 04 A4 80 80 80 5C 5C 5C
 						39 01 00 00 46 00 13 CE 81 1F 0F 01 24 68 22 20 04 01 00 80 FF 88 08 02 00 00
 						];
-					qcom,mdss-dsi-on-command-state = "dsi_lp_mode";
+					qcom,mdss-dsi-on-command-state = "dsi_hs_mode";
 
 					qcom,mdss-dsi-post-panel-on-command = [
 						39 01 00 00 3C 00 03 B0 A5 00
@@ -68,13 +69,13 @@
 					qcom,mdss-dsi-timing-switch-command = [
 						15 01 00 00 00 00 02 3D 00
 						];
-					qcom,mdss-dsi-timing-switch-command-state = "dsi_lp_mode";
+					qcom,mdss-dsi-timing-switch-command-state = "dsi_hs_mode";
 
 					qcom,compression-mode = "dsc";
 					qcom,config-select = <&dsi_sw43402_dsc_cmd_config3>;
 					qcom,mdss-dsc-version = <0x11>;
 					qcom,mdss-dsc-scr-version = <0x1>;
-					qcom,mdss-dsi-panel-clockrate = <899000000>;
+					qcom,mdss-dsi-panel-clockrate = <1100000000>;
 				};
 				fhd {
 					qcom,mdss-dsi-panel-framerate = <70>;
@@ -95,6 +96,7 @@
 					qcom,mdss-dsi-t-clk-post = <0x07>;
 					qcom,mdss-dsi-t-clk-pre = <0x29>;
 					qcom,panel-roi-alignment = <1440 0 1440 16 1440 16>;
+					qcom,mdss-mdp-transfer-time-us = <8000>;
 
 					qcom,mdss-dsi-on-command = [
 						39 01 00 00 00 00 03 B0 20 43
