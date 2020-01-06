@@ -21,6 +21,10 @@
 		qcom,mdss-dsc-bit-per-component = <8>;
 		qcom,mdss-dsc-bit-per-pixel = <8>;
 		qcom,mdss-dsc-block-prediction-enable;
+		qcom,mdss-dsi-panel-framerate = <70>;
+		qcom,mdss-dsi-max-refresh-rate = <70>;
+		qcom,mdss-dsi-panel-clockrate = <1190000000>;
+		qcom,mdss-dsi-panel-timings = [00 14 05 05 08 0E 04 05 04 03 04 00];
 	};
 
 	dsi_sw43402_dsc_cmd_config2: config2 {
@@ -32,6 +36,10 @@
 		qcom,mdss-dsc-bit-per-component = <8>;
 		qcom,mdss-dsc-bit-per-pixel = <8>;
 		qcom,mdss-dsc-block-prediction-enable;
+		qcom,mdss-dsi-panel-framerate = <70>;
+		qcom,mdss-dsi-max-refresh-rate = <70>;
+		qcom,mdss-dsi-panel-clockrate = <1100000000>;
+		qcom,mdss-dsi-panel-timings = [00 14 05 05 08 0E 04 05 04 03 04 00];
 	};
 
 	dsi_sw43402_dsc_cmd_config3: config3 {
@@ -43,5 +51,9 @@
 		qcom,mdss-dsc-bit-per-component = <8>;
 		qcom,mdss-dsc-bit-per-pixel = <8>;
 		qcom,mdss-dsc-block-prediction-enable;
+		qcom,mdss-dsi-panel-framerate = <70>;
+		qcom,mdss-dsi-max-refresh-rate = <70>;
+		qcom,mdss-dsi-panel-clockrate = <1100000000>;
+		qcom,mdss-dsi-panel-timings = [00 14 05 05 08 0E 04 05 04 03 04 00];
 	};
 };

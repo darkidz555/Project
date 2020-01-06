@@ -17,7 +17,7 @@
     dsi_sw43402_dsc_qhd_cmd_dv3_0: qcom,mdss_dsi_sw43402_dsc_qhd_cmd_dv3_0 {
         qcom,mdss-dsi-panel-name = "SW43402 cmd mode dsc dsi panel";
 		qcom,mdss-dsi-panel-type = "dsi_cmd_mode";
-		qcom,mdss-dsi-panel-framerate = <70>;
+		qcom,mdss-dsi-panel-framerate = <90>;
 		qcom,mdss-dsi-virtual-channel-id = <0>;
 		qcom,mdss-dsi-stream = <0>;
 		qcom,mdss-dsi-panel-width = <1440>;
@@ -33,7 +33,7 @@
 		qcom,mdss-dsi-h-right-border = <0>;
 		qcom,mdss-dsi-v-top-border = <0>;
 		qcom,mdss-dsi-v-bottom-border = <0>;
-		qcom,mdss-dsi-panel-timings = [00 14 05 05 08 0E 04 05 04 03 04 00];
+		qcom,mdss-dsi-panel-timings = [00 1B 06 06 0B 11 05 07 05 03 04 00];
 		qcom,mdss-dsi-t-clk-post = <0x06>;
 		qcom,mdss-dsi-t-clk-pre = <0x20>;
 		qcom,mdss-dsi-bpp = <24>;
@@ -68,6 +68,10 @@
 		qcom,mdss-mdp-transfer-time-us = <8000>;
 		qcom,ulps-enabled;
 		qcom,mdss-dsi-force-clock-lane-hs;
+		qcom,mdss-dsi-pan-enable-dynamic-fps;
+		qcom,mdss-dsi-max-refresh-rate = <70>;
+		qcom,mdss-tear-check-frame-rate = <7000>;
+		qcom,mdss-dsi-panel-clockrate = <1100000000>;
 
 		qcom,mdss-dsi-panel-hdr-enabled;
 		qcom,mdss-dsi-panel-hdr-color-primaries = <14880 15935 32435 16555 14945 30910 7790 3415>;
@@ -75,6 +79,8 @@
 		qcom,mdss-dsi-panel-blackness-level = <6134>;
 		lge,color-manager-default-status = <1>;
 		lge,aod-interface-data = <0x112>; /* QHD = 1, FHD = 1, HD = 2 */
+
+		qcom,cmd-to-video-mode-switch-commands = [15 01 00 00 00 00 02 C2 03];
 
 		qcom,mdss-dsi-on-command = [
 			39 01 00 00 00 00 03 B0 20 43
