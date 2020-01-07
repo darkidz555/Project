@@ -25,7 +25,7 @@
     dsi_dummy_qhd_video: qcom,mdss_dsi_dummy_dsc_qhd_video {
         qcom,mdss-dsi-panel-name = "dummy video mode dsi no panel";
 		qcom,mdss-dsi-panel-type = "dsi_video_mode";
-		qcom,mdss-dsi-panel-framerate = <70>;
+		qcom,mdss-dsi-panel-framerate = <120>;
 		qcom,mdss-dsi-virtual-channel-id = <0>;
 		qcom,mdss-dsi-stream = <0>;
 		qcom,mdss-dsi-panel-width = <1440>;
@@ -59,9 +59,9 @@
 		qcom,mdss-mdp-transfer-time-us = <8000>;
 		qcom,ulps-enabled;
 		qcom,mdss-dsi-force-clock-lane-hs = <1>;
-		qcom,mdss-dsi-max-refresh-rate = <70>;
-		qcom,mdss-tear-check-frame-rate = <7000>;
-		qcom,mdss-dsi-panel-clockrate = <1100000000>;
+		qcom,mdss-dsi-max-refresh-rate = <120>;
+		qcom,mdss-tear-check-frame-rate = <12000>;
+		qcom,mdss-dsi-panel-clockrate = <1300000000>;
 
 		qcom,mdss-dsi-on-command = [05 01 00 00 14 00 02 29 00];
 		qcom,mdss-dsi-off-command = [05 01 00 00 78 00 02 28 00];
