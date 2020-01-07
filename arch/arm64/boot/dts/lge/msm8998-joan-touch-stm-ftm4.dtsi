@@ -45,8 +45,8 @@
 		max_width_minor = <2879>;
 		max_orientation = <90>;
 		max_id = <10>;
-		hw_reset_delay = <10>;
-		sw_reset_delay = <10>;
+		hw_reset_delay = <5>;
+		sw_reset_delay = <5>;
 
 		/* Role */
 		use_lpwg = <1>;
