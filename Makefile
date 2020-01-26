@@ -412,6 +412,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-strict-prototypes \
 		   -Wno-misleading-indentation \
 		   -Wno-uninitialized \
+		   -Wno-address-of-packed-member \
 		   -fno-delete-null-pointer-checks \
 		   -fivopts \
 		   -fvariable-expansion-in-unroller \
