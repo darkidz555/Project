@@ -5,8 +5,8 @@
 
 static int cpumaxfreq_show(struct seq_file *m, void *v)
 {
-	/* C1, C2 and D5 all use msm8998 with maxfreq 2.45 */
-	seq_printf(m, "2.45\n");
+	/* C1, C2 and D5 all use msm8998 with maxfreq 2.59 */
+	seq_printf(m, "2.59\n");
 
 	return 0;
 }
