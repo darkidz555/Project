@@ -33,6 +33,7 @@
 #include <linux/memblock.h>
 #include <linux/bootmem.h>
 #include <linux/rmap.h>
+#include <linux/compaction.h>
 
 #include <asm/tlbflush.h>
 
