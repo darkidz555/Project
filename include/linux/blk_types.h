@@ -220,10 +220,25 @@ enum rq_flag_bits {
 	__REQ_IO_STAT,		/* account I/O stat */
 	__REQ_MIXED_MERGE,	/* merge of different types, fail separately */
 	__REQ_PM,		/* runtime pm request */
+	__REQ_HASHED,		/* on IO scheduler merge hash */
+	__REQ_MQ_INFLIGHT,	/* track inflight for MQ */
+	__REQ_NO_TIMEOUT,	/* requests may never expire */
 	__REQ_URGENT,		/* urgent request */
 	__REQ_NR_BITS,		/* stops here */
 };
 
+#define REQ_WRITE		(1ULL << __REQ_WRITE)
+#define REQ_FAILFAST_DEV	(1ULL << __REQ_FAILFAST_DEV)
+#define REQ_FAILFAST_TRANSPORT	(1ULL << __REQ_FAILFAST_TRANSPORT)
+#define REQ_FAILFAST_DRIVER	(1ULL << __REQ_FAILFAST_DRIVER)
+#define REQ_SYNC		(1ULL << __REQ_SYNC)
+#define REQ_META		(1ULL << __REQ_META)
+#define REQ_PRIO		(1ULL << __REQ_PRIO)
+#define REQ_DISCARD		(1ULL << __REQ_DISCARD)
+#define REQ_WRITE_SAME		(1ULL << __REQ_WRITE_SAME)
+#define REQ_URGENT		(1ULL << __REQ_URGENT)
+#define REQ_NOIDLE		(1ULL << __REQ_NOIDLE)
+#define REQ_INTEGRITY		(1ULL << __REQ_INTEGRITY)
 
 #define REQ_FAILFAST_MASK \
 	(REQ_FAILFAST_DEV | REQ_FAILFAST_TRANSPORT | REQ_FAILFAST_DRIVER)
