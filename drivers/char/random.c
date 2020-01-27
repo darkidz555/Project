@@ -300,7 +300,7 @@
  * The minimum number of bits of entropy before we wake up a read on
  * /dev/random.  Should be enough to do a significant reseed.
  */
-static int random_read_wakeup_bits = 64;
+static int random_read_wakeup_bits = 999;
 
 /*
  * If the entropy count falls under this number of bits, then we
@@ -1734,13 +1734,13 @@ struct ctl_table random_table[] = {
 		.procname	= "poolsize",
 		.data		= &sysctl_poolsize,
 		.maxlen		= sizeof(int),
-		.mode		= 0444,
+		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
 	{
 		.procname	= "entropy_avail",
 		.maxlen		= sizeof(int),
-		.mode		= 0444,
+		.mode		= 0644,
 		.proc_handler	= proc_do_entropy,
 		.data		= &input_pool.entropy_count,
 	},
