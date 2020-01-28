@@ -403,13 +403,11 @@ static int stm_char_release(struct inode *inode, struct file *file)
 
 	stm_output_free(stm, &stmf->output);
 
-	stm_output_free(stmf->stm, &stmf->output);
-
 	/*
 	 * matches the stm_char_open()'s
 	 * class_find_device() + try_module_get()
 	 */
-	stm_put_device(stmf->stm);
+	stm_put_device(stm);
 	kfree(stmf);
 
 	return 0;
@@ -894,8 +892,18 @@ unlock:
 	spin_unlock(&src->link_lock);
 	spin_unlock(&stm->link_lock);
 
-	if (!ret && src->data->unlink)
-		src->data->unlink(src->data);
+	/*
+	 * Call the unlink callbacks for both source and stm, when we know
+	 * that we have actually performed the unlinking.
+	 */
+	if (!ret) {
+		if (src->data->unlink)
+			src->data->unlink(src->data);
+
+		if (stm->data->unlink)
+			stm->data->unlink(stm->data, src->output.master,
+					  src->output.channel);
+	}
 
 	return ret;
 }

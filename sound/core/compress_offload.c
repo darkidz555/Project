@@ -922,8 +922,8 @@ static const struct file_operations snd_compr_file_ops = {
 #ifdef CONFIG_COMPAT
 		.compat_ioctl = snd_compr_ioctl_compat,
 #endif
-		.mmap =		snd_compr_mmap,
-		.poll =		snd_compr_poll,
+		.mmap =           snd_compr_mmap,
+		.poll =           snd_compr_poll,
 };
 
 static int snd_compress_dev_register(struct snd_device *device)
