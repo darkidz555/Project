@@ -971,7 +971,17 @@ int ufshcd_wait_for_register(struct ufs_hba *hba, u32 reg, u32 mask,
  */
 static inline u32 ufshcd_get_intr_mask(struct ufs_hba *hba)
 {
-	u32 intr_mask = 0;
+	struct ufs_query_res *query_res = &hba->dev_cmd.query.response;
+
+	memcpy(&query_res->upiu_res, &lrbp->ucd_rsp_ptr->qr, QUERY_OSF_SIZE);
+
+	/* Get the descriptor */
+	if (hba->dev_cmd.query.descriptor &&
+	    lrbp->ucd_rsp_ptr->qr.opcode == UPIU_QUERY_OPCODE_READ_DESC) {
+		u8 *descp = (u8 *)lrbp->ucd_rsp_ptr +
+				GENERAL_UPIU_REQUEST_SIZE;
+		u16 resp_len;
+		u16 buf_len;
 
 	switch (hba->ufs_version) {
 	case UFSHCI_VERSION_10:
