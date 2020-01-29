@@ -63,8 +63,7 @@ struct sched_param {
 
 #include <asm/processor.h>
 
-extern bool energy_aware_enable;
-extern bool disable_boost;
+#define SCHED_ATTR_SIZE_VER0	48	/* sizeof first published struct */
 
 /*
  * Extended scheduling parameters data structure.

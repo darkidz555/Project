@@ -36,47 +36,6 @@
 #include <trace/events/sched.h>
 #include "tune.h"
 #include "walt.h"
-#ifdef CONFIG_ONEPLUS_HEALTHINFO
-#include <linux/oem/oneplus_healthinfo.h>
-#endif
-
-#ifdef CONFIG_SMP
-static inline bool task_fits_max(struct task_struct *p, int cpu);
-#endif /* CONFIG_SMP */
-
-bool energy_aware_enable = false;
-
-#ifdef CONFIG_SCHED_WALT
-
-static void walt_fixup_sched_stats_fair(struct rq *rq, struct task_struct *p,
-					u16 updated_demand_scaled,
-					u16 updated_pred_demand_scaled);
-static void walt_fixup_nr_big_tasks(struct rq *rq, struct task_struct *p,
-					int delta, bool inc);
-#endif /* CONFIG_SCHED_WALT */
-
-#if defined(CONFIG_SCHED_WALT) && defined(CONFIG_CFS_BANDWIDTH)
-
-static void walt_init_cfs_rq_stats(struct cfs_rq *cfs_rq);
-static void walt_inc_cfs_rq_stats(struct cfs_rq *cfs_rq,
-				  struct task_struct *p);
-static void walt_dec_cfs_rq_stats(struct cfs_rq *cfs_rq,
-				  struct task_struct *p);
-static void walt_inc_throttled_cfs_rq_stats(struct walt_sched_stats *stats,
-					    struct cfs_rq *cfs_rq);
-static void walt_dec_throttled_cfs_rq_stats(struct walt_sched_stats *stats,
-					    struct cfs_rq *cfs_rq);
-#else
-static inline void walt_init_cfs_rq_stats(struct cfs_rq *cfs_rq) {}
-static inline void
-walt_inc_cfs_rq_stats(struct cfs_rq *cfs_rq, struct task_struct *p) {}
-static inline void
-walt_dec_cfs_rq_stats(struct cfs_rq *cfs_rq, struct task_struct *p) {}
-
-#define walt_inc_throttled_cfs_rq_stats(...)
-#define walt_dec_throttled_cfs_rq_stats(...)
-
-#endif
 
 /*
  * Targeted preemption latency for CPU-bound tasks:
