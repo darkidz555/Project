@@ -313,18 +313,6 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 	if (action != CPUFREQ_ADJUST)
 		return NOTIFY_OK;
 
-	/* Unboost when the screen is off */
-	if (test_bit(SCREEN_OFF, &b->state)) {
-		policy->min = get_min_freq(policy);
-		/* Enable EAS behaviour */
-		energy_aware_enable = true;
-		/* CPUBW unboost */
-		set_hyst_trigger_count_val(3);
-		set_hist_memory_val(20);
-		set_hyst_length_val(10);
-		return NOTIFY_OK;
-	}
-
 	/* Boost CPU to max frequency for max boost */
 	if (test_bit(MAX_BOOST, &b->state))
 		policy->min = get_max_boost_freq(policy);
@@ -332,7 +320,6 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 	/* Do powerhal boost for powerhal_max_boost */
 	if (test_bit(POWERHAL_MAX_BOOST, &b->state)) {
 		/* Disable EAS behaviour */
-		energy_aware_enable = false;
 
 		/* CPUBW boost */
 		set_hyst_trigger_count_val(0);
@@ -347,7 +334,6 @@ static int cpu_notifier_cb(struct notifier_block *nb, unsigned long action,
 		__timer_store_ph(10000, KGSL_PWR_IDLE_TIMER);
 	} else {
 		/* Enable EAS behaviour */
-		energy_aware_enable = true;
 
 		/* GPU unboost */
 		/* Disable KGSL_PWRFLAGS_POWER_ON */
