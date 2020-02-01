@@ -43,4 +43,5 @@ void __force_on_store_ph(unsigned int val, int flag);
 void __timer_store_ph(unsigned int val,
 				enum kgsl_pwrctrl_timer_type timer);
 
+>>>>>>> 5e1d325a0cbb... powerhal: make it possible to do Google PowerHAL GPU boosts
 #endif /* _POWER_HAL_H */
