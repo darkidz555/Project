@@ -764,6 +764,9 @@ error:
 	return rc;
 }
 
+static int dsi_panel_parse_dfps_caps(struct dsi_dfps_capabilities *dfps_caps,
+				     struct device_node *of_node,
+				     const char *name)
 {
 	int rc = 0;
 	bool supported = false;
@@ -775,11 +778,29 @@ error:
 
 	if (!supported) {
 		pr_debug("[%s] DFPS is not supported\n", name);
+		dfps_caps->dfps_support = false;
 	} else {
 
 		type = of_get_property(of_node,
 				       "qcom,mdss-dsi-pan-fps-update",
 				       NULL);
+		if (!type) {
+			pr_err("[%s] dfps type not defined\n", name);
+			rc = -EINVAL;
+			goto error;
+		} else if (!strcmp(type, "dfps_suspend_resume_mode")) {
+			dfps_caps->type = DSI_DFPS_SUSPEND_RESUME;
+		} else if (!strcmp(type, "dfps_immediate_clk_mode")) {
+			dfps_caps->type = DSI_DFPS_IMMEDIATE_CLK;
+		} else if (!strcmp(type, "dfps_immediate_porch_mode_hfp")) {
+			dfps_caps->type = DSI_DFPS_IMMEDIATE_HFP;
+		} else if (!strcmp(type, "dfps_immediate_porch_mode_vfp")) {
+			dfps_caps->type = DSI_DFPS_IMMEDIATE_VFP;
+		} else {
+			pr_err("[%s] dfps type is not recognized\n", name);
+			rc = -EINVAL;
+			goto error;
+		}
 
 		rc = of_property_read_u32(of_node,
 					  "qcom,mdss-dsi-min-refresh-rate",
@@ -789,6 +810,35 @@ error:
 			rc = -EINVAL;
 			goto error;
 		}
+		dfps_caps->min_refresh_rate = val;
+
+		rc = of_property_read_u32(of_node,
+					  "qcom,mdss-dsi-max-refresh-rate",
+					  &val);
+		if (rc) {
+			pr_debug("[%s] Using default refresh rate\n", name);
+			rc = of_property_read_u32(of_node,
+						"qcom,mdss-dsi-panel-framerate",
+						&val);
+			if (rc) {
+				pr_err("[%s] max refresh rate is not defined\n",
+				       name);
+				rc = -EINVAL;
+				goto error;
+			}
+		}
+		dfps_caps->max_refresh_rate = val;
+
+		if (dfps_caps->min_refresh_rate > dfps_caps->max_refresh_rate) {
+			pr_err("[%s] min rate > max rate\n", name);
+			rc = -EINVAL;
+		}
+
+		pr_debug("[%s] DFPS is supported %d-%d, mode %d\n", name,
+				dfps_caps->min_refresh_rate,
+				dfps_caps->max_refresh_rate,
+				dfps_caps->type);
+		dfps_caps->dfps_support = true;
 	}
 
 error:
@@ -1519,6 +1569,10 @@ struct dsi_panel *dsi_panel_get(struct device *parent,
 		goto error;
 	}
 
+	rc = dsi_panel_parse_dfps_caps(&panel->dfps_caps, of_node, panel->name);
+	if (rc)
+		pr_err("failed to parse dfps configuration, rc=%d\n", rc);
+
 	rc = dsi_panel_parse_phy_props(&panel->phy_props, of_node, panel->name);
 	if (rc) {
 		pr_err("failed to parse panel physical dimension, rc=%d\n", rc);
@@ -1712,12 +1766,19 @@ int dsi_panel_get_phy_props(struct dsi_panel *panel,
 	return rc;
 }
 
+int dsi_panel_get_dfps_caps(struct dsi_panel *panel,
+			    struct dsi_dfps_capabilities *dfps_caps)
 {
 	int rc = 0;
 
+	if (!panel || !dfps_caps) {
+		pr_err("Invalid params\n");
+		return -EINVAL;
 	}
 
 	mutex_lock(&panel->panel_lock);
+
+	memcpy(dfps_caps, &panel->dfps_caps, sizeof(*dfps_caps));
 
 	mutex_unlock(&panel->panel_lock);
 	return rc;
