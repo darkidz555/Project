@@ -236,7 +236,7 @@ static void *cxip_lm_reg_base;
 
 static LIST_HEAD(devices_list);
 static LIST_HEAD(thresholds_list);
-static int mitigation = 1;
+static int mitigation = 0;
 
 enum thermal_threshold {
 	HOTPLUG_THRESHOLD_HIGH,

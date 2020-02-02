@@ -264,9 +264,9 @@ get_dynamic_power(struct devfreq_cooling_device *dfc, unsigned long freq,
 	if (dfc_power->get_dynamic_power)
 		return dfc_power->get_dynamic_power(freq, voltage);
 
-	freq_mhz = freq / 1000000;
+	freq_mhz = freq / 8000000;
 	power = (u64)dfc_power->dyn_power_coeff * freq_mhz * voltage * voltage;
-	do_div(power, 1000000000);
+	do_div(power, 8000000000);
 
 	return power;
 }
