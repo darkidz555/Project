@@ -289,7 +289,7 @@ void kgsl_pwrscale_enable(struct kgsl_device *device)
 		 * run at default level;
 		 */
 		kgsl_pwrctrl_pwrlevel_change(device,
-					device->pwrctrl.num_pwrlevels - 4);
+					device->pwrctrl.default_pwrlevel);
 		device->pwrscale.enabled = false;
 	}
 }
@@ -874,7 +874,7 @@ int kgsl_pwrscale_init(struct device *dev, const char *governor)
 	srcu_init_notifier_head(&pwrscale->nh);
 
 	profile->initial_freq =
-		pwr->pwrlevels[pwr->num_pwrlevels - 4].gpu_freq;
+		pwr->pwrlevels[pwr->default_pwrlevel].gpu_freq;
 	/* Let's start with 10 ms and tune in later */
 	profile->polling_ms = 10;
 
