@@ -19,6 +19,8 @@ obj-$(CONFIG_CPU_BOOST)			+= cpu-boost.o
 
 # CPU Input Boost
 obj-$(CONFIG_CPU_INPUT_BOOST)		+= cpu_input_boost.o
+obj-$(CONFIG_DYNAMIC_STUNE_BOOST)	+= dynamic_stune_boost.o
+obj-$(CONFIG_BOOST_CONTROL)		+= boost_control.o
 
 obj-$(CONFIG_CPUFREQ_DT)		+= cpufreq-dt.o
 obj-$(CONFIG_LGE_PM_TRITON)        += triton.o
