@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2014, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,6 +37,8 @@
 					qcom,mdss-dsi-t-clk-post = <0x06>;
 					qcom,mdss-dsi-t-clk-pre = <0x20>;
 					qcom,panel-roi-alignment = <1440 0 1440 16 1440 16>;
+					qcom,mdss-dsi-force-clock-lane-hs = <1>;
+					qcom,mdss-mdp-transfer-time-us = <10000>;
 
 					qcom,mdss-dsi-on-command = [
 						39 01 00 00 00 00 03 B0 20 43
@@ -92,6 +95,8 @@
 					qcom,mdss-dsi-t-clk-post = <0x06>;
 					qcom,mdss-dsi-t-clk-pre = <0x20>;
 					qcom,panel-roi-alignment = <1440 0 1440 16 1440 16>;
+					qcom,mdss-dsi-force-clock-lane-hs = <1>;
+                                        qcom,mdss-mdp-transfer-time-us = <10000>;
 
 					qcom,mdss-dsi-on-command = [
 						39 01 00 00 00 00 03 B0 20 43
