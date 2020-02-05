@@ -104,8 +104,8 @@
 #define CXIP_LM_BYPASS_VAL        0xFF00
 #define CXIP_LM_THERM_VOTE_VAL    0x80
 #define CXIP_LM_THERM_SENS_ID     8
-#define CXIP_LM_THERM_SENS_HIGH   90
-#define CXIP_LM_THERM_SENS_LOW    75
+#define CXIP_LM_THERM_SENS_HIGH   100
+#define CXIP_LM_THERM_SENS_LOW    85
 
 #define VALIDATE_AND_SET_MASK(_node, _key, _mask, _cpu) \
 	do { \
@@ -236,7 +236,7 @@ static void *cxip_lm_reg_base;
 
 static LIST_HEAD(devices_list);
 static LIST_HEAD(thresholds_list);
-static int mitigation = 1;
+static int mitigation = 0;
 
 enum thermal_threshold {
 	HOTPLUG_THRESHOLD_HIGH,
