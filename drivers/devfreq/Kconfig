@@ -148,7 +148,7 @@ if DEVFREQ_GOV_QCOM_BW_HWMON
 
 config DEVFREQ_GOV_QCOM_BW_HWMON_BOOST_PERCENT
 	int "Boost percentage to apply"
-	default 0
+	default 99
 	range 0 99
 	help
 	  This attribute is subtracted from the 'io_percent' variable during
