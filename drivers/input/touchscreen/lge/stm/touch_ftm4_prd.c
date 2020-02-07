@@ -71,7 +71,7 @@ int ftm4_check_pure_autotune_key(void)
 
 	TOUCH_I("%s: Start Checking Key..\n", __func__);
 	do {
-		touch_msleep(50);
+		touch_msleep(8);
 		file = sys_open(fname, O_RDONLY, 0);
 		retry++;
 		TOUCH_I("%s: Chcking Key... retry(%d)\n", __func__, retry);
@@ -1434,7 +1434,7 @@ static int ftm4_read_self_raw_frame(
 	ftm4_command(dev, SENSEOFF);
 	touch_msleep(50);
 	ftm4_command(dev, FLUSHBUFFER);
-	touch_msleep(50);
+	touch_msleep(8);
 
 	buf[0] = 0xD0;
 	buf[1] = 0x00;
