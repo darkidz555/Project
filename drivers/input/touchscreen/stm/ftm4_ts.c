@@ -175,8 +175,8 @@ int fts_read_reg(struct fts_ts_info *info, unsigned char *reg, int cnum,
 
 void fts_delay(unsigned int ms)
 {
-	if (ms < 20)
-		usleep_range(ms * 1000, ms * 1000);
+	if (ms < 8)
+		usleep_range(ms * 100, ms * 100);
 	else
 		msleep(ms);
 }

@@ -43,7 +43,7 @@
 #include <linux/input/sovc_notifier.h>
 
 enum {
-	TOUCH_SUSPEND_STATE_LOW_POWER = 1,
+	TOUCH_SUSPEND_STATE_LOW_POWER,
 	TOUCH_SUSPEND_STATE_DEEP_SLEEP,
 };
 
@@ -314,7 +314,7 @@ int ftm4_wait_for_ready(struct device *dev)
 			break;
 		}
 
-		touch_msleep(20);
+		touch_msleep(8);
 	}
 
 	TOUCH_I("%s: %02X, %02X, %02X, %02X, %02X, %02X, %02X, %02X\n",
