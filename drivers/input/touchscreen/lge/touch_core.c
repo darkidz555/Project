@@ -187,7 +187,7 @@ irqreturn_t touch_irq_handler(int irq, void *dev_id)
 		TOUCH_I("interrupt in suspend[%d]\n",
 				atomic_read(&ts->state.pm));
 		atomic_set(&ts->state.pm, DEV_PM_SUSPEND_IRQ);
-		wake_lock_timeout(&ts->lpwg_wake_lock, msecs_to_jiffies(1000));
+		wake_lock_timeout(&ts->lpwg_wake_lock, msecs_to_jiffies(100));
 		return IRQ_HANDLED;
     }
 	return IRQ_WAKE_THREAD;
@@ -571,7 +571,7 @@ static void touch_send_uevent(struct touch_core_data *ts, int type)
 	TOUCH_TRACE();
 	if (atomic_read(&ts->state.uevent) == UEVENT_IDLE ||
 			touch_boot_mode_check(ts->dev) != NORMAL_BOOT) {
-		wake_lock_timeout(&ts->lpwg_wake_lock, msecs_to_jiffies(3000));
+		wake_lock_timeout(&ts->lpwg_wake_lock, msecs_to_jiffies(300));
 		atomic_set(&ts->state.uevent, UEVENT_BUSY);
 		kobject_uevent_env(&device_uevent_touch.kobj,
 				KOBJ_CHANGE, uevent_str[type]);

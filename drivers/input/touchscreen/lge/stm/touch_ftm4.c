@@ -1898,9 +1898,9 @@ int ftm4_ic_info(struct device *dev)
 
 	touch_report_all_event(ts);
 	ftm4_command(dev, SENSEOFF);
-	touch_msleep(50);
+	touch_msleep(10);
 	ftm4_command(dev, FLUSHBUFFER);
-	touch_msleep(50);
+	touch_msleep(10);
 	touch_interrupt_control(ts->dev, INTERRUPT_DISABLE);
 
 	ftm4_command(dev, FTS_CMD_RELEASEINFO);
@@ -1930,7 +1930,7 @@ int ftm4_ic_info(struct device *dev)
 					__func__, i + 1, loop_cnt);
 		}
 
-		touch_msleep(50);
+		touch_msleep(10);
 	}
 
 	if (i >= loop_cnt) {
@@ -1998,7 +1998,7 @@ static void ftm4_set_active_mode(struct device *dev)
 	TOUCH_I("%s: start\n", __func__);
 
 	ftm4_command(dev, SENSEON);
-	touch_msleep(50);
+	touch_msleep(10);
 
 	TOUCH_I("%s: end\n", __func__);
 }
@@ -2010,7 +2010,7 @@ static void ftm4_set_low_power_mode(struct device *dev)
 	TOUCH_I("%s: start\n", __func__);
 
 	ftm4_command(dev, FTS_CMD_LOWPOWER_MODE);
-	touch_msleep(50);
+	touch_msleep(10);
 
 	TOUCH_I("%s: end\n", __func__);
 }
@@ -2855,7 +2855,7 @@ static int ftm4_wait_for_flash_ready(struct device *dev, u8 type)
 	for (i = 0; (i < 1000) && (ret != 0); i++) {
 		ftm4_reg_read(dev, cmd, sizeof(cmd), &data, 1);
 		ret = data & 0x80;
-		touch_msleep(50);
+		touch_msleep(10);
 	}
 
 	if (i >= 1000 && ret != 0) {
@@ -2989,7 +2989,7 @@ static int ftm4_check_erase_done(struct device *dev)
 		if ((data & 0x80) != 0x80)
 			break;
 
-		touch_msleep(50);
+		touch_msleep(10);
 		timeout--;
 	} while (timeout != 0);
 
@@ -3017,21 +3017,21 @@ static int ftm4_fw_download(struct device *dev, u8 *filename,
 	buf[1] = 0x52;
 	buf[2] = 0x34;
 	ftm4_reg_write(dev, buf, 3);
-	touch_msleep(30);
+	touch_msleep(10);
 
 	/* Unlock Flash */
 	buf[0] = 0xF7;
 	buf[1] = 0x74;
 	buf[2] = 0x45;
 	ftm4_reg_write(dev, buf, 3);
-	touch_msleep(100);
+	touch_msleep(10);
 
 	/* Unlock Erase Operation */
 	buf[0] = 0xFA;
 	buf[1] = 0x72;
 	buf[2] = 0x01;
 	ftm4_reg_write(dev, buf, 3);
-	touch_msleep(30);
+	touch_msleep(10);
 
 	/* Erase Partial Flash */
 	for (i = 0; i < 64; i++) {
@@ -3054,7 +3054,7 @@ static int ftm4_fw_download(struct device *dev, u8 *filename,
 	buf[1] = 0x72;
 	buf[2] = 0x02;
 	ftm4_reg_write(dev, buf, 3);
-	touch_msleep(100);
+	touch_msleep(10);
 
 	/* Write to FLASH */
 	if (block_type == BIN_FTB) {
@@ -3138,7 +3138,7 @@ int ftm4_fw_wait_for_event(struct device *dev, u8 eid)
 			break;
 		}
 
-		touch_msleep(20);
+		touch_msleep(10);
 	}
 
 	return ret;
@@ -3151,9 +3151,9 @@ void ftm4_osc_trim_cmd(struct device *dev)
 	TOUCH_I("%s: start\n", __func__);
 
 	ftm4_command(dev, FTS_CMD_TRIM_LOW_POWER_OSCILLATOR);
-	touch_msleep(200);
+	touch_msleep(10);
 	ftm4_command(dev, FTS_CMD_SAVE_CX_TUNING);
-	touch_msleep(230);
+	touch_msleep(10);
 	ftm4_fw_wait_for_event(dev, STATUS_EVENT_FLASH_WRITE_CXTUNE_VALUE);
 
 	TOUCH_I("%s: end\n", __func__);
@@ -3165,12 +3165,12 @@ void ftm4_do_autotune(struct device *dev)
 
 	TOUCH_I("%s: mutual autotune ...\n", __func__);
 	ftm4_command(dev, CX_TUNNING);
-	touch_msleep(300);
+	touch_msleep(10);
 	ftm4_fw_wait_for_event(dev, STATUS_EVENT_MUTUAL_AUTOTUNE_DONE);
 
 	TOUCH_I("%s: self autotune ...\n", __func__);
 	ftm4_command(dev, SELF_AUTO_TUNE);
-	touch_msleep(300);
+	touch_msleep(10);
 	ftm4_fw_wait_for_event(dev, STATUS_EVENT_SELF_AUTOTUNE_DONE);
 
 	TOUCH_I("%s: end\n", __func__);
@@ -3182,7 +3182,7 @@ static void ftm4_save_autotune(struct device *dev)
 
 	TOUCH_I("%s: flash write CX_TUNE value ...\n", __func__);
 	ftm4_command(dev, FTS_CMD_SAVE_CX_TUNING);
-	touch_msleep(230);
+	touch_msleep(10);
 	ftm4_fw_wait_for_event(dev, STATUS_EVENT_FLASH_WRITE_CXTUNE_VALUE);
 
 	TOUCH_I("%s: end\n", __func__);
@@ -3199,7 +3199,7 @@ static void ftm4_clear_pure_autotune(struct device *dev)
 	if (ret < 0) {
 		TOUCH_E("failed to clear pure_autotune value (ret = %d)\n", ret);
 	} else {
-		touch_msleep(20);
+		touch_msleep(10);
 		ftm4_fw_wait_for_event(dev, STATUS_EVENT_PURE_AUTOTUNE_CLEARED);
 	}
 }
@@ -3421,7 +3421,7 @@ static int ftm4_upgrade(struct device *dev)
 
 	if (ftm4_fw_compare(dev, fw)) {
 		ret = -EINVAL;
-		touch_msleep(200);
+		touch_msleep(10);
 		for (i = 0; (i < 2) && ret; i++)
 			ret = ftm4_fw_upgrade(dev, fw);
 	} else {
@@ -4953,7 +4953,7 @@ static ssize_t store_autotune(struct device *dev,
 		mutex_lock(&ts->lock);
 
 		ftm4_system_reset(dev);
-		touch_msleep(20);
+		touch_msleep(10);
 		ftm4_wait_for_ready(dev);
 
 		ftm4_osc_trim_cmd(dev);
@@ -4965,7 +4965,7 @@ static ssize_t store_autotune(struct device *dev,
 		mutex_lock(&ts->lock);
 
 		ftm4_system_reset(dev);
-		touch_msleep(20);
+		touch_msleep(10);
 		ftm4_wait_for_ready(dev);
 
 		ftm4_osc_trim_cmd(dev);
@@ -5001,7 +5001,7 @@ static ssize_t show_pure_autotune(struct device *dev, char *buf)
 	mutex_lock(&ts->lock);
 
 	ftm4_system_reset(dev);
-	touch_msleep(20);
+	touch_msleep(10);
 	ftm4_wait_for_ready(dev);
 
 	ftm4_osc_trim_cmd(dev);
@@ -5084,7 +5084,7 @@ static int ftm4_get_cmd_version(struct device *dev, char *buf)
 
 	if (atomic_read(&ts->state.debug_option_mask) & DEBUG_OPTION_9) {
 		ftm4_system_reset(dev);
-		touch_msleep(20);
+		touch_msleep(10);
 		ftm4_wait_for_ready(dev);
 
 		ftm4_osc_trim_cmd(dev);
