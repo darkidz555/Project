@@ -234,39 +234,89 @@ config IMX_THERMAL
 	  cpufreq is used as the cooling device to throttle CPUs when the
 	  passive trip is crossed.
 
-choice
-        prompt "MSM Thermal Monitor Types"
-        default THERMAL_MONITOR
-
-config INTELLI_THERMAL_V2
-        bool "Better thermal monitor for MSM"
-        depends on THERMAL_TSENS8974
-        depends on CPU_FREQ_MSM
-        help
-          This enables thermal monitoring capability in the kernel replacing
-          userspace thermal monitoring altogether. new version 2 for 8974+
-          targets
-
-config THERMAL_MONITOR
-	bool "Monitor thermal state and limit CPU Frequency"
-	depends on THERMAL_TSENS8960 || THERMAL_TSENS8974
-	depends on CPU_FREQ_MSM
-#	default n
+config SPEAR_THERMAL
+	tristate "SPEAr thermal sensor driver"
+	depends on PLAT_SPEAR || COMPILE_TEST
+	depends on OF
 	help
 	  Enable this to plug the SPEAr thermal sensor driver into the Linux
 	  thermal framework.
 
-config THERMAL_MONITOR_LOG
-	bool "Print thermal state to kernel log"
-	depends on THERMAL_MONITOR
-	default n
+config ROCKCHIP_THERMAL
+	tristate "Rockchip thermal driver"
+	depends on ARCH_ROCKCHIP || COMPILE_TEST
+	depends on RESET_CONTROLLER
 	help
-	  Enable this to print thermal data to the kernel log every few seconds.
+	  Rockchip thermal driver provides support for Temperature sensor
+	  ADC (TS-ADC) found on Rockchip SoCs. It supports one critical
+	  trip point. Cpufreq is used as the cooling device and will throttle
+	  CPUs when the Temperature crosses the passive trip point.
 
-endchoice
+config RCAR_THERMAL
+	tristate "Renesas R-Car thermal driver"
+	depends on ARCH_SHMOBILE || COMPILE_TEST
+	depends on HAS_IOMEM
+	help
+	  Enable this to plug the R-Car thermal sensor driver into the Linux
+	  thermal framework.
 
-config SPEAR_THERMAL
-	bool "SPEAr thermal sensor driver"
+config KIRKWOOD_THERMAL
+	tristate "Temperature sensor on Marvell Kirkwood SoCs"
+	depends on MACH_KIRKWOOD || COMPILE_TEST
+	depends on OF
+	help
+	  Support for the Kirkwood thermal sensor driver into the Linux thermal
+	  framework. Only kirkwood 88F6282 and 88F6283 have this sensor.
+
+config DOVE_THERMAL
+	tristate "Temperature sensor on Marvell Dove SoCs"
+	depends on ARCH_DOVE || MACH_DOVE || COMPILE_TEST
+	depends on OF
+	help
+	  Support for the Dove thermal sensor driver in the Linux thermal
+	  framework.
+
+config DB8500_THERMAL
+	tristate "DB8500 thermal management"
+	depends on MFD_DB8500_PRCMU
+	default y
+	help
+	  Adds DB8500 thermal management implementation according to the thermal
+	  management framework. A thermal zone with several trip points will be
+	  created. Cooling devices can be bound to the trip points to cool this
+	  thermal zone if trip points reached.
+
+config ARMADA_THERMAL
+	tristate "Armada 370/XP thermal management"
+	depends on ARCH_MVEBU || COMPILE_TEST
+	depends on OF
+	help
+	  Enable this option if you want to have support for thermal management
+	  controller present in Armada 370 and Armada XP SoC.
+
+config TEGRA_SOCTHERM
+	tristate "Tegra SOCTHERM thermal management"
+	depends on ARCH_TEGRA
+	help
+	  Enable this option for integrated thermal management support on NVIDIA
+	  Tegra124 systems-on-chip. The driver supports four thermal zones
+	  (CPU, GPU, MEM, PLLX). Cooling devices can be bound to the thermal
+	  zones to manage temperatures. This option is also required for the
+	  emergency thermal reset (thermtrip) feature to function.
+
+config DB8500_CPUFREQ_COOLING
+	tristate "DB8500 cpufreq cooling"
+	depends on ARCH_U8500
+	depends on CPU_THERMAL
+	default y
+	help
+	  Adds DB8500 cpufreq cooling devices, and these cooling devices can be
+	  bound to thermal zone trip points. When a trip point reached, the
+	  bound cpufreq cooling device turns active to set CPU frequency low to
+	  cool down the CPU.
+
+config INTEL_POWERCLAMP
+	tristate "Intel PowerClamp idle injection driver"
 	depends on THERMAL
 	depends on X86
 	depends on CPU_SUP_INTEL
