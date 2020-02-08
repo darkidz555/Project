@@ -238,24 +238,6 @@ config SPEAR_THERMAL
 	tristate "SPEAr thermal sensor driver"
 	depends on PLAT_SPEAR || COMPILE_TEST
 	depends on OF
-choice
-        prompt "MSM Thermal Monitor Types"
-        default THERMAL_MONITOR
-
-config INTELLI_THERMAL_V2
-        bool "Better thermal monitor for MSM"
-        depends on THERMAL_TSENS8974
-        depends on CPU_FREQ_MSM
-        help
-          This enables thermal monitoring capability in the kernel replacing
-          userspace thermal monitoring altogether. new version 2 for 8974+
-          targets
-
-config THERMAL_MONITOR
-	bool "Monitor thermal state and limit CPU Frequency"
-	depends on THERMAL_TSENS8960 || THERMAL_TSENS8974
-	depends on CPU_FREQ_MSM
-#	default n
 	help
 	  Enable this to plug the SPEAr thermal sensor driver into the Linux
 	  thermal framework.
@@ -335,17 +317,6 @@ config DB8500_CPUFREQ_COOLING
 
 config INTEL_POWERCLAMP
 	tristate "Intel PowerClamp idle injection driver"
-config THERMAL_MONITOR_LOG
-	bool "Print thermal state to kernel log"
-	depends on THERMAL_MONITOR
-	default n
-	help
-	  Enable this to print thermal data to the kernel log every few seconds.
-
-endchoice
-
-config SPEAR_THERMAL
-	bool "SPEAr thermal sensor driver"
 	depends on THERMAL
 	depends on X86
 	depends on CPU_SUP_INTEL
