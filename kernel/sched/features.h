@@ -43,7 +43,7 @@ SCHED_FEAT(LB_BIAS, true)
 /*
  * Decrement CPU capacity based on time not spent running tasks
  */
-SCHED_FEAT(NONTASK_CAPACITY, false)
+SCHED_FEAT(NONTASK_CAPACITY, true)
 
 /*
  * Queue remote wakeups on the target CPU and process them
@@ -83,18 +83,3 @@ SCHED_FEAT(ENERGY_AWARE, true)
 #else
 SCHED_FEAT(ENERGY_AWARE, false)
 #endif
-
-/*
- * Minimum capacity capping. Keep track of minimum capacity factor when
- * minimum frequency available to a policy is modified.
- * If enabled, this can be used to inform the scheduler about capacity
- * restrictions.
- */
-SCHED_FEAT(MIN_CAPACITY_CAPPING, false)
-
-/*
- * Inflate the effective utilization of SchedTune-boosted tasks, which
- * generally leads to usage of higher frequencies.
- * If disabled, boosts will only bias tasks to higher-capacity CPUs.
- */
-SCHED_FEAT(SCHEDTUNE_BOOST_UTIL, false)
