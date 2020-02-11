@@ -136,32 +136,6 @@ config MSM_MMCC_8974
 	  Say Y if you want to support multimedia devices such as display,
 	  graphics, video encode/decode, camera, etc.
 
-config MSM_GCC_8994
-	tristate "MSM8994 Global Clock Controller"
-	depends on COMMON_CLK_QCOM
-	help
-	  Support for the global clock controller on msm8994 devices.
-	  Say Y if you want to use peripheral devices such as UART, SPI,
-	  i2c, USB, UFS, SD/eMMC, PCIe, etc.
-
-config MSM_GCC_8976
-	tristate "MSM8976 Global Clock Controller"
-	select QCOM_GDSC
-	depends on COMMON_CLK_QCOM
-	help
-	  Support for the global clock controller on msm8974 devices.
-	  Say Y if you want to use peripheral devices such as UART, SPI,
-	  i2c, USB, SD/eMMC, SATA, PCIe, etc.
-
-config MSM_GCC_8998
-	tristate "MSM8998 Global Clock Controller"
-	select QCOM_GDSC
-	depends on COMMON_CLK_QCOM
-	help
-	  Support for the global clock controller on msm8996 devices.
-	  Say Y if you want to use peripheral devices such as UART, SPI,
-	  i2c, USB, UFS, SD/eMMC, PCIe, etc.
-
 config MSM_GCC_8996
 	tristate "MSM8996 Global Clock Controller"
 	depends on COMMON_CLK_QCOM
@@ -179,18 +153,9 @@ config MSM_MMCC_8996
 	  Say Y if you want to support multimedia devices such as display,
 	  graphics, video encode/decode, camera, etc.
 
-config MSM_MMCC_8998
-	tristate "MSM8998 Multimedia Clock Controller"
-	select MSM_GCC_8998
+config MSM_GCC_660
+	tristate "SDM660 Global Clock Controller"
 	select QCOM_GDSC
-	depends on COMMON_CLK_QCOM
-	help
-	  Support for the multimedia clock controller on msm8998 devices.
-	  Say Y if you want to support multimedia devices such as display,
-	  graphics, video encode/decode, camera, etc.
-
-config QCOM_HFPLL
-	tristate "High-Frequency PLL (HFPLL) Clock Controller"
 	depends on COMMON_CLK_QCOM
 	---help---
 	  Support for the global clock controller on Qualcomm Technologies, Inc
@@ -309,50 +274,6 @@ config MSM_CLK_RPMH
 config MSM_GPUCC_8998
 	tristate "MSM8998 Graphics Clock Controller"
 	select MSM_GCC_8998
-	depends on COMMON_CLK_QCOM
-	help
-	  Support for the graphics clock controller on Qualcomm Technologies, Inc.
-	  MSM8998 devices.
-	  Say Y if you want to support graphics controller devices.
-
-config MSM_GPUCC_SM8150
-	tristate "SM8150 Graphics Clock Controller"
-	depends on COMMON_CLK_QCOM
-	help
-	  Support for the graphics clock controller on Qualcomm Technologies, Inc.
-	  sm8150 devices.
-	  Say Y if you want to support graphics controller devices.
-
-config MSM_GCC_SDMSHRIKE
-	tristate "SDMSHRIKE Global Clock Controller"
-	depends on COMMON_CLK_QCOM
-	help
-	  Support for the global clock controller on Qualcomm Technologies, Inc
-	  SDMSHRIKE devices.
-	  Say Y if you want to use peripheral devices such as UART, SPI, i2c,
-	  USB, UFS, SD/eMMC, PCIe, etc.
-
-config MSM_CAMCC_SDMSHRIKE
-	tristate "SDMSHRIKE Camera Clock Controller"
-	depends on COMMON_CLK_QCOM
-	help
-	  Support for the camera clock controller on Qualcomm Technologies, Inc
-	  SDMSHRIKE devices.
-          Say Y if you want to support camera devices and functionality such as
-	  capturing pictures.
-
-config MDM_GCC_QCS405
-	tristate "QCS405 Global Clock Controller"
-	select QCOM_GDSC
-	depends on COMMON_CLK_QCOM
-	help
-	 Support for the global clock controller on Qualcomm Technologies, Inc
-	 QCS405 devices.
-	 Say Y if you want to use peripheral devices such as UART, SPI, I2C,
-	 USB, SD/eMMC, PCIe, etc.
-
-config MDM_DEBUGCC_QCS405
-	tristate "QCS405 Debug Clock Controller"
 	depends on COMMON_CLK_QCOM
 	help
 	  This driver supports the clkdiv functionality on the Qualcomm
