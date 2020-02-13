@@ -75,7 +75,7 @@ static struct devfreq *find_device_devfreq(struct device *dev)
 static void devfreq_set_freq_limits(struct devfreq *devfreq)
 {
 	int idx;
-	unsigned long min = ~0, max = 18670;
+	unsigned long min = ~0, max = 23670;
 
 	if (!devfreq->profile->freq_table)
 		return;
