@@ -282,7 +282,7 @@
 &devfreq_cpufreq {
 	mincpubw-cpufreq {
 		cpu-to-dev-map-0 =
-			< 1900800 18670 >,
+			< 1900800 5195 >,
 			< 2208000 23670 >;
 		cpu-to-dev-map-4 =
 			< 2112000 5195 >,
