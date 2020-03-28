@@ -6701,6 +6701,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
 		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
 		goto drop;
 	}
+#endif
 
 	req = inet_reqsk_alloc(rsk_ops, sk, !want_cookie);
 	if (!req)
