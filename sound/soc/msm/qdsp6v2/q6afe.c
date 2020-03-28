@@ -586,22 +586,6 @@ static int32_t afe_callback(struct apr_client_data *data, void *priv)
 		uint32_t param_id;
 		uint32_t param_id_pos = 0;
 
-#if defined(CONFIG_SND_SOC_TFA9872)
-		if(atomic_read(&this_afe.tfa_state) == 1 &&
-		   data->token == q6audio_get_port_index(AFE_PORT_ID_TERTIARY_MI2S_RX))
-		{
-			pr_info("%s:AFE_PORT_CMDRSP_GET_PARAM_V2 , data->token = %d, payload = %d, %d\n",
-				__func__, data->token, payload[0], payload[1]);
-			if(data->payload_size == sizeof(uint32_t))
-				atomic_set(&this_afe.status, payload[0]);
-			else if(data->payload_size == (2*sizeof(uint32_t)))
-				atomic_set(&this_afe.status, payload[1]);
-			atomic_set(&this_afe.tfa_state, 0);
-			wake_up(&this_afe.wait[data->token]);
-			return 0;
-		}
-#endif // CONFIG_SND_SOC_TFA9872
-
 		if (!payload || (data->token >= AFE_MAX_PORTS)) {
 			pr_err("%s: Error: size %d payload %pK token %d\n",
 				__func__, data->payload_size,
