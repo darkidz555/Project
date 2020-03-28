@@ -3599,7 +3599,7 @@ static int build_sit_info(struct f2fs_sb_info *sbi)
 	SM_I(sbi)->sit_info = sit_i;
 
 	sit_i->sentries =
-		f2fs_kvzalloc(sbi, array_size(sizeof(struct seg_entry),
+		f2fs_kvzalloc(sbi, (sizeof(struct seg_entry),
 					      MAIN_SEGS(sbi)),
 			      GFP_KERNEL);
 	if (!sit_i->sentries)
@@ -3642,7 +3642,7 @@ static int build_sit_info(struct f2fs_sb_info *sbi)
 
 	if (sbi->segs_per_sec > 1) {
 		sit_i->sec_entries =
-			f2fs_kvzalloc(sbi, array_size(sizeof(struct sec_entry),
+			f2fs_kvzalloc(sbi, (sizeof(struct sec_entry),
 						      MAIN_SECS(sbi)),
 				      GFP_KERNEL);
 		if (!sit_i->sec_entries)
@@ -3720,7 +3720,7 @@ static int build_curseg(struct f2fs_sb_info *sbi)
 	struct curseg_info *array;
 	int i;
 
-	array = f2fs_kzalloc(sbi, array_size(NR_CURSEG_TYPE, sizeof(*array)),
+	array = f2fs_kzalloc(sbi, (NR_CURSEG_TYPE, sizeof(*array)),
 			     GFP_KERNEL);
 	if (!array)
 		return -ENOMEM;

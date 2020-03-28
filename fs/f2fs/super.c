@@ -2620,7 +2620,7 @@ static int f2fs_scan_devices(struct f2fs_sb_info *sbi)
 	 * zoned block device information.
 	 */
 	sbi->devs = f2fs_kzalloc(sbi,
-				 array_size(max_devices,
+				 (max_devices,
 					    sizeof(struct f2fs_dev_info)),
 				 GFP_KERNEL);
 	if (!sbi->devs)
@@ -2846,7 +2846,7 @@ try_onemore:
 
 		sbi->write_io[i] =
 			f2fs_kmalloc(sbi,
-				     array_size(n,
+				     (n,
 						sizeof(struct f2fs_bio_info)),
 				     GFP_KERNEL);
 		if (!sbi->write_io[i]) {
