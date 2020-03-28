@@ -2157,6 +2157,7 @@ static int __dwc3_gadget_start(struct dwc3 *dwc)
 
 	/* begin to receive SETUP packets */
 	dwc->ep0state = EP0_SETUP_PHASE;
+	dwc->link_state = DWC3_LINK_STATE_SS_DIS;
 	dwc3_ep0_out_start(dwc);
 
 	dwc3_gadget_enable_irq(dwc);
@@ -2691,9 +2692,6 @@ static void dwc3_disconnect_gadget(struct dwc3 *dwc)
 	struct usb_gadget_driver *gadget_driver;
 
 	if (dwc->gadget_driver && dwc->gadget_driver->disconnect) {
-#ifdef CONFIG_LGE_USB
-		trace_printk("[F: %s]: %p\n", __func__, dwc);
-#endif
 		gadget_driver = dwc->gadget_driver;
 		spin_unlock(&dwc->lock);
 		dbg_event(0xFF, "DISCONNECT", 0);
