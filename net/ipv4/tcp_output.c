@@ -794,6 +794,7 @@ static unsigned int tcp_established_options(struct sock *sk, struct sk_buff *skb
 		if (likely(opts->num_sack_blocks))
 			size += TCPOLEN_SACK_BASE_ALIGNED +
 				opts->num_sack_blocks * TCPOLEN_SACK_PERBLOCK;
+#endif
 	}
 
 	return size;
